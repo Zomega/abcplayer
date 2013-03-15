@@ -1,0 +1,392 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+
+
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="assignment_files/main.css" type="text/css">
+<title>The ABC Subset for 6.005</title>
+</head><body>
+
+<h1>An ABC Subset for 6.005</h1>
+
+<p>
+This document provides a high-level, but not necessarily
+ comprehensive, overview of language constructs
+that your abc player will need to handle. For information on the exact 
+syntax of abc, you should consult
+the grammar in the <a href="assignment_files/abc_subset_bnf.txt">EBNF</a>.
+</p>
+
+<p>
+An abc file consists of two parts: (1) the <i>header</i>, which contains various
+information about the musical piece, such as its title, composer,
+tempo, meter, and note length, and (2) the <i>body</i>, which contains a
+sequence of notes that make up the musical piece.  
+</p>
+
+<h2>1 Header</h2>
+
+<p>
+Each line in the header corresponds to a <i>field</i>, and begins with
+a single uppercase letter and a colon (':'), followed by the 
+content of the field. The following shows an example of what a header 
+may look like:
+<pre>
+X: 3
+T: Turkish March
+C: W. Mozart
+M: 2/4
+L: 1/8
+K: Am
+</pre>
+According to this header, the title of the piece contained in this
+file is "Turkish March", and was composed by a person named
+"W. Mozart". The piece is in A minor ('K: Am'), and the default
+length of each note or beat in the music is one eighth ('L: 1/8'). Each bar
+contains two quarter beats ('M: 2/4'). 
+</p>
+<p>The abc standard specifies a large number of fields. You are
+  required to handle only the following subset:
+<ul>
+<li><b>C:</b> Name of the composer.</li>
+<li><b>K:</b> Key, which determines the <i>key signature</i> for the piece.</li>
+<li><b>L:</b> Default length or duration of a note.</li>
+<li><b>M:</b> Meter. It determines the sum of the durations of all
+  notes within a bar.</li>
+<li><b>Q:</b> Tempo. It represents the number of default-length notes
+  per minute.</li>
+<li><b>T:</b> Title of the piece.</li>
+<li><b>X:</b> Index number, similar to the track number in a
+  recording. In this project, this field does not carry any
+  meaning, as you are required to parse only one abc file at a
+  time. However, the official standard designates this field to be
+  mandatory in every abc file, and therefore, your parser must be able at least to read
+  it (and may then discard it).</li>
+</ul>
+</p>
+
+<p>
+There are several additional requirements on the header:
+<ul>
+<li>The first field in the header must be the index number ('X').</li>
+<li>The second field in the header must be the title ('T').</li>
+<li>The last field in the header must be the key ('K').</li>
+<li>Each field in the header occurs on a separate line.</li>
+</ul>
+</p>
+
+<p>
+All fields other than 'X', 'T', and 'K' are optional, and may appear
+in any order. When omitted, the default values are
+1/8 for the note length, 4/4 for the meter, and 100 beats per minute 
+for the tempo. When the field 'C' is omitted, any reasonable string
+will suffice (e.g. "Unknown"). 
+</p>
+
+<p> 
+<div style="margin: 1em; float: right; text-align: center;">
+<img src="assignment_files/key_signature.png" border="1" width="100">
+</div>
+<b>More about key signature</b>: A key signature is a set of
+  sharps or flats associated with particular notes in the scale. A
+  <i>sharp</i> causes every occurrence of that note to be played one semitone
+  <b>higher</b>, and a <i>flat</i> causes every occurrence of that note
+  to be played one semitone 
+  <b>lower</b>. For example, the key signature in the diagram shown on
+  the right contains three sharps (placed on C, F, and G). Throughout
+  the piece,  every C, F or G (irrespective of the octave) should
+  be played one semitone higher. Your abc player should handle every
+  major and minor key; the list of keys and their signatures can be
+  found <a href="http://en.wikipedia.org/wiki/Key_signature">here</a>.
+  You should also note that the effect of the key signature can be
+  temporarily overridden with an <i>accidental</i>, which 
+  appears immediately left of its target note. Accidentals are described
+  in Section 2.3.
+</p>
+
+<h2>2 Body</h2>
+
+<p>
+<b>2.1 Notes</b>
+</p>
+
+<p>
+The body of an abc file consists of a sequence of notes separated by
+bar lines. Middle C is denoted by 
+<pre>
+C
+</pre>
+and the scale of C in this octave is represented by the sequence
+<pre>
+CDEFGAB
+</pre>
+The note C in the next higher octave is denoted by a lower case C
+<pre>
+c
+</pre>
+Therefore, the sequence of notes that represents the scale of C twice, going
+through two octaves, and 
+starting with middle C is
+<pre>
+CDEFGABcdefgab
+</pre>
+Notes in the higher octave are denoted by appending an appropriate
+number of apostrophes (') immediately after their names. For example,
+<pre>
+c'
+</pre>
+represents C in the two octaves up from the middle C, and
+<pre>
+c''
+</pre>
+represents C in the three octaves up. Similarly, notes in the octaves
+below the middle C can be denoted by appending commas (,). 
+</p>
+
+<p>
+A bar line separates a sequence of notes into segments and is denoted by
+'|'. A double bar line (e.g. '||' or '|]') indicates the end of a major
+section in the music. There are also repeat lines (e.g. '|:'), which
+are described in Section 2.7.
+</p>
+
+<p>
+As a summarizing example, the following sequence of notes
+<pre> 
+<img src="assignment_files/simple_octaves.png" border="1" height="90">
+</pre>
+may be represented by 
+<pre>
+C, D, E, F,|G, A, B, C|D E F G|A B c d|e f g a|b c' d' e'|f' g' a' b'|]
+</pre>
+
+<p>
+<b>2.2 Note Lengths</b>
+</p>
+
+<p>By default, every note has the length specified in the 'L' header
+  field (and when this field is absent, a length of 1/8). The length
+  of a particular note may be increased or decreased by appending a
+  multiplicative factor to the note. For example, if the default note
+  length is 1/8 (i.e. an eighth note), then the following sequence of notes
+<pre>
+<img src="assignment_files/length_example.png" border="1" height="60">
+</pre>
+is represented by
+<pre>
+A1/4 A/4 A/ A A2 A3 A4 A6 A8| A,1/4 A,/4 A,/ A, A,2 A,3 A,4 A,6 A,8 |]
+</pre>
+Note that either the denominator or the numerator (or both) in a fractional
+multiplicative factor can be omitted. An absent numerator should be
+treated as 1, and an absent denominator as 2. In addition, any
+apostrophes or commas that indicate the deviation from the middle
+octave must precede the multiplicative factor.
+</p>
+
+<p>
+<b>2.3 Accidentals</b>
+</p>
+
+<p>
+The effect of the key signature as discussed in Section 1 ('K'
+field) can be temporarily overridden using accidentals. An accidental
+can be a sharp (denoted by '^' in abc), a flat ('_'), or a
+natural ('='). A sharp causes a note to be played one semitone higher,
+a flat one semitone lower, and a natural
+causes the note to be played as if the key were in C without any
+accidental. Double sharps ('^^') and flats ('__') are also allowed.
+</p>
+
+<p>
+The effect of an accidental on a note lasts through the remainder
+of the current bar, and can be overridden by another accidental that
+occurs in the same bar. The effect of the key signature is restored at the
+beginning of the next bar.
+</p>
+
+<p>
+<b>2.4 Rests</b>
+</p>
+
+<p>
+A rest is denoted by 
+<pre>
+z
+</pre>
+and has the same default length as a note. Multiplicative factors have
+the same effect on rests as they do on notes, but accidentals cannot
+be applied to rests.
+</p>
+
+<p>
+<b>2.5 Chords</b>
+</p>
+
+<p>
+One or more notes may be played simultaneously in a chord. In abc, a
+chord is denoted by a group of notes between square brackets ('[' and
+']'):
+<pre>
+[CEG]
+</pre>
+Notes within a chord can be embellished with an accidental or a 
+multiplicative factor.
+</p>
+
+<p>
+<b>2.6 Tuplets</b>
+</p>
+
+<p>
+<div style="margin: 1em; float: right; text-align: center;">
+<img src="assignment_files/triplet.png" border="1" width="70">
+</div>
+A tuplet is a consecutive group of notes that are to be played for a
+duration that is either greater or less than the sum of the individual 
+notes within that group. In abc, a tuplet is denoted by an opening 
+round bracket '(', the tuplet number, and the actual notes in the
+tuplet. For example,
+<pre>
+(3GAB
+</pre>
+is a tuplet that consists of three notes, and
+called <i>triplet</i>. 
+</p>
+
+<p>
+In this project, we require you to handle
+<b>ONLY</b> duplets, triplets,
+and quadruplets. The duration of each type of the tuplets are as follows:
+<ul>
+<li>Duplet: 2 notes in the time of 3 notes</li>
+<li>Triplet: 3 notes in the time of 2 notes</li>
+<li>Quadruplet: 4 notes in the time of 3 notes</li> 
+</ul>
+</p>
+
+<p>
+For example, a triplet that contains three eighth notes is equal
+in duration to one quarter note; therefore, each eighth note in the
+triplet should be played 2/3 the duration of a standard eighth note.
+</p>
+
+<p>
+<b>2.7 Repeats</b>
+</p>
+
+<p>
+A section of music that is enclosed within '|:' and ':|' is to be
+repeated once. For example, in the following fragment of abc,
+<pre>
+|: C D E F | G A B c :|
+</pre>
+the two bars are repeated, so the sequence of notes that your abc
+player should produce as output is:
+<pre>
+C D E F G A B c C D E F G A B c
+</pre>
+The begin repeat bar '|:' may be omitted; in this case, the repeat is 
+from the beginning of a major section (i.e. the bar that immediately follows '|]'), 
+or the beginning of the musical piece.
+</p>
+<p>
+A repeated section may have a differet ending when it is
+played the second time. In abc, alternate endings are indicated using
+'[1' and '[2'. For example,
+<pre>
+|: C D E F |[1 G A B c :|[2 F E D C |
+</pre> 
+should be played as 
+<pre>
+C D E F G A B c C D E F F E D C
+</pre>
+Note that when the repeat is played the second time, the bar that
+begins with '[1' is entirely skipped over.
+</p>
+
+<h2>3 Multiple Voices</h2>
+
+<p>
+All of the abc constructs that we have discussed so far allow
+us to play only a single melodic line. Many pieces of music
+(e.g. orchestral or band music), however,
+involve multiple "voices" that are played
+simultaneously. Multiple voices do not belong to the official abc language
+definition, but have nevertheless become a part of the <i>de facto</i>
+standard among abc users.
+</p>
+
+<p>
+Your abc player should be able to parse and play multiple voices as 
+defined below. Your abc player is <b>NOT</b> required to be able to play
+different instruments or have varied timbres.
+</p>
+
+<p>
+Voices are listed in the header of an abc file using one or more
+field lines that begin with 'V'. The content of each voice field is
+the identifier for a particular voice, and can be an arbitrary
+string. For example, the header
+<pre>
+X:0
+T: Prelude No. 1
+C: J. S. Bach
+M:4/4
+L:1/16
+Q:100
+V: upper
+V: middle
+V: lower
+K:C
+</pre>
+says that this piece of music contains three different voices,
+labeled "upper", "middle", and "lower". There is no limit on the
+number of voices in a piece.
+</p>
+
+<p>
+A 'V' field line may re-appear in the middle of the body to indicate
+that the following sequence of notes belongs to a particular voice,
+until another voice field with a different identifier
+appears. For increased readability, middle-of-body voice fields 
+are often placed between 
+small sequences of bars for 
+different voices in alternating fashion (as it is normally done in
+sheet music):
+<pre>
+V: upper
+z2 Gc eGce z2 Gc eGce | z2 Ad fAdf z2 Ad fAdf | 
+V: middle
+z E7 z E7 | z D7 z D7 |
+V: lower
+C8 C8 | C8 C8 |
+V: upper
+z2 Gd fGdf z2 Gd fGdf | z2 Ae aAea z2 Ae aAea |]
+V: middle
+z D7 z D7 | z E7 z E7 |]
+V: lower
+B,8 B,8 | C8 C8 |]
+</pre>
+However, your abc player should not make any assumptions about 
+the order or frequency of
+middle-of-body voice fields. For example, instead of interleaving
+voices as in the previous example, an abc author could write each voice in its
+entirety under a single middle-of-body voice field:
+<pre>
+V: upper
+z2 Gc eGce z2 Gc eGce | z2 Ad fAdf z2 Ad fAdf | z2 Gd fGdf z2 Gd fGdf | z2 Ae aAea z2 Ae aAea |]
+V: middle
+z E7 z E7 | z D7 z D7 | z D7 z D7 | z E7 z E7 |]
+V: lower
+C8 C8 | C8 C8 | B,8 B,8 | C8 C8 |]
+</pre>
+</p>
+
+<p>
+The names/labels of the voices might indiciate different instruments, for example. However,
+they have no significance for your music player because you do not need to play different
+instruments or have varied timbres. Your music player only needs to produce one kind of sound,
+and voices simply allow your player to play multiple melodic lines simultaneously.
+</p>
+
+</body></html>

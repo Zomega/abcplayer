@@ -1,0 +1,566 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="assignment_files/main.css" type="text/css">
+<title>Project 1: An ABC Music Player</title>
+</head><body>
+
+<center>
+<p><img src="assignment_files/musicnotes.png" border="0" height="150"></p>
+
+<h1>6.005 &mdash; Spring, 2013<br>
+Project 1: An ABC Music Player<br>
+</h1>
+
+<h3>
+<u>Deadlines</u><br>
+Milestone &mdash; Tuesday, March 19, 2013 at 11:59pm<br> 
+Final &mdash; Tuesday, April 2, 2013 at 11:59pm<br>
+Reflections &mdash; Thursday, April 4, 2013 at 11:59pm<br><br>
+Meetings with TAs to discuss your milestone will occur on March 20, 21, and 22.
+</h3>
+
+</center>
+
+<br>
+<ul>
+  <li> <a href="#problem">Problem</a>
+  </li><li> <a href="#purpose">Purpose</a>
+  </li><li> <a href="#readings">Background Reading</a>
+  </li><li> <a href="#specification">Specification</a>
+  </li><li> <a href="#tasks">Tasks</a>
+  </li><li> <a href="#repo">Your team's repository</a>
+  </li><li> <a href="#infrastructure">Infrastructure</a>
+  </li><li> <a href="#lab">Warmup</a>
+  </li><li> <a href="#deliverables">Deliverables and Grading</a>
+  </li><li> <a href="#testing">Automated Testing</a>
+  </li><li> <a href="#hints">Hints</a>
+</li></ul>
+
+<h2><a name="problem">Problem</a></h2>
+
+<p>
+  Composition of a musical piece is often a trial-and-error process,
+  in which the musician writes down a series of notes on paper and
+  tests them out on a musical instrument.  One way to
+  do this on a computer is to type the notes into a text file using a
+  special notation and feed them to a program that understands this
+  notation. This way, you can transcribe your favorite pieces of music
+  or compose your own pieces, and easily exchange them among your
+  friends on the web.
+</p>
+
+<p>
+  <b>abc</b> is one of the languages designed for this purpose. 
+  It was originally intended for notating folk and traditional tunes of
+  Western Europe, but it provides a sufficient set of constructs for
+  transcribing a reasonably complex piece of music, such as
+  <a href="http://www.ucolick.org/~sla/abcmusic/sym7mov2.html"> a Beethoven
+  symphony</a>. Since its invention in 1980's, abc has become one of
+  the most popular notations for music, with around 50,000 
+  abc files circulating around the web.
+<p> 
+  In this project, you will build an <i>abc player</i> that plays an
+  abc file, by parsing it and feeding it to the Java MIDI API.  You
+  are required to handle only a subset of the abc language, which we will
+  discuss in more detail below in the
+  <a href="#specification">Specification</a> section. This subset is
+  sufficient to play a large number of interesting tunes 
+  that are available on the web, but you are welcome to implement the
+  rest of the standard, as long as your overall design remains clean
+  and simple.
+</p>
+
+</p>
+
+<h2><a name="purpose">Purpose</a></h2>
+
+<p> 
+  The purpose of this project is to help you gain experience with:
+  <ul>
+    <li>Designing and implementing programs in the functional style (that
+    is, making extensive use of functions over immutable types).</li>
+    <li>Designing and implementing abstract types.
+    <li>Using common design patterns for constructing and traversing structures
+    (such as Variant as Class, Interpreter, Iterator, and Visitor).</li>
+  </ul>
+  <br>
+  This project will also offer an opportunity to continue working with the
+  fundamentals of compilation, including:
+  <ul>
+    <li>Expressing a language as a grammar.</li>
+    <li>Converting a text to an abstract syntax tree.</li>
+    <li>Organizing a compiler into phases (lexing, parsing,
+    static semantic analysis, etc).</li>
+  </ul>
+  <br>
+  Finally, the project will give you further practice in software engineering
+  fundamentals, such as:
+  <ul>
+    <li>Clarifying a problem statement.</li>
+    <li>Inventing clear and simple interfaces to minimize coupling, and
+    identifying and resolving undesirable dependencies.</li>
+    <li>Structuring a program to make it easily testable, organizing, executing
+    and evaluating test suites.</li>
+    <li>Working collaboratively in a team.</li>
+  </ul>
+</p>
+
+<h2><a name="readings">Background Reading</a></h2>
+
+<p>
+The Specification below is not meant to provide you with comprehensive 
+information on abc notation. Instead, you may find the following links
+helpful as you work to understand the notation:
+<ul>
+<li>
+ <a href="http://www.walshaw.plus.com/abc/abc2mtex/abc.txt">abc
+ standard v1.6</a>: The current official standard for abc.</li>
+<li>
+ <a href="http://en.wikipedia.org/wiki/Abc_notation">Wikipedia article
+ on abc</a>.</li>
+<li>
+ <a href="http://www.walshaw.plus.com/abc/">Chris Walshaw's abc
+ site</a>: An informative web site by the inventor of the
+ language. Among other things, the site contains a set of examples and
+ a tutorial, which should help get you up to speed with abc.</li>
+<li>
+ <a href="http://trillian.mit.edu/~jc/music/abc/">John Chambers' abc
+ site</a>: Another comprehensive site on abc. A great feature on this
+ site is the <a href="http://trillian.mit.edu/~jc/cgi/abc/tunefind">
+ abc tune finder</a>, which lets you search through thousands of abc
+ files around the web.</li>
+<li>
+ <a href="http://en.wikipedia.org/wiki/Modern_musical_symbols">Wikipedia
+ article on modern musical symbols</a>: A fairly comprehensive
+ overview of the Western musical notation.</li>
+</ul>
+<br>
+</p>
+
+<h2><a name="specification">Specification</a></h2>
+
+<p>
+You are required to implement a subset of abc notation. The subset that you are
+required to implement is described in a separate document:
+<a href="abc_subset_description.html"><b>The ABC Subset for 6.005</b></a>.
+Also, we are giving you a grammar in an EBNF that corresponds to the subset:
+<a href="assignment_files/abc_subset_bnf.txt"><b>The ABC Subset Grammar</b></a>.
+</p>
+
+<p>
+If you would like, you are welcome to go beyond this subset. For your interest,
+the full abc EBNF can be found <a href="http://www.norbeck.nu/abc/abcbnf.htm">here</a>.
+However, you are only required to implement the <b>ABC Subset for 6.005</b>.
+</p>
+
+<p>
+Note: You are NOT allowed to use any code taken from an existing abc player
+as a part of your implementation in this project.
+</p>
+
+<h2><a name="tasks">Tasks</a></h2>
+
+<p>
+During this project, you will perform the following tasks. The <a href="#deliverables">
+Deliverables and Grading</a> section specifies when each component is due.
+<ul>
+<li><b>Team Contracts</b> &mdash; Before you begin, you should write and agree to a
+team contract. Please see <a href="teamcontract.html">this page</a> for details.     
+</li>
+
+<li><b>Warmup</b> &mdash; There are some warmup exercises that you need to do, listed below.  They will help you learn about how the abc music player works. 
+</li>
+
+<li><b>Design</b> &mdash; Using the <a href="assignment_files/abc_subset_bnf.txt"><b>The ABC Subset Grammar</b></a>,
+you will need to consider the datatype definitions you would like to use to represent the parsed input, as well as
+the music itself. In particular, you should think about what you'll need to do to transform the
+parsed input into a format that can be easily played. Your software's design is perhaps the most important
+part of the project; a good design will make it simpler to implement and debug your music player.
+</li>
+
+<li><b>Implementation</b> &mdash; Implement the project in Java. 
+You may find that you want to make changes to your design. You
+are free to do this, but should record the changes so it is clear how
+and why you diverged from the original. Remember to do test-first programming.
+</li>
+
+<li><b>Tests</b> &mdash; Test your entire system on the staff sample files. 
+Furthermore, create at least three additional abc files as tests. These should show that your player
+is able to correctly parse and play various musical constructs, as well as detect any semantic
+errors in an abc file. You should also have JUnit tests that test smaller components of your
+system (including, but certainly not limited to, your Lexer and Parser).
+</li>
+
+<li><b>Reflection</b> &mdash; Write a brief commentary saying what you
+learned from this experience. What was easy? What was hard? What was
+unexpected? Briefly evaluate your solution, pointing out its key
+merits and deficiencies. This is an individual activity.  
+</li>
+
+</ul>
+
+<h2><a name="repo">Your team's repository</a></h2>
+
+<p>
+Clone your team's Git repository using (all one line):
+<blockquote><code>
+git clone ssh://<span style="background: yellow">[you]</span>@athena.dialup.mit.edu/afs/athena.mit.edu/course/6/6.005/git/sp13/projects/abcplayer/<span style="background: yellow">[username1]</span>-<span style="background: yellow">[username2]</span>-<span style="background: yellow">[username3]</span>.git abcplayer
+</code></blockquote>
+where the three Athena usernames are in alphabetical order.
+
+<h2><a name="infrastructure">Infrastructure</a></h2>
+
+<p>Before you start the project, you should learn
+  about the <b>Java MIDI Sequencer</b>. It allows you to schedule a series of notes to be
+  played at certain time intervals.</p>
+
+<p>Look at the package <tt>sound</tt> under <tt>src</tt>, and study
+  the provided class, <tt>SequencePlayer</tt>.  For this project, you
+  will not need to modify this class, but you should become
+  comfortable using its constructor and the
+  methods <tt>addNote</tt> and <tt>play</tt>.
+</p>
+
+<p><b>SequencePlayer(int beatsPerMinute, int ticksPerQuarterNote)</b>: The
+    constructor for <tt>SequencePlayer</tt> takes two parameters:
+  <ul>
+    <li><p>The first, <tt>beatsPerMinute</tt>, is the tempo of a
+    musical piece. It is expressed in the number of beats per minute (BPM),
+    where each beat is equal to the duration of one quarter
+    note. The BPM to be used for a particular piece depends on the
+    value of the optional tempo field ('Q') in the input abc
+    file. When this field is absent, the default tempo is 100 BPM,
+    where each beat is equal in duration to the
+    default note length (indicated by the field 'L'). </p>
+    </li>
+    <li> <p>The second parameter, <tt>ticksPerQuarterNote</tt>,
+    corresponds to the number of ticks per quarter note. Note that
+    ticks used by the sequencer are based on discrete time. Think
+    about how large this number needs to be in order to play notes of
+    different durations in an abc piece. For example,
+    if <tt>ticksPerQuarterNote</tt> had a value of 2, then an eighth
+    note would be played for the duration of one tick, but you would
+    not be able to schedule a sixteenth note for the correct
+    duration.</p>
+    </li>
+  </ul>
+</p>
+
+<p><b>addNote(int note, int startTick, int numTicks)</b>: This method
+  schedules a note to be played at <tt>startTick</tt> for the duration
+  of <tt>numTicks</tt>. Here, a "tick" is similar to a time step. At
+  the beginning of a musical piece, the global tick is initialized to
+  0, and as the music progresses through the notes, the global tick is
+  incremented by some number. The first parameter <tt>note</tt> is a MIDI
+  note value that
+  corresponds to the pitch of a note. The provided
+  class <tt>Pitch</tt> contains a number of useful methods for working
+  with pitches. In particular, the method <tt>toMidiNote</tt> returns the
+  MIDI note value of the particular note, and <tt>transpose</tt> can
+  be used to transpose the note some number of semitones up or down.
+</p>
+
+<p><b>play()</b>: After all of the notes have been scheduled, you can
+  invoke <tt>play</tt> to tell the sequencer to begin playing the music. 
+</p>
+
+<p>Run the main method in <tt>SequencePlayer</tt>, which shows an
+  example of using a sequencer to play up and down a C major
+  scale. In this example, all of the notes in the scale have been
+  hard-coded. In your abc player, you will be walking over your data
+  structures that represent a musical piece and automatically schedule 
+  the notes at appropriate ticks.
+</p>
+
+
+
+<p>We are also providing some example abc files that you can use to
+  test your abc player. (These are included in the git
+  repository under the folder <tt>sample_abc</tt>). They are:
+<ul>
+<li>
+ <a href="sample_abc/scale.abc"><tt>A simple scale
+ (scale.abc)</tt></a>
+</li>
+<li>
+ <a href="sample_abc/little_night_music.abc"><tt>A Little Night Music
+ by W. A. Mozart (little_night_music.abc)</tt></a>
+</li>
+<li>
+ <a href="sample_abc/paddy.abc"><tt>Paddy O'Rafferty, an Irish tune
+ (paddy.abc)</tt></a>
+</li>
+<li>
+ <a href="sample_abc/invention.abc"><tt>Invention by J. S. Bach
+ (invention.abc)</tt></a>
+</li>
+<li>
+ <a href="sample_abc/prelude.abc"><tt>Prelude by J. S. Bach (prelude.abc)</tt></a>
+</li>
+<li>
+ <a href="sample_abc/fur_elise.abc"><tt>Fur Elise by L. v. Beethoven (fur_elise.abc)</tt></a>
+</li>
+</ul>
+</p>
+
+<p>
+You can find many more examples online,
+including <a href="http://www.walshaw.plus.com/abc/examples/">here</a>.
+</p>
+
+<h2><a name="lab">Warmup</a></h2>
+
+<p>
+Note: If you don't understand musical notation, <a href="http://en.wikipedia.org/wiki/Modern_musical_symbols">
+this Wikipedia page</a> may be helpful.
+</p>
+
+<p><b>Task 1</b>: Transcribe each of the following small pieces of music
+ into an abc file.  Name your files as <b>piece1.abc</b>
+ and <b>piece2.abc</b>, respectively, and commit them under the
+ directory <tt>sample_abc</tt> in your team's git repository.
+</p>
+<p>You may find the <a href="abc_subset_description.html"><b>ABC Subset for 6.005</b></a> useful here.<p> 
+
+<p><u>Piece 1</u>: A simple, 4/4 meter piece with triplets. As a
+  starter, the header and the first two bars are already
+  provided. You should complete the rest of the piece by transcribing
+  the last two bars.
+<pre> 
+<img src="assignment_files/piece1.png" border="1">
+</pre>
+</p>
+
+<p>
+<pre>
+X: 1
+T:Piece No.1
+M:4/4
+L:1/4
+Q: 140
+K:C
+C C C3/4 D/4 E | E3/4 D/4 E3/4 F/4 G2 |
+</pre>
+</p>
+
+<p><u>Piece 2</u>: A more complex piece, with chords, accidentals,
+  and rests. <b>Set its tempo to 200, with the default note length of 1/4.</b> The piece below is only an excerpt, and the last measure is not a full measure. Pad the piece with enough rests to complete the measure.   
+<pre> 
+<img src="assignment_files/piece2.png" border="1">
+</pre>
+</p>
+<br>
+<p>
+  <b>Task 2</b>: Write JUnit tests that play these pieces using the
+  sequencer, similar to the main method in the <tt>SequencePlayer</tt>
+  class. Store them in a separate class called <b><tt>SequencePlayerTest</tt></b>.
+  Didit cannot play music for you, so you'll want to tell Didit to ignore this test
+  file. See <a href="#testing">Automated Testing</a> for how to tell Didit to
+  ignore a test file.
+</p>
+
+<p><b>Hint:</b> <tt>SequencePlayer</tt> has a <tt>toString</tt> method
+that produces a string representation of all its events. If you are
+not confident in your listening skills, this might be
+useful if you want to compare sequences that sound the same.</p>
+
+<h2><a name="deliverables">Deliverables and Grading</a></h2>
+
+<p>
+  Note that you will be able to work on your projects in-class on March 15, 18, 20, 22, and April 1.
+</p>
+
+<p>
+  The <b><u>milestone deadline</u></b> is Tuesday, March 19, 2013 at 11:59pm. The deliverables are:
+</p>
+
+<ul>
+  <li>Your <b>Team Contract</b>. In your team's git repository, there is a folder called <tt>docs</tt>.
+  You should place your contract in <tt>docs/team-contract.pdf</tt>.</li>
+  <li>Your <b>Warmup</b> exercises. Place your pieces (<tt>piece1.abc</tt> and <tt>piece2.abc</tt>)
+  in the <tt>sample_abc</tt> directory in your team's git repository. Also include your <tt>SequencePlayerTest</tt>
+  class in team's your git repository.</li>
+  <li>Your <b>Design</b>. Place your design in <tt>docs/design-milestone.pdf</tt> in your team's git repository.
+  Your design must address, at the very least, the following:
+    <ul>
+      <li>Think about the datatypes your music player will require. List these datatypes, state whether
+      they are mutable or immutable, and list their operations. For each operation, provide a short
+      description of what it does. Also, we encourage (but do not require) you to include a dependency
+      diagram.</li>
+      <li>You may wish to modify the given <a href="assignment_files/abc_subset_bnf.txt">grammar</a>
+      we give you to make parsing input easier. This is ok, as long as it continues
+      to fit the specifications. If you do wish to modify the grammar, include your modified
+      grammar in your design.</li>
+      <li>Demonstrate how your parser is going to work. You can do this by describing its individual
+      methods, by displaying a state machine diagram, or through some other format. Additionally,
+      demonstrate how your parser will detect and handle semantic errors in an input abc file.</li>
+      <li>Describe how you will take a representation of the input (e.g., your AST) and transform
+      it into a format that you can cleanly play using <tt>SequencePlayer</tt>.
+      <li>List the components of your system that you believe can and should be tested. For each of
+      these components, describe your testing strategy and describe at least three specific test
+      cases you plan to have.</li>
+    </ul>
+</ul>
+
+<p>
+Your team will be randomly assigned a TA who will help you with your design and ensure you're on the right
+track before you implement your player. Meetings with TAs will occur on March 20, 21, and 22.
+Your TA will get in touch with you to setup that meeting.
+</p>
+
+<br>
+
+<p>
+  The <b><u>final deadline</u></b> is Tuesday, April 2, 2013 at 11:59pm. The deliverables are:
+</p>
+
+<ul>
+  <li>Your <b>Revised Design</b>. As you implement your player, you will likely need to modify your
+  original design. Start this revised design with a summary of what changed from your milestone
+  design. Place your revised design in <tt>docs/design-revised.pdf</tt> in your team's
+  git repository.</li>
+  <li>Your <b>implementation</b>. All your code should be completed by this deadline!</li>
+  <li>Your <b>tests</b>. As described in <a href="#tasks">Tasks</a>, you must write at least
+  three abc files beyond the ones we give you. Your JUnit tests should also be completed by
+  this deadline.</li>
+</ul>
+
+<br>
+
+<p>
+  The <b><u>reflections deadline</u></b> is Thursday, April 4, 2013 at 11:59pm. In your reflections, you should address the following:
+</p>
+
+<ul>
+  <li>Reflections on your team &mdash; How did you feel the team did? How well did your team work together? How was the coding? How did you split the work?</li>
+  <li>Reflections on yourself &mdash; How do you think you did? What specific contributions did you make? How do you feel about your contributions?</li>
+</ul>
+<p>A Stellar assignment will be created for reflections. Please submit your reflections as a <tt>pdf</tt> to Stellar.</p>
+
+<br>
+
+<p>
+  Other than reflections, all parts of the project should be committed in the repository you share with your
+  teammates. Each commit to the repository should have a comment saying what you changed, as well as who worked on it.
+  Your TA will be reviewing your git log to see individual contributions. Make sure you commit frequently!
+</p>
+
+<p>
+  Grades will be allotted according to the following breakdown:
+<ul>
+<li>  Team Contract &mdash; 5%
+<li>  Design &mdash; 25%
+<li>  Implementation &mdash; 50%
+<li>  Testing &mdash; 15%
+<li>  Reflection &mdash; 5%
+</ul>
+</p>
+
+<h2><a name="testing">Automated Testing</a></h2>
+<p>
+  Starting with Problem Set 0, you have been using the Didit system for automated building and testing: every time you push your commits to Athena, the Didit build server pulls a copy of your code, attempts to compile it, and runs tests.
+  This kind of automation is very common in the world of professional software development, and is very useful for coordinating a team of developers.
+  There is no ambiguity about whether the code compiles or not: if it doesn't compile on the build server, it doesn't compile.
+  And there is no ambiguity about whether the tests pass: if they don't pass on the build server, they don't pass.
+</p>
+<p>
+  For this project, Didit will run <b>your</b> tests: any JUnit tests you check in to your team's project repository will be executed and the results included in your Didit build report.
+  Tests must be in the <code>src</code> directory with a name like <code><i>[something]</i>Test.java</code> or <code><i>[something]</i>Tests.java</code> for Didit to find them.
+</p>
+<p>
+  Your tests will be run in an environment with limited permissions and resources.
+  (E.g., filesystem access only to your <code>src</code> and <code>sample_abc</code> directories.)
+  Any deliberate attempts to circumvent these restrictions are a violation of course policy and academic standards, and will be dealt with harshly.
+  However:
+</p>
+<ul>
+  <li>If you find that Didit is unable to run some of your tests but you think they are reasonable and should be supported, email the TAs and include <b>&quot;Didit test restrictions&quot;</b> in the subject line.
+    This is the first semester 6.005 is offering automated builds, so you might try things we didn't think of.
+    Hopefully we will be able to make Didit more accommodating.</li>
+</ul>
+<p></p>
+<ul>
+  <li>You are likely to have at least some tests Didit cannot run (e.g., tests which require the MIDI synthesizer).
+    <i>Don't let Didit's restrictions stop you from writing such tests.</i>
+    Instead, for these tests, include the Javadoc tag <b><code>@category&nbsp;no_didit</code></b> on the test class.
+    <i>All tests in that file will be ignored.</i> You cannot use <b><code>@category&nbsp;no_didit</code></b> on methods &mdash; you must use it on the class.
+    Here's an example:
+  </li>
+</ul>
+
+<pre>
+<b>package</b> player;
+<b>import</b> org.junit.Test;
+/**
+ * Test some super complicated stuff.
+ * <b>@category</b> no_didit
+ */
+<b>public</b> <b>class</b> SuperComplicatedTest {
+  
+    @Test <b>public</b> <b>void</b> testBWV1010() {
+      // Didit will not run this test
+    }
+    // nor any other tests in this file
+}
+</pre>
+
+<p>
+  On your build results page, Didit will report which tests it attempted to run, and which tests it skipped.
+  Make sure you and your teammates are running those tests manually.
+</p>
+<p>
+  If you include no tests, Didit will count that as a pass &mdash; remember to also check whether your code compiled!
+</p>
+
+<h2><a name="hints">Hints</a></h2>
+
+<p>
+<b>Start early!</b> This project is more work than it seems. 
+Starting early on the project will give you more time to sort
+out any issues and ask the staff questions that may arise, especially if you have trouble with transcribing music.
+</p>
+
+<p><b>Lexing and parsing</b>: Given the grammar for abc, you will need
+to build a lexer that breaks the input string into tokens. You may find
+the Java pattern matching libraries such as <tt>java.util.regex.Pattern</tt>
+and <tt>java.util.regex.Matcher</tt> helpful for lexing, but you should use them
+judiciously. You will also need to build a parser that groups the tokens into a valid syntactic
+construct and produces an abstract syntax tree (AST). We recommend that you think
+carefully about your approach to parsing the abc file; consider how to
+make it easiest to write a single parser that can handle the entire
+file, with complexities such as bars split across lines.
+</p>
+
+<p>
+<b>Designing datatypes</b>: For the design of your abc player, you
+should think carefully about datatypes that you need to
+represent the musical constructs in abc. Start with simple constructs,
+such as notes and rests, and think about how you would build up on
+these primitive objects to create more complex structures. How would
+you represent a triplet? A chord? What does a bar consist of? How
+would you represent multiple voices? Sort out answers to these
+questions with your team members during the design stage.
+</p>
+
+<p>
+<b>Evaluating expressions</b>: Once you parse an abc file and create
+your own internal representation of the music as an abstract syntax
+tree (AST), you will need to perform various computations that involve
+traversing the tree, possibly multiple times.  Consider carefully the
+patterns you learned for performing these traversals: you may want to
+use the visitor pattern, though an interpreter pattern might also work.
+</p>
+
+<p>
+<b>Multiple voices</b>: A particular challenge is how you will represent
+multiple voices, and how you will merge them into a single sequence of midi events.
+We recommend thinking about this challenge early in your design process.
+</p>
+
+<p>
+<b>Use classtime wisely</b>: Lecture and recitation are being replaced with
+time for team/TA meetings on March 15, 18, 20, 22, and April 1.
+You should use the time to work on the project, or meet up with your TA.</p>
+
+</body></html>
