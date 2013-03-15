@@ -2,5 +2,9 @@
 *~
 *#
 
+# Ignore LaTeX temp files...
+*.log
+*.aux
+
 /bin/
 .DS_Store
