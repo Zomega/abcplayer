@@ -1,2 +1,6 @@
+# Ignore temp files...
+*~
+*#
+
 /bin/
 .DS_Store
