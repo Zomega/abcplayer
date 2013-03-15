@@ -2,8 +2,9 @@ X: 1
 T:Piece No.1
 M:4/4
 L:1/4
-Q: 140
+Q:140
 K:C
-C C C3/4 D/4 E | E3/4 D/4 E3/4 F/4 G2 |
-
-TODO: stuff goes here.
+C C C3/4 D/4 E |
+E3/4 D/4 E3/4 F/4 G2 |
+(3 c1/2 c1/2 c1/2 (3 G1/2 G1/2 G1/2 (3 E1/2 E1/2 E1/2 (3 C1/2 C1/2 C1/2 |
+G3/4 F/4 E3/4 D/4 C2 |]
