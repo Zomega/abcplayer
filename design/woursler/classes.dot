@@ -1,0 +1,16 @@
+// A very rough sketch of dependancies.
+// A -> B means that the class A in some way requires B to function fully.
+// A -> B neither implies B -> A or not B -> A
+
+// This document is rough and subject to tons of change.
+
+digraph Classes {
+	// Parsing Chain...
+	Parser -> Lexer -> Token;
+	// Data Structure...
+	Parser -> SomeSortOfPotentiallyComplexDataStructure;
+	DataStructureVisitor -> SomeSortOfPotentiallyComplexDataStructure;
+	// Player.
+	Player -> Parser;
+	Player -> DataStructureVisitor -> SequencePlayer;
+}

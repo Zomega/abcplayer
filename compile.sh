@@ -1,0 +1,3 @@
+# TODO: make more general. Compile all .dot to .svg...
+dot -T svg design/woursler/classes.dot > design/woursler/classes.svg
+# TODO: compile all .tex to .pdf
