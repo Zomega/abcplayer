@@ -10,8 +10,10 @@ digraph Classes {
 	// Data Structure...
 	Parser -> Piece;
 	PieceVisitor -> Piece;
-	Piece->Measure->Note-> Fraction;
-	Note->Pitch
+	Piece->Measure->Note;
+	Measure->Measure;
+	Note->Pitch;
+	Note->Fraction;
 	// Player.
 	Player -> Parser;
 	Player -> PieceVisitor -> SequencePlayer;
