@@ -8,9 +8,13 @@ digraph Classes {
 	// Parsing Chain...
 	Parser -> Lexer -> Token;
 	// Data Structure...
-	Parser -> SomeSortOfPotentiallyComplexDataStructure;
-	DataStructureVisitor -> SomeSortOfPotentiallyComplexDataStructure;
+	Parser -> Piece;
+	PieceVisitor -> Piece;
+	Piece->Measure->Note;
+	Measure->Measure;
+	Note->Pitch;
+	Note->Fraction;
 	// Player.
 	Player -> Parser;
-	Player -> DataStructureVisitor -> SequencePlayer;
+	Player -> PieceVisitor -> SequencePlayer;
 }
