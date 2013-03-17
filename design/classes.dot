@@ -11,7 +11,7 @@ digraph Classes {
 	// Data Structure...
 	Parser -> Piece;
 	PieceVisitor -> Piece;
-	PieceVisitor -> MeasureIterator;
+	PieceVisitor -> MeasureIterator->Measure;
 	Piece->Measure->Note;
 	Measure->Measure;
 	Note->Pitch;
