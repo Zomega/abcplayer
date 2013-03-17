@@ -106,43 +106,43 @@
 </g>
 <!-- Note -->
 <g id="node15" class="node"><title>Note</title>
-<ellipse fill="none" stroke="black" cx="333" cy="-93" rx="34.8574" ry="18.3848"/>
-<text text-anchor="middle" x="333" y="-89.4" font-family="Times Roman,serif" font-size="14.00">Note</text>
+<ellipse fill="none" stroke="black" cx="292" cy="-93" rx="34.8574" ry="18.3848"/>
+<text text-anchor="middle" x="292" y="-89.4" font-family="Times Roman,serif" font-size="14.00">Note</text>
 </g>
 <!-- Measure&#45;&gt;Note -->
 <g id="edge15" class="edge"><title>Measure&#45;&gt;Note</title>
-<path fill="none" stroke="black" d="M364.618,-148.708C359.648,-139.951 353.6,-129.296 348.131,-119.659"/>
-<polygon fill="black" stroke="black" points="351.098,-117.796 343.118,-110.826 345.01,-121.251 351.098,-117.796"/>
+<path fill="none" stroke="black" d="M355.33,-149.463C344.083,-139.436 329.846,-126.743 317.721,-115.932"/>
+<polygon fill="black" stroke="black" points="319.904,-113.189 310.111,-109.147 315.246,-118.414 319.904,-113.189"/>
 </g>
-<!-- Pair -->
-<g id="node18" class="node"><title>Pair</title>
-<ellipse fill="none" stroke="black" cx="416" cy="-93" rx="29.9071" ry="18.3848"/>
-<text text-anchor="middle" x="416" y="-89.4" font-family="Times Roman,serif" font-size="14.00">Pair</text>
+<!-- Pair&lt;Note,Fraction&gt; -->
+<g id="node18" class="node"><title>Pair&lt;Note,Fraction&gt;</title>
+<ellipse fill="none" stroke="black" cx="458" cy="-93" rx="113.137" ry="18.3848"/>
+<text text-anchor="middle" x="458" y="-89.4" font-family="Times Roman,serif" font-size="14.00">Pair&lt;Note,Fraction&gt;</text>
 </g>
-<!-- Measure&#45;&gt;Pair -->
-<g id="edge19" class="edge"><title>Measure&#45;&gt;Pair</title>
-<path fill="none" stroke="black" d="M385.135,-148.708C390.023,-139.886 395.978,-129.138 401.348,-119.445"/>
-<polygon fill="black" stroke="black" points="404.479,-121.016 406.264,-110.572 398.356,-117.623 404.479,-121.016"/>
+<!-- Measure&#45;&gt;Pair&lt;Note,Fraction&gt; -->
+<g id="edge19" class="edge"><title>Measure&#45;&gt;Pair&lt;Note,Fraction&gt;</title>
+<path fill="none" stroke="black" d="M394.67,-149.463C405.108,-140.156 418.123,-128.553 429.634,-118.29"/>
+<polygon fill="black" stroke="black" points="432.178,-120.711 437.313,-111.444 427.52,-115.486 432.178,-120.711"/>
 </g>
 <!-- Pitch -->
 <g id="node20" class="node"><title>Pitch</title>
-<ellipse fill="none" stroke="black" cx="281" cy="-19" rx="36.0624" ry="18.3848"/>
-<text text-anchor="middle" x="281" y="-15.4" font-family="Times Roman,serif" font-size="14.00">Pitch</text>
+<ellipse fill="none" stroke="black" cx="240" cy="-19" rx="36.0624" ry="18.3848"/>
+<text text-anchor="middle" x="240" y="-15.4" font-family="Times Roman,serif" font-size="14.00">Pitch</text>
 </g>
 <!-- Note&#45;&gt;Pitch -->
 <g id="edge21" class="edge"><title>Note&#45;&gt;Pitch</title>
-<path fill="none" stroke="black" d="M320.677,-75.463C314.266,-66.3394 306.303,-55.0086 299.198,-44.897"/>
-<polygon fill="black" stroke="black" points="301.848,-42.5807 293.235,-36.4111 296.121,-46.6053 301.848,-42.5807"/>
+<path fill="none" stroke="black" d="M279.677,-75.463C273.266,-66.3394 265.303,-55.0086 258.198,-44.897"/>
+<polygon fill="black" stroke="black" points="260.848,-42.5807 252.235,-36.4111 255.121,-46.6053 260.848,-42.5807"/>
 </g>
 <!-- Fraction -->
 <g id="node22" class="node"><title>Fraction</title>
-<ellipse fill="none" stroke="black" cx="386" cy="-19" rx="50.9117" ry="18.3848"/>
-<text text-anchor="middle" x="386" y="-15.4" font-family="Times Roman,serif" font-size="14.00">Fraction</text>
+<ellipse fill="none" stroke="black" cx="345" cy="-19" rx="50.9117" ry="18.3848"/>
+<text text-anchor="middle" x="345" y="-15.4" font-family="Times Roman,serif" font-size="14.00">Fraction</text>
 </g>
 <!-- Note&#45;&gt;Fraction -->
 <g id="edge23" class="edge"><title>Note&#45;&gt;Fraction</title>
-<path fill="none" stroke="black" d="M345.56,-75.463C352,-66.4716 359.975,-55.3365 367.137,-45.3374"/>
-<polygon fill="black" stroke="black" points="370.184,-47.093 373.162,-36.9251 364.493,-43.0171 370.184,-47.093"/>
+<path fill="none" stroke="black" d="M304.56,-75.463C311,-66.4716 318.975,-55.3365 326.137,-45.3374"/>
+<polygon fill="black" stroke="black" points="329.184,-47.093 332.162,-36.9251 323.493,-43.0171 329.184,-47.093"/>
 </g>
 <!-- Player -->
 <g id="node23" class="node"><title>Player</title>

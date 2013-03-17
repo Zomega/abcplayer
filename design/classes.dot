@@ -14,7 +14,7 @@ digraph Classes {
 	PieceVisitor -> MeasureIterator->Measure;
 	Piece->Measure->Note;
 	Measure->Measure;
-	Measure->Pair;
+	Measure->"Pair<Note,Fraction>";
 	Note->Pitch;
 	Note->Fraction;
 	// Player.
