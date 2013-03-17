@@ -39,8 +39,12 @@ Rests are not notes, and in fact are not represented at all; they are redundant 
 Notes are immutable objects.  Its values are pitch, length, accidentals, octave, and it has getter methods to access these values.  
 
 \section{ Lexer }
+The Lexer class will separate the input into tokens.  For the header of the piece, it will create field header tokens, field value tokens, and newline tokens to show the separation between fields and the header and body.  
+For the body of the piece, it will create tokens for note pitches, which includes an upper or lowercase letter, accidental, or octave ticks, note length values, chords, tuples, rests, bar lines, and the symbols indicating that there are multiple voices.  It will also ignore whitespace.
+The lexer will throw exceptions when it encounters invalid symbols or malformed tokens.  
 
 \section{ Parser }
+
 
 \section{ Visitor }
 
