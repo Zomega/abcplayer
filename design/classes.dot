@@ -7,9 +7,11 @@
 digraph Classes {
 	// Parsing Chain...
 	Parser -> Lexer -> Token;
+	Parser -> CircleOfFifths
 	// Data Structure...
 	Parser -> Piece;
 	PieceVisitor -> Piece;
+	PieceVisitor -> MeasureIterator;
 	Piece->Measure->Note;
 	Measure->Measure;
 	Note->Pitch;
