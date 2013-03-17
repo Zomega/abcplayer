@@ -3,6 +3,11 @@ package player;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 
+/**
+ * Test some super complicated stuff.
+ * @category no_didit
+ */
+
 import org.junit.Test;
 
 import sound.Pitch;
