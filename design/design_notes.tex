@@ -21,11 +21,13 @@ The Fraction class has a Numerator and Denominator, guaranteed to be in lowest t
 
 \section{ The Piece class }
 
-This class is primarily concerned with the piece metadata, such as BPM, time, etc. It also contains a reference to the first Measure of the piece.
+This class is primarily concerned with the piece metadata, such as BPM, time, etc. It also contains a reference to the first Measure of the piece.  It is a mutable class and has methods to set the piece's voices.  
 
 \section{ The Measure class and Repeats }
 
-Each measure is a container of Note instances, each Note being associated with a start time ( represented by a Fraction ) relative the beginning of the measure. In this manner, the same Measure object can represent both of it's instantiations in a repeat. Measures are structured similarly to a linked list, but have an additional pointer to a second next element. If the Visitor has seen a specific measure before (measured by reference NOT value, as two different measures may contain the same musical content), it will take the second next measure rather than the first. This perhaps should be enabled with a careful Iterator pattern.
+Each measure is a container of Note instances, each Note being associated with a start time ( represented by a Fraction ) relative the beginning of the measure. In this manner, the same Measure object can represent both of its instantiations in a repeat. Measures are structured similarly to a linked list, but have an additional pointer to a second next element. If the Visitor has seen a specific measure before (measured by reference NOT value, as two different measures may contain the same musical content), it will take the second next measure rather than the first. This perhaps should be enabled with a careful Iterator pattern, using a MeasureIterator class.  
+
+Measures are mutable objects and contain methods to changing the measure's pointers to other measures and adding or modifying what notes are in the method.  
 
 \includegraphics[width=\linewidth]{measure_example.png}
 
@@ -33,5 +35,15 @@ Each measure is a container of Note instances, each Note being associated with a
 A Note contains a pitch and a duration  ( represented by a Fraction ).  It does NOT contain any information that refers to a larger data structure. The key signature / implicit accidentals, for instance, are not relevant. They should be handled by the Parser.
 
 Rests are not notes, and in fact are not represented at all; they are redundant because note start times are explicitly specified by the Parser.
+
+Notes are immutable objects.  Its values are pitch, length, accidentals, octave, and it has getter methods to access these values.  
+
+\section( Lexer )
+
+\section( Parser )
+
+\section( Visitor )
+
+\section( Testing )
 
 \end{document}
