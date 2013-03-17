@@ -47,7 +47,9 @@ The lexer will throw exceptions when it encounters invalid symbols or malformed 
 
 \section{ Parser }
 The parser will parse the header information tokens, specifically identifying key signature (using Circle of Fifths class), the tempo, and the time signature.  It will throw errors if there are invalid (or null) values for any of these fields.  This information will be passed into the Piece data type.  
+
 The parser will parse the body tokens into Measures, with methods to create note objects from single notes, tuples, chords, and rest Tokens.  From the key signature, the parser should keep track of current accidentals throughout a Measure, resetting when creating a new Measure.  The parser must link the next measure to the previous measure (e.g. the case of multiple endings).  In addition, it should keep track of different beat divisions, which will be used by the Visitor to determine a common tick/measure for the entire Piece.  Also, it should note if there are multiple voices and create separate 'linked lists' of Measures for each voice if so.  
+
 Some errors that parser will keep an eye out for: invalid measure durations (too long or too short), incorrect repeat braces, musically incorrect accidental stacking, invalid tuplets (length-wise), and invalid beat times (negatives, decimals, and the Fraction class should ensure there are no divide by 0s). 
 
 \section{ Visitor }
@@ -55,8 +57,11 @@ The Visitor interfaces with the Piece class and the SequencePlayer.  It tracks g
 
 \section{ Testing }
 The modularity of our design allows that each major class can be tested.  We test that...
+
 ... the Lexer can separate every kind of token, throws exception of invalid tokens, and correctly handles null input.
+
 ... the Parser throws exceptions for all errors; correctly parses Measures with both basic notes and more complex tokens (chords, tuples); correctly creates nested repeat structures and multiple endings.  
+
 ... the Visitor ensures global timekeeping is working and correctly translates to MIDI notes; correctly calculates a 'base' tick/quarter note from the different beat divisions; correctly traverses through repeats and alternate endings; and ensures that errors thrown in Lexer/Parser also stop its actions.   
 
 \end{document}
