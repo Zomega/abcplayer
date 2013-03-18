@@ -12,11 +12,14 @@ digraph Classes {
 	Parser -> Piece;
 	PieceVisitor -> Piece;
 	PieceVisitor -> MeasureIterator->Measure;
-	Piece->Measure->Note;
+	Piece->Voice->Measure->Note;
 	Measure->"Pair<Note,Fraction>";
 	Note->Pitch;
-	Note->Fraction;
+	Note->Fraction->FractionValueException;
 	// Player.
 	Player -> Parser;
 	Player -> PieceVisitor -> SequencePlayer;
+	//Testing...
+	ParserTest->Parser;
+	MeasureIteratorTest->MeasureIterator;
 }
