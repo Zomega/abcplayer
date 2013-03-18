@@ -15,18 +15,19 @@ import org.junit.Test;
  * @author woursler
  */
 public class LexerTest {
-	private TokenType INTEGER = new TokenType("INTEGER",
+	public final TokenType INTEGER = new TokenType("INTEGER",
 			Pattern.compile("\\d+(?!\\.)"));
-	private TokenType FLOATING_POINT = new TokenType("FLOATING_POINT",
+	public final  TokenType FLOATING_POINT = new TokenType("FLOATING_POINT",
 			Pattern.compile("(\\d*\\.\\d+(?!\\.))|(\\d+\\.\\d*(?!\\.))"));
-	private TokenType VARIABLE = new TokenType("VARIABLE",
+	public final  TokenType VARIABLE = new TokenType("VARIABLE",
 			Pattern.compile("[a-zA-Z]+"));
-	private TokenType OPERATOR = new TokenType("OPERATOR",
+	public final  TokenType OPERATOR = new TokenType("OPERATOR",
 			Pattern.compile("[*+]"));
-	private TokenType OPEN_PAREN = new TokenType("OPEN_PAREN",
+	public final  TokenType OPEN_PAREN = new TokenType("OPEN_PAREN",
 			Pattern.compile("\\("));
-	private TokenType CLOSE_PAREN = new TokenType("CLOSE_PAREN",
+	public final  TokenType CLOSE_PAREN = new TokenType("CLOSE_PAREN",
 			Pattern.compile("\\)"));
+	
 	List<TokenType> types = new ArrayList<TokenType>();
 
 	@Before
