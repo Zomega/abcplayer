@@ -1,0 +1,22 @@
+// A very rough sketch of dependancies.
+// A -> B means that the class A in some way requires B to function fully.
+// A -> B neither implies B -> A or not B -> A
+
+// This document is rough and subject to tons of change.
+
+digraph Classes {
+	// Parsing Chain...
+	Parser -> Lexer -> Token->TokenType;
+	Parser -> CircleOfFifths
+	// Data Structure...
+	Parser -> Piece;
+	PieceVisitor -> Piece;
+	PieceVisitor -> MeasureIterator->Measure;
+	Piece->Measure->Note;
+	Measure->"Pair<Note,Fraction>";
+	Note->Pitch;
+	Note->Fraction;
+	// Player.
+	Player -> Parser;
+	Player -> PieceVisitor -> SequencePlayer;
+}
