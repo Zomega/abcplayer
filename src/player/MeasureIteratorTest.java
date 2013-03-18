@@ -6,6 +6,12 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
+/**
+ * JUnit testing for MeasureIterator.
+ * 
+ * @author woursler
+ * 
+ */
 public class MeasureIteratorTest {
 
 	@Test

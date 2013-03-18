@@ -24,9 +24,7 @@ public class PieceVisitor {
 		/**
 		 * The fractional global time at which the current measure started.
 		 */
-		Fraction measureTime = new Fraction(0);
-		int conversionFactor = 0; // TODO: The number of ticks per unit
-									// fraction.
+		Fraction globalTime = new Fraction(0);
 
 		// //END TODO
 
@@ -40,18 +38,26 @@ public class PieceVisitor {
 					Fraction offset = p.second;
 
 					player.addNote(note.getPitch().toMidiNote(), PieceVisitor
-							.fractionToTicks(measureTime.plus(offset),
-									conversionFactor), PieceVisitor
+							.fractionToTicks(globalTime.plus(offset),
+									piece.getSmallestDivision()), PieceVisitor
 							.fractionToTicks(note.getDuration(),
-									conversionFactor));
+									piece.getSmallestDivision()));
 				}
-				measureTime = measureTime.plus(1);
+
+				// Move forward one measure.
+				globalTime = globalTime.plus(piece.getMeter());
 			}
 		}
 		return null;
 	}
-
-	private static int fractionToTicks(Fraction f, int conversionFactor) {
+	
+	/**
+	 * Convert a time ( in fractional length ) to ticks.
+	 * @param time The time to convert.
+	 * @param divisionLength the length of a single tick.
+	 * @return the number of ticks in time.
+	 */
+	private static int fractionToTicks(Fraction time, Fraction divisionLength) {
 		return 0; // TODO
 	}
 }
