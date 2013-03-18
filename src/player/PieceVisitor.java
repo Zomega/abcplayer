@@ -34,7 +34,7 @@ public class PieceVisitor {
 		SequencePlayer player = new SequencePlayer(piece.getTempo(),
 				ticksPerQuarterNote);
 
-		for (Measure voice : piece.getVoices()) {
+		for (Voice voice : piece.getVoices()) {
 			for (Measure measure : voice) {
 				for (Pair<Note, Fraction> p : measure.getNotes()) {
 					// Unpack the pair.

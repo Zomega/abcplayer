@@ -4,6 +4,11 @@ import java.util.List;
 
 import utilities.Fraction;
 
+/**
+ * Data structure that represents a Piece of music.
+ * @author woursler
+ * @version alpha
+ */
 public class Piece {
 
 	/**
@@ -44,7 +49,7 @@ public class Piece {
 	/**
 	 * The List of all the starting measures for each voice.
 	 */
-	private List<Measure> voices;
+	private List<Voice> voices;
 	
 	/**
 	 * The (largest, ideally) smallest division needed such that the length of each note (and rest) is an integer multiple.
@@ -117,11 +122,11 @@ public class Piece {
 		this.defaultNoteLength = defaultNoteLength;
 	}
 
-	public List<Measure> getVoices() {
+	public List<Voice> getVoices() {
 		return voices;
 	}
 
-	public void setVoices(List<Measure> voices) {
+	public void setVoices(List<Voice> voices) {
 		this.voices = voices;
 	}
 
