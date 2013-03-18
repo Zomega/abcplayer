@@ -12,20 +12,16 @@ package utilities;
  */
 public class Fraction {
 
-	private final int numerator;
-	private final int denominator;
+	/**
+	 * The fraction's numerator. May take on any value, including negative ones.
+	 */
+	public final int numerator;
+	/**
+	 * The fraction's denominator. Must be a strictly positive integer.
+	 */
+	public final int denominator;
 
 	// Static helper methods...
-	// TODO: Implement and doc
-	
-	public int getNum()
-	{
-	    return this.numerator;
-	}
-	public int getDenom()
-	{
-	    return this.denominator;
-	}
 	/**
 	 * Method which finds and returns the GCD of two nonzero integers
 	 * by implementing Euclid's algorithm.
@@ -51,17 +47,13 @@ public class Fraction {
 	    return (first*second)/gcd(first, second);
 	}
 
+	// Other Methods.
 	/**
 	 * Constructor for a Fraction with a single parameter, int value.
 	 * The Fraction is equal to (value / 1); thus in lowest terms.
-	 * @param value, the nonnegative integer value of the fraction.  
-	 * @throws BadFractionException if value is negative
+	 * @param value, the integer value of the fraction.  
 	 */
-	public Fraction(int value) throws BadFractionException{
-	    if (value < 0)
-	    {
-	        throw new BadFractionException("Negative number given as numerator");
-	    }
+	public Fraction(int value) {
 		this.numerator = value;
 		this.denominator = 1;
 	}
@@ -70,95 +62,99 @@ public class Fraction {
      * Constructor for a Fraction with two parameters, numerator and denominator.
      * The Fraction constructed is in lowest terms.  
      * @param int numerator, int denominator.
-     * @throws BadFractionException if denominator = 0, or if either is negative. 
+     * @throws FractionValueException if denominator = 0, or if either is negative. 
      */
-	public Fraction(int numerator, int denominator) throws BadFractionException {
-		// Handle a special case.
+	public Fraction(int numerator, int denominator) throws FractionValueException {
+		
+		// Handle a special case where we've been given something invalid.
 	    if (denominator == 0)
 	    {
-	        throw new BadFractionException("Zero in denominator");
+	        throw new FractionValueException("Zero in denominator");
 	    }
-	    else if ((denominator < 0) || (numerator < 0))
-	    {
-	        throw new BadFractionException("Negative numbers in num or denom");
-	    }
-	    //This ensures that our fractions are nonnegative.  Therefore, in plus
-	    //and times, as long as we aren't adding/multiplying by negative integers,
-	    //we should always have a nonnegative fraction.  This is our invariant.  
-	    else if (numerator == 0) {
+	    
+	    // Handle the special case where we have a zero fraction.  
+	    if (numerator == 0) {
 			this.numerator = 0;
 			this.denominator = 1;
 			return;
 		}
+	    
+	    // Store the final sign...
+	    boolean isPositive = ( numerator*denominator > 0 );
+	    
+	    numerator = Math.abs( numerator );
+	    denominator = Math.abs( denominator );
 
-		int gcd = gcd(numerator, denominator); 
-		this.numerator = numerator / gcd;
+		int gcd = gcd(numerator, denominator);
+		// Add back in our sign.
+		if( isPositive )
+			this.numerator = numerator / gcd;
+		else
+			this.numerator = -1 * numerator / gcd;
 		this.denominator = denominator / gcd;
 	}
 
 	/**
-	 * Returns the sum of the current fraction to the other fraction.
-	 * Note that other can never be negative or invalid by construction
-	 * thus the returned value can never be negative or invalid.
+	 * Returns the sum of the current fraction with the other fraction.
+	 * Note that other can never be invalid by construction
+	 * thus the returned value can never be invalid.
 	 * @param Fraction other
 	 * @return new Fraction representing the sum of this and other
-	 * @throws BadFractionException
 	 */
-	public Fraction plus(Fraction other) throws BadFractionException {
-		int newnum = this.numerator * other.getDenom() + other.getNum() * this.denominator;
-		int newdenom = this.denominator * other.getDenom();
-		int newgcd = gcd(newnum, newdenom);
-		return new Fraction(newnum / newgcd, newdenom / newgcd);
-		
+	public Fraction plus(Fraction other) {
+		try {
+			return new Fraction( this.numerator * other.denominator + other.numerator * this.denominator, this.numerator * other.numerator );
+		}
+		catch( Exception e ) {
+			//This shouldn't happen.
+			return null;
+		}
 	}
 
 	/**
-	 * Returns the sum of the current fraction to ( other / 1 ).
-	 * Note that if other is negative, then in constructing
-	 * new Fraction(other) the BadFractionException will be thrown.  
+	 * Returns the sum of the current fraction with ( other / 1 ).
 	 * @param other
 	 *            an int to to add.
 	 * @return The result of the addition.
-	 * @throws BadFractionException
 	 */
-	public Fraction plus(int other) throws BadFractionException {
-		return this.plus(new Fraction(other));
+	public Fraction plus(int other) {
+		return this.plus( new Fraction(other) );
 	}
 
 	 /**
-     * Returns the product of the current fraction to the other fraction.
-     * Note that other can never be negative or invalid by construction
-     * thus the returned value can never be negative or invalid.
-     * @param Fraction other
+     * Returns the product of the current fraction and the other fraction.
+     * Note that other can never invalid by construction
+     * thus the returned value can never be invalid.
+     * @param other the other Fraction.
      * @return new Fraction representing the product of this and other
-     * @throws BadFractionException
      */
-	public Fraction times(Fraction offset) throws BadFractionException {
-	      int newnum = this.numerator * offset.getNum();
-	      int newdenom = this.denominator * offset.getDenom();
-	      int newgcd = gcd(newnum, newdenom);
-	      return new Fraction(newnum / newgcd, newdenom / newgcd);
+	public Fraction times(Fraction other) {
+		try {
+			return new Fraction( this.numerator * other.numerator, this.denominator * other.denominator );
+		}
+		catch( Exception e ) {
+			//This shouldn't happen.
+			return null;
+		}
+		
 	}
 	
 	 /**
-     * Returns the product of the current fraction to ( other / 1 ).
-     * Note that if other is negative, then in constructing
-     * new Fraction(other) the BadFractionException will be thrown.  
+     * Returns the product of the current fraction and ( other / 1 ).
      * @param other
-     *            an int to to multiply.
+     *            an int to to multiply by.
      * @return The result of the multiplication.
-     * @throws BadFractionException
      */
-	public Fraction times(int offset) throws BadFractionException {
-	    return this.times(new Fraction(offset));
+	public Fraction times(int other) {
+	    return this.times(new Fraction(other));
 	}
 
 	/**
-	 * Takes the inverse of this.
+	 * Takes the inverse of this fraction.
 	 * @return a new Fraction, the inverse of this Fraction.
-	 * @throws BadFractionException
+	 * @throws FractionValueException if this fraction is zero.
 	 */
-	public Fraction invert() throws BadFractionException {
+	public Fraction invert() throws FractionValueException {
 	    return new Fraction(this.denominator, this.numerator);
 	}
 	
