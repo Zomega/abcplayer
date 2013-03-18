@@ -7,21 +7,19 @@
 digraph Classes {
 	subgraph cluster_lexer {
 		label = "lexer";
-		Lexer;
-		Token;
-		TokenType;
+		Lexer -> Token->TokenType;
 		LexerTest;
 	}
 	subgraph cluster_utilities {
 		label = "utilities";
-		Fraction;
-		FractionValueException;
+		Fraction->FractionValueException;
 		"Pair<Note,Fraction>";
 	}
 	subgraph cluster_sound {
 		label = "sound";
 		Pitch;
 		SequencePlayer;
+		SequencePlayerTest;
 	}
 	subgraph cluster_player {
 		label = "player";
@@ -36,11 +34,8 @@ digraph Classes {
 		Note;
 		MeasureIteratorTest;
 	}
-	// Parsing Chain...
-	Parser -> Lexer -> Token->TokenType;
-	Parser -> CircleOfFifths
+	
 	// Data Structure...
-	Parser -> Piece;
 	PieceVisitor -> Piece;
 	PieceVisitor -> MeasureIterator->Measure;
 	Measure->MeasureIterator;
@@ -48,11 +43,16 @@ digraph Classes {
 	Piece->Voice->Measure->Note;
 	Measure->"Pair<Note,Fraction>";
 	Note->Pitch;
-	Note->Fraction->FractionValueException;
+	Note->Fraction;
+	
 	// Player.
+	Parser -> Lexer;
+	Parser -> CircleOfFifths
+	Parser -> Piece;
 	Player -> Parser;
 	Player -> PieceVisitor -> SequencePlayer;
 	//Testing...
 	LexerTest->Lexer;
 	MeasureIteratorTest->MeasureIterator;
+	SequencePlayerTest->SequencePlayer;
 }

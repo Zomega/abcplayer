@@ -1,4 +1,4 @@
-package player;
+package sound;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
@@ -10,8 +10,6 @@ import javax.sound.midi.MidiUnavailableException;
 
 import org.junit.Test;
 
-import sound.Pitch;
-import sound.SequencePlayer;
 
 public class SequencePlayerTest {
     @Test
