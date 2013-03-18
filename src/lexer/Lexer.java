@@ -1,4 +1,4 @@
-package player;
+package lexer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,13 @@ import java.util.Scanner;
  * 
  */
 public class Lexer {
+
+	private final List<TokenType> types;
+
+	public Lexer(List<TokenType> types) {
+		this.types = types;
+	}
+
 	/**
 	 * Lexes the passed string into Tokens.
 	 * 
@@ -27,7 +34,7 @@ public class Lexer {
 	 *             if something that does appear to be a valid token is
 	 *             encountered.
 	 */
-	public static List<Token> lex(String input) throws RuntimeException {
+	public List<Token> lex(String input) throws RuntimeException {
 		List<Token> tokens = new ArrayList<Token>();
 		Scanner scanner = new Scanner(input);
 		scanner.useDelimiter("\\p{javaWhitespace}+");
@@ -42,8 +49,8 @@ public class Lexer {
 
 				boolean foundValidToken = false;
 
-				for (Token.Type type : Token.Type.values()) {
-					Matcher matcher = Token.getPattern(type).matcher(current);
+				for (TokenType type : this.types) {
+					Matcher matcher = type.pattern.matcher(current);
 					if (matcher.lookingAt()) {
 						tokens.add(new Token(current.substring(matcher.start(),
 								matcher.end()), type));
