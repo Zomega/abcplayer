@@ -1,15 +1,35 @@
 package player;
 
+import java.util.Iterator;
 import java.util.List;
 
 import utilities.Fraction;
 import utilities.Pair;
 
-public class Measure {
+public class Measure implements Iterable<Measure> {
 	
-	// Member variables.
-	Measure next;
-	Measure alternateNext = null;
-	List<Pair<Note,Fraction>> notes;
+	private Measure next;
+	private Measure alternateNext = null;
+	private List<Pair<Note,Fraction>> notes;
+	
+	//TODO: all these are autogen'd. Assess design carefully.
+	public Measure getNext() {
+		return next;
+	}
+	
+	public void setNext(Measure next) {
+		this.next = next;
+	}
+
+	public Iterator<Measure> iterator() {
+		return new MeasureIterator( this );
+	}
+	
+	public List<Pair<Note,Fraction>> getNotes() {
+		return notes;
+	}
+	public void setNotes(List<Pair<Note,Fraction>> notes) {
+		this.notes = notes;
+	}
 
 }
