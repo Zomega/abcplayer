@@ -3,7 +3,6 @@ package lexer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.Scanner;
 
 /**
  * A lexer takes a string and splits it into Tokens that are meaningful to a
@@ -36,34 +35,30 @@ public class Lexer {
 	 */
 	public List<Token> lex(String input) throws RuntimeException {
 		List<Token> tokens = new ArrayList<Token>();
-		Scanner scanner = new Scanner(input);
-		scanner.useDelimiter("\\p{javaWhitespace}+");
 
-		// TODO: Remove Scanner ( which has some lexing functions, even if I
-		// don't use them ) and recognize and strip whitespace automagically?
+		// Ensure we have a non-whitespace character right off the bat.
+		String current = input.trim();
 
-		while (scanner.hasNext()) {
-			String current = scanner.next();
+		while (current.length() > 0) {
 
-			while (current.length() > 0) {
+			boolean foundValidToken = false;
 
-				boolean foundValidToken = false;
-
-				for (TokenType type : this.types) {
-					Matcher matcher = type.pattern.matcher(current);
-					if (matcher.lookingAt()) {
-						tokens.add(new Token(current.substring(matcher.start(),
-								matcher.end()), type));
-						current = current.substring(matcher.end());
-						foundValidToken = true;
-						break;
-					}
+			for (TokenType type : this.types) {
+				Matcher matcher = type.pattern.matcher(current);
+				if (matcher.lookingAt()) {
+					tokens.add(new Token(current.substring(matcher.start(),
+							matcher.end()), type));
+					// Remove the token (and any whitespace trailing it) from
+					// the string...
+					current = current.substring(matcher.end()).trim();
+					foundValidToken = true;
+					break;
 				}
+			}
 
-				if (!foundValidToken) {
-					throw new RuntimeException("Invalid token in \"" + current
-							+ "\".");
-				}
+			if (!foundValidToken) {
+				throw new RuntimeException("Invalid token in \"" + current
+						+ "\".");
 			}
 		}
 		return tokens;
