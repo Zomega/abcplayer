@@ -6,14 +6,13 @@
 
 digraph Classes {
 	// Parsing Chain...
-	Parser -> Lexer -> Token;
+	Parser -> Lexer -> Token->TokenType;
 	Parser -> CircleOfFifths
 	// Data Structure...
 	Parser -> Piece;
 	PieceVisitor -> Piece;
 	PieceVisitor -> MeasureIterator->Measure;
 	Piece->Measure->Note;
-	Measure->Measure;
 	Measure->"Pair<Note,Fraction>";
 	Note->Pitch;
 	Note->Fraction;
