@@ -32,4 +32,12 @@ public class Measure implements Iterable<Measure> {
 		this.notes = notes;
 	}
 
+	public Measure getAlternateNext() {
+		return alternateNext;
+	}
+
+	public void setAlternateNext(Measure alternateNext) {
+		this.alternateNext = alternateNext;
+	}
+
 }

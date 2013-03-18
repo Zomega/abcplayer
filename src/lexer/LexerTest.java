@@ -43,7 +43,8 @@ public class LexerTest {
 	@Test
 	public void test1() {
 		Lexer l = new Lexer(types);
-		List<Token> tokens = l.lex(" ((	4+3)  *  (2.0 ))");
+		List<Token> tokens = l.lex(" ((	4+3 )  *  (2.0 ))");
+		//Check that all the types are equal (I'll assume the values...).
 		assertEquals(tokens.get(0).type, OPEN_PAREN);
 		assertEquals(tokens.get(1).type, OPEN_PAREN);
 		assertEquals(tokens.get(2).type, INTEGER);
