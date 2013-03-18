@@ -15,8 +15,19 @@ public class Fraction {
 
 	// Static helper methods...
 	// TODO: Implement and doc
+	/**
+	 * Method which finds and returns the GCD of two nonzero integers
+	 * by implementing Euclid's algorithm.
+	 * @param first - a nonzero integer
+	 * @param second - a nonzero integer
+	 * @return their greatest common divisor
+	 */
 	public static int gcd(int first, int second) {
-		return 0;
+		if (second == 0)
+		{
+		    return 0;
+		}
+		return gcd(second, first % second);
 	}
 
 	// TODO: Implement and doc
