@@ -180,15 +180,16 @@ public class Fraction {
 	public float approximation() {
 		return this.numerator / ((float) this.denominator);
 	}
-	
+
 	public int hashCode() {
-		return ( this.numerator + this.denominator) * this.denominator + this.numerator;
+		return (this.numerator + this.denominator) * this.denominator
+				+ this.numerator;
 	}
-	
+
 	public boolean equals(Object other) {
 		if (other instanceof Fraction) {
-			Fraction o = (Fraction)other;
-			return ( ( this.numerator == o.numerator )&&( this.denominator == o.denominator ) );
+			Fraction o = (Fraction) other;
+			return ((this.numerator == o.numerator) && (this.denominator == o.denominator));
 		}
 		return false;
 	}

@@ -7,28 +7,29 @@ import utilities.Fraction;
 import utilities.Pair;
 
 public class Measure implements Iterable<Measure> {
-	
+
 	private Measure next;
 	private Measure alternateNext = null;
-	private List<Pair<Note,Fraction>> notes;
-	
-	//TODO: all these are autogen'd. Assess design carefully.
+	private List<Pair<Note, Fraction>> notes;
+
+	// TODO: all these are autogen'd. Assess design carefully.
 	public Measure getNext() {
 		return next;
 	}
-	
+
 	public void setNext(Measure next) {
 		this.next = next;
 	}
 
 	public Iterator<Measure> iterator() {
-		return new MeasureIterator( this );
+		return new MeasureIterator(this);
 	}
-	
-	public List<Pair<Note,Fraction>> getNotes() {
+
+	public List<Pair<Note, Fraction>> getNotes() {
 		return notes;
 	}
-	public void setNotes(List<Pair<Note,Fraction>> notes) {
+
+	public void setNotes(List<Pair<Note, Fraction>> notes) {
 		this.notes = notes;
 	}
 

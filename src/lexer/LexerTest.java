@@ -18,17 +18,17 @@ import org.junit.Test;
 public class LexerTest {
 	public final TokenType INTEGER = new TokenType("INTEGER",
 			Pattern.compile("\\d+(?!\\.)"));
-	public final  TokenType FLOATING_POINT = new TokenType("FLOATING_POINT",
+	public final TokenType FLOATING_POINT = new TokenType("FLOATING_POINT",
 			Pattern.compile("(\\d*\\.\\d+(?!\\.))|(\\d+\\.\\d*(?!\\.))"));
-	public final  TokenType VARIABLE = new TokenType("VARIABLE",
+	public final TokenType VARIABLE = new TokenType("VARIABLE",
 			Pattern.compile("[a-zA-Z]+"));
-	public final  TokenType OPERATOR = new TokenType("OPERATOR",
+	public final TokenType OPERATOR = new TokenType("OPERATOR",
 			Pattern.compile("[*+]"));
-	public final  TokenType OPEN_PAREN = new TokenType("OPEN_PAREN",
+	public final TokenType OPEN_PAREN = new TokenType("OPEN_PAREN",
 			Pattern.compile("\\("));
-	public final  TokenType CLOSE_PAREN = new TokenType("CLOSE_PAREN",
+	public final TokenType CLOSE_PAREN = new TokenType("CLOSE_PAREN",
 			Pattern.compile("\\)"));
-	
+
 	List<TokenType> types = new ArrayList<TokenType>();
 
 	@Before
@@ -46,7 +46,7 @@ public class LexerTest {
 	public void test1() {
 		Lexer l = new Lexer(types);
 		List<Token> tokens = l.lex(" ((	4+3 )  *  (2.0 ))");
-		//Check that all the types are equal (I'll assume the values...).
+		// Check that all the types are equal (I'll assume the values...).
 		assertEquals(tokens.get(0).type, OPEN_PAREN);
 		assertEquals(tokens.get(1).type, OPEN_PAREN);
 		assertEquals(tokens.get(2).type, INTEGER);

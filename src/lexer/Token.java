@@ -3,7 +3,8 @@ package lexer;
 /**
  * A token is a lexical item that the parser uses.
  * 
- * At the time of writing, this is modified version of woursler's PS 2 token class, unchanged...
+ * At the time of writing, this is modified version of woursler's PS 2 token
+ * class, unchanged...
  * 
  * @author woursler
  * @version RC1
