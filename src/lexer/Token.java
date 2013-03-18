@@ -6,7 +6,7 @@ package lexer;
  * At the time of writing, this is modified version of woursler's PS 2 token class, unchanged...
  * 
  * @author woursler
- * 
+ * @version RC1
  */
 public class Token {
 	public final TokenType type;

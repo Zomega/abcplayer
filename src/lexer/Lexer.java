@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
  * At the time of writing, this is woursler's PS 2 token class, unchanged...
  * 
  * @author woursler
- * 
+ * @version RC1
  */
 public class Lexer {
 

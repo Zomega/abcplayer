@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * duplicate TokenTypes.
  * 
  * @author woursler
- * 
+ * @version RC1
  */
 public class TokenType {
 	public final String name;

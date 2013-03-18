@@ -13,6 +13,7 @@ import org.junit.Test;
  * This JUnit Testing file is based off the contents of ps2.
  * 
  * @author woursler
+ * @version alpha
  */
 public class LexerTest {
 	public final TokenType INTEGER = new TokenType("INTEGER",
