@@ -41,10 +41,12 @@ public class PieceVisitor {
 					Note note = p.first;
 					Fraction offset = p.second;
 
-					player.addNote(note.getPitch().toMidiNote(), PieceVisitor
-							.fractionToTicks(globalTime.plus(offset),
-									piece.getSmallestDivision()), PieceVisitor
-							.fractionToTicks(note.getDuration(),
+					player.addNote(
+							note.pitch.toMidiNote(),
+							PieceVisitor.fractionToTicks(
+									globalTime.plus(offset),
+									piece.getSmallestDivision()),
+							PieceVisitor.fractionToTicks(note.duration,
 									piece.getSmallestDivision()));
 				}
 
