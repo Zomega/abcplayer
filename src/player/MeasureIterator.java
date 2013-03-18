@@ -16,7 +16,7 @@ public class MeasureIterator implements Iterator<Measure> {
 	Measure current;
 	
 	/**
-	 * 
+	 * A Map containing how many times we have seen each measure by reference.
 	 */
 	Map< Measure, Integer > timesSeen;
 
@@ -34,7 +34,7 @@ public class MeasureIterator implements Iterator<Measure> {
 
 	public boolean hasNext() {
 
-		// Somewhat amusingly, this only occurse when we have yet to begin
+		// Somewhat amusingly, this only occurs when we have yet to begin
 		// iterating, which implies we do have a next element.
 		if (this.current == null)
 			return true;
