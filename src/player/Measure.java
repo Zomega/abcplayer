@@ -14,6 +14,18 @@ import utilities.Pair;
 public class Measure implements Iterable<Measure> {
 
 	/**
+	 * Length of the measure.
+	 */
+	private final Fraction length;
+	
+	/**
+	 * A list of notes, each associated with their start times.
+	 */
+	private List<Pair<Note, Fraction>> notes;
+	
+	// Linking Structure...
+	
+	/**
 	 * The typical next measure in the larger piece.
 	 */
 	private Measure next;
@@ -24,42 +36,43 @@ public class Measure implements Iterable<Measure> {
 	private Measure alternateNext = null;
 
 	/**
-	 * A list of notes, each associated with their start times.
-	 */
-	private List<Pair<Note, Fraction>> notes;
-
-	/**
 	 * Full constructor. All values are explicit. If you want to assign an
 	 * existing list of notes, use this one.
+	 * @throws NoteOutOfBoundsException if any of the listed notes is invalid.
 	 */
 	public Measure(Measure next, Measure alternateNext,
-			List<Pair<Note, Fraction>> notes) {
+			List<Pair<Note, Fraction>> notes, Fraction length) throws NoteOutOfBoundsException {
 		this.next = next;
 		this.alternateNext = alternateNext;
 		this.notes = new ArrayList<Pair<Note, Fraction>>();
+		// Add each new note in a safe manner.
 		for (Pair<Note, Fraction> note : notes)
 			this.addNote(note.first, note.second);
+		this.length = length;
 	}
 
 	/**
 	 * Structure Measure. Constructs an empty list of notes automatically.
 	 */
-	public Measure(Measure next, Measure alternateNext) {
-		this(next, alternateNext, new ArrayList<Pair<Note, Fraction>>());
+	public Measure(Measure next, Measure alternateNext, Fraction length) {
+		this.next = next;
+		this.alternateNext = alternateNext;
+		this.notes = new ArrayList<Pair<Note, Fraction>>();
+		this.length = length;
 	}
 
 	/**
 	 * Constructs a Measure based only off the next Measure.
 	 */
-	public Measure(Measure next) {
-		this(next, null);
+	public Measure(Measure next, Fraction length) {
+		this(next, null, length);
 	}
 
 	/**
 	 * Default Constructor. Initializes all values to default.
 	 */
-	public Measure() {
-		this(null);
+	public Measure( Fraction length ) {
+		this(null, length);
 	}
 
 	/**
@@ -105,15 +118,12 @@ public class Measure implements Iterable<Measure> {
 	/**
 	 * Getter for this.notes
 	 * 
-	 * @return a List of the Note / Time pairs. Please do not modify this list.
-	 *         Java's stupidity with regards to generics prevents me from
-	 *         effectively copying the list, so mutations will actually mutate a
-	 *         private member, which rather defeats the point.
-	 * 
-	 *         TODO:Fix
+	 * @return a List of the Note / Time pairs. This list is a shallow copy of
+	 *         this.notes, but both Note and Fraction are immutable, so it
+	 *         should pose no risk.
 	 */
 	public List<Pair<Note, Fraction>> getNotes() {
-		return notes;
+		return new ArrayList<Pair<Note, Fraction>>(notes);
 	}
 
 	/**
@@ -121,14 +131,23 @@ public class Measure implements Iterable<Measure> {
 	 * 
 	 * @param note
 	 *            The Note to add...
-	 * @param offset
+	 * @param startTime
 	 *            The time at which the note starts with respect to the start of
 	 *            the measure.
+	 * @throws NoteOutOfBoundsException if the passed note is not fully contained in the measure.
 	 */
-	public void addNote(Note note, Fraction offset) {
-		// TODO: check that the note is within the measure?
-		// This requires a notion of measure length.
-		this.notes.add(new Pair<Note, Fraction>(note, offset));
+	public void addNote(Note note, Fraction startTime ) throws NoteOutOfBoundsException {
+		// Check to ensure the note is fully within the measure...
+		// Check to ensure it starts after 0...
+		if( startTime.numerator < 0 )
+			throw new NoteOutOfBoundsException("Tried to add a note that started at " + startTime +"." );
+		if( note.duration.numerator <= 0 )
+			throw new NoteOutOfBoundsException("Tried to add a non-positive duration note.");
+		Fraction endTime = startTime.plus( note.duration );
+		if( endTime.minus( this.length ).numerator > 0 )
+			throw new NoteOutOfBoundsException("Tried to add a note which ended after the measure.");
+		
+		this.notes.add(new Pair<Note, Fraction>(note, startTime ));
 	}
 
 }

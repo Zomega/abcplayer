@@ -134,6 +134,30 @@ public class Fraction {
 	public Fraction plus(int other) {
 		return this.plus(new Fraction(other));
 	}
+	
+	/**
+	 * Returns the difference of the current fraction with the other fraction. Note
+	 * that other can never be invalid by construction thus the returned value
+	 * can never be invalid.
+	 * 
+	 * @param Fraction
+	 *            other
+	 * @return new Fraction representing the sum of this and other
+	 */
+	public Fraction minus( Fraction other ) {
+		return this.plus(other.times(-1));
+	}
+	
+	/**
+	 * Returns the difference of the current fraction with ( other / 1 ).
+	 * 
+	 * @param other
+	 *            an int to to add.
+	 * @return The result of the addition.
+	 */
+	public Fraction minus( int other ) {
+		return this.plus( -1 * other );
+	}
 
 	/**
 	 * Returns the product of the current fraction and the other fraction. Note

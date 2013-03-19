@@ -25,18 +25,16 @@ digraph Classes {
 		label = "player";
 		Parser;
 		Player;
-		PieceVisitor;
-		Piece;
+		PieceVisitor -> Piece;
 		CircleOfFifths;
 		Voice;
 		MeasureIterator;
-		Measure;
+		Measure->NoteOutOfBoundsException;
 		Note;
 		MeasureIteratorTest;
 	}
 	
 	// Data Structure...
-	PieceVisitor -> Piece;
 	PieceVisitor -> MeasureIterator->Measure;
 	Measure->MeasureIterator;
 	Voice->MeasureIterator;
