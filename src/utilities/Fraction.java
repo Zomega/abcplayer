@@ -134,20 +134,20 @@ public class Fraction {
 	public Fraction plus(int other) {
 		return this.plus(new Fraction(other));
 	}
-	
+
 	/**
-	 * Returns the difference of the current fraction with the other fraction. Note
-	 * that other can never be invalid by construction thus the returned value
-	 * can never be invalid.
+	 * Returns the difference of the current fraction with the other fraction.
+	 * Note that other can never be invalid by construction thus the returned
+	 * value can never be invalid.
 	 * 
 	 * @param Fraction
 	 *            other
 	 * @return new Fraction representing the sum of this and other
 	 */
-	public Fraction minus( Fraction other ) {
+	public Fraction minus(Fraction other) {
 		return this.plus(other.times(-1));
 	}
-	
+
 	/**
 	 * Returns the difference of the current fraction with ( other / 1 ).
 	 * 
@@ -155,8 +155,8 @@ public class Fraction {
 	 *            an int to to add.
 	 * @return The result of the addition.
 	 */
-	public Fraction minus( int other ) {
-		return this.plus( -1 * other );
+	public Fraction minus(int other) {
+		return this.plus(-1 * other);
 	}
 
 	/**
@@ -169,14 +169,8 @@ public class Fraction {
 	 * @return new Fraction representing the product of this and other
 	 */
 	public Fraction times(Fraction other) {
-		try {
-			return new Fraction(this.numerator * other.numerator,
-					this.denominator * other.denominator);
-		} catch (Exception e) {
-			// This shouldn't happen.
-			return null;
-		}
-
+		return new Fraction(this.numerator * other.numerator, this.denominator
+				* other.denominator);
 	}
 
 	/**
@@ -191,6 +185,29 @@ public class Fraction {
 	}
 
 	/**
+	 * Returns the quotient of the fractions.
+	 * 
+	 * @param other
+	 *            a Fraction to to divide by.
+	 * @return The result of the division.
+	 */
+	public Fraction quotient(Fraction other) {
+		return new Fraction(this.numerator * other.denominator,
+				this.denominator * other.numerator);
+	}
+
+	/**
+	 * Returns the quotient of the current fraction and ( other / 1 ).
+	 * 
+	 * @param other
+	 *            an int to to divide by.
+	 * @return The result of the division.
+	 */
+	public Fraction quotient(int other) {
+		return new Fraction(this.numerator, this.denominator * other);
+	}
+
+	/**
 	 * Takes the inverse of this fraction.
 	 * 
 	 * @return a new Fraction, the inverse of this Fraction.
@@ -201,6 +218,9 @@ public class Fraction {
 		return new Fraction(this.denominator, this.numerator);
 	}
 
+	/**
+	 * @return a float approximation of the numerical value of this.
+	 */
 	public float approximation() {
 		return this.numerator / ((float) this.denominator);
 	}

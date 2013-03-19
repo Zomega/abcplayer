@@ -9,7 +9,7 @@ import utilities.Pair;
 
 /**
  * @author woursler
- * @version alpha
+ * @version beta
  */
 public class Measure implements Iterable<Measure> {
 
