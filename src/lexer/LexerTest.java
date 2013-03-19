@@ -12,6 +12,7 @@ import org.junit.Test;
 /**
  * This JUnit Testing file is based off the contents of ps2.
  * 
+ * @category no_didit
  * @author woursler
  * @version beta
  */

@@ -67,6 +67,8 @@ public class PieceVisitor {
 	 * @return the number of ticks in time.
 	 */
 	private static int fractionToTicks(Fraction time, Fraction divisionLength) {
-		return (int) time.times(divisionLength.inverse()).approximation();
+		// The int case should be exact, since time should be an integer
+		// multiple of the division length.
+		return (int) time.quotient(divisionLength).approximation();
 	}
 }

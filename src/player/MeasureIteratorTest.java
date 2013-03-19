@@ -9,8 +9,9 @@ import org.junit.Test;
 /**
  * JUnit testing for MeasureIterator.
  * 
+ * @category no_didit
  * @author woursler
- * 
+ * @version RC1
  */
 public class MeasureIteratorTest {
 

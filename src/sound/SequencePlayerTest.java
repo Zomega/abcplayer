@@ -4,9 +4,13 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 
 import org.junit.Test;
+
 /**
  * Test some super complicated stuff.
+ * 
  * @category no_didit
+ * @author czuo and toyk2a
+ * @version RC1
  */
 
 public class SequencePlayerTest {
