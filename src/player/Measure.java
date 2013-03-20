@@ -36,15 +36,6 @@ public class Measure implements Iterable<Measure> {
 	private Measure alternateNext = null;
 
 
-	private List<Pair<Note,Fraction>> notes;
-	
-	//TODO: Constructor for Measure
-	
-	//TODO: all these are autogen'd. Assess design carefully.
-
-	public Measure getNext() {
-		return next;
-
 	/**
 	 * Full constructor. All values are explicit. If you want to assign an
 	 * existing list of notes, use this one.
