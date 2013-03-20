@@ -1,6 +1,6 @@
 package lexer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,9 @@ import org.junit.Test;
 /**
  * This JUnit Testing file is based off the contents of ps2.
  * 
+ * @category no_didit
  * @author woursler
- * @version alpha
+ * @version beta
  */
 public class LexerTest {
 	public final TokenType INTEGER = new TokenType("INTEGER",
@@ -41,7 +42,6 @@ public class LexerTest {
 		types.add(CLOSE_PAREN);
 	}
 
-	// TODO: Add a couple more tests...
 	@Test
 	public void test1() {
 		Lexer l = new Lexer(types);
@@ -58,5 +58,32 @@ public class LexerTest {
 		assertEquals(tokens.get(8).type, FLOATING_POINT);
 		assertEquals(tokens.get(9).type, CLOSE_PAREN);
 		assertEquals(tokens.get(10).type, CLOSE_PAREN);
+	}
+
+	@Test
+	public void test2() {
+		Lexer l = new Lexer(types);
+		List<Token> tokens = l.lex("(((x * x) * x) + x)");
+		// Check that all the types are equal.
+		assertEquals(tokens.get(0).type, OPEN_PAREN);
+		assertEquals(tokens.get(1).type, OPEN_PAREN);
+		assertEquals(tokens.get(2).type, OPEN_PAREN);
+		assertEquals(tokens.get(3).type, VARIABLE);
+		assertEquals(tokens.get(4).type, OPERATOR);
+		assertEquals(tokens.get(5).type, VARIABLE);
+		assertEquals(tokens.get(6).type, CLOSE_PAREN);
+		assertEquals(tokens.get(7).type, OPERATOR);
+		assertEquals(tokens.get(8).type, VARIABLE);
+		assertEquals(tokens.get(9).type, CLOSE_PAREN);
+		assertEquals(tokens.get(10).type, OPERATOR);
+		assertEquals(tokens.get(11).type, VARIABLE);
+		assertEquals(tokens.get(12).type, CLOSE_PAREN);
+
+		// Check a few values...
+		assertEquals(tokens.get(5).contents, "x");
+		assertEquals(tokens.get(4).contents, "*");
+		assertEquals(tokens.get(10).contents, "+");
+		assertEquals(tokens.get(12).contents, ")");
+
 	}
 }

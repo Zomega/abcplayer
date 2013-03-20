@@ -93,7 +93,6 @@ public class MeasureIterator implements Iterator<Measure> {
 	 *             all the time, every time.
 	 */
 	public void remove() throws RuntimeException {
-		// TODO: special exception type?
 		throw new RuntimeException("Removing Measures is not supported.");
 	}
 

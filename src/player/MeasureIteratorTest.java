@@ -1,6 +1,6 @@
 package player;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Iterator;
 
@@ -9,8 +9,9 @@ import org.junit.Test;
 /**
  * JUnit testing for MeasureIterator.
  * 
+ * @category no_didit
  * @author woursler
- * 
+ * @version RC1
  */
 public class MeasureIteratorTest {
 
@@ -18,10 +19,10 @@ public class MeasureIteratorTest {
 	public void basicRepeat() {
 		// m1 |: m2 | m3 :| m4 |]
 
-		Measure m1 = new Measure();
-		Measure m2 = new Measure();
-		Measure m3 = new Measure();
-		Measure m4 = new Measure();
+		Measure m1 = new Measure(null);
+		Measure m2 = new Measure(null);
+		Measure m3 = new Measure(null);
+		Measure m4 = new Measure(null);
 		m1.setNext(m2);
 		m2.setNext(m3);
 		m3.setNext(m2);
@@ -41,12 +42,12 @@ public class MeasureIteratorTest {
 	public void nestedRepeat() {
 		// m1 |: m2 |: m3 | m4 :| m5 :| m6 |]
 
-		Measure m1 = new Measure();
-		Measure m2 = new Measure();
-		Measure m3 = new Measure();
-		Measure m4 = new Measure();
-		Measure m5 = new Measure();
-		Measure m6 = new Measure();
+		Measure m1 = new Measure(null);
+		Measure m2 = new Measure(null);
+		Measure m3 = new Measure(null);
+		Measure m4 = new Measure(null);
+		Measure m5 = new Measure(null);
+		Measure m6 = new Measure(null);
 		m1.setNext(m2);
 		m2.setNext(m3);
 		m3.setNext(m4);
@@ -77,11 +78,11 @@ public class MeasureIteratorTest {
 	public void twoEndingRepeat() {
 		// m1 |: m2 |[1 m3 |[2 m4 :| m5 |]
 
-		Measure m1 = new Measure();
-		Measure m2 = new Measure();
-		Measure m3 = new Measure();
-		Measure m4 = new Measure();
-		Measure m5 = new Measure();
+		Measure m1 = new Measure(null);
+		Measure m2 = new Measure(null);
+		Measure m3 = new Measure(null);
+		Measure m4 = new Measure(null);
+		Measure m5 = new Measure(null);
 		m1.setNext(m2);
 		m2.setNext(m3);
 		m2.setAlternateNext(m4);

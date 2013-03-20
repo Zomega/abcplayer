@@ -3,12 +3,15 @@ package sound;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 
+import org.junit.Test;
+
 /**
  * Test some super complicated stuff.
+ * 
  * @category no_didit
+ * @author czuo and toyk2a
+ * @version RC1
  */
-
-import org.junit.Test;
 
 public class SequencePlayerTest {
 	@Test
