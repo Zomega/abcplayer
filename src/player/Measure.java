@@ -10,9 +10,13 @@ public class Measure implements Iterable<Measure> {
 
 	private Measure next;
 	private Measure alternateNext = null;
-	private List<Pair<Note, Fraction>> notes;
 
-	// TODO: all these are autogen'd. Assess design carefully.
+	private List<Pair<Note,Fraction>> notes;
+	
+	//TODO: Constructor for Measure
+	
+	//TODO: all these are autogen'd. Assess design carefully.
+
 	public Measure getNext() {
 		return next;
 	}
