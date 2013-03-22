@@ -1,5 +1,7 @@
 package utilities;
 
+//TODO: Proofread / sync documentation.
+//TODO: FractionTest may be in order.
 /**
  * Fraction Instances are immutable objects. They are guaranteed to be in least
  * terms by structural induction. If the fraction is zero ( 0 ), least terms is
@@ -241,5 +243,4 @@ public class Fraction {
 	public String toString() {
 		return "( " + this.numerator + " / " + this.denominator + " )";
 	}
-
 }

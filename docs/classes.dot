@@ -12,7 +12,7 @@ digraph Classes {
 	}
 	subgraph cluster_utilities {
 		label = "utilities";
-		Fraction->FractionValueException;
+		FractionTest->Fraction->FractionValueException;
 		"Pair<Note,Fraction>";
 	}
 	subgraph cluster_sound {
@@ -24,7 +24,7 @@ digraph Classes {
 	subgraph cluster_player {
 		label = "player";
 		Parser;
-		Player;
+		Main->Player;
 		PieceVisitor -> Piece;
 		CircleOfFifths;
 		Voice;
