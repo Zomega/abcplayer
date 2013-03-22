@@ -17,7 +17,7 @@ This document contains rough design guidelines. These guidelines should be caref
 
 Because note lengths and start times are all rational numbers, and because the exact ratios of these numbers with respect to others is important, a Fraction method is useful.
 
-The Fraction class has a Numerator and Denominator, guaranteed to be in lowest terms. It supports addition and multiplication ( possibly division and subtraction if w have time ). It will make heavy use of GCD and LCM methods, which we be from %TODO...
+The Fraction class has a Numerator and Denominator, guaranteed to be in lowest terms. It supports addition and multiplication ( possibly division and subtraction if w have time ).  In order to add and multiply while keeping the Fraction in simplest terms, we also implemented GCD and LCM methods.  
 
 \section{ The Piece class }
 
