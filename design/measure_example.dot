@@ -1,0 +1,25 @@
+digraph MeasureExample {
+	// title
+	labelloc="t";
+	label="Linked Representation of \"M0 |: M1 | M2 | M3 :| M4 |: M5 | [1 M6 :|[2 M7 | M8 |]\"";
+	rankdir="LR";
+	M0 [ shape="none" ];
+	M1 [ shape="none" ];
+	M2 [ shape="none" ];
+	M3 [ shape="none" ];
+	M4 [ shape="none" ];
+	M5 [ shape="none" ];
+	M6 [ shape="none" ];
+	M7 [ shape="none" ];
+	M8 [ shape="none" ];
+	M0 -> M1 [ label="1" ];
+	M1 -> M2 [ label="1" ];
+	M2 -> M3 [ label="1" ];
+	M3 -> M1 [ label="1" ];
+	M3 -> M4 [ label="2" ];
+	M4 -> M5 [ label="1" ];
+	M5 -> M6 [ label="1" ];
+	M5 -> M7 [ label="2" ];
+	M6 -> M5 [ label="1" ];
+	M7 -> M8 [ label="1" ];
+}

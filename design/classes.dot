@@ -1,0 +1,56 @@
+// A very rough sketch of dependancies.
+// A -> B means that the class A in some way requires B to function fully.
+// A -> B neither implies B -> A or not B -> A
+
+// This document is rough and subject to tons of change.
+
+digraph Classes {
+	subgraph cluster_lexer {
+		label = "lexer";
+		Lexer -> Token->TokenType;
+		LexerTest;
+	}
+	subgraph cluster_utilities {
+		label = "utilities";
+		Fraction->FractionValueException;
+		"Pair<Note,Fraction>";
+	}
+	subgraph cluster_sound {
+		label = "sound";
+		Pitch;
+		SequencePlayer;
+		SequencePlayerTest;
+	}
+	subgraph cluster_player {
+		label = "player";
+		Parser;
+		Player;
+		PieceVisitor -> Piece;
+		CircleOfFifths;
+		Voice;
+		MeasureIterator;
+		Measure->NoteOutOfBoundsException;
+		Note;
+		MeasureIteratorTest;
+	}
+	
+	// Data Structure...
+	PieceVisitor -> MeasureIterator->Measure;
+	Measure->MeasureIterator;
+	Voice->MeasureIterator;
+	Piece->Voice->Measure->Note;
+	Measure->"Pair<Note,Fraction>";
+	Note->Pitch;
+	Note->Fraction;
+	
+	// Player.
+	Parser -> Lexer;
+	Parser -> CircleOfFifths
+	Parser -> Piece;
+	Player -> Parser;
+	Player -> PieceVisitor -> SequencePlayer;
+	//Testing...
+	LexerTest->Lexer;
+	MeasureIteratorTest->MeasureIterator;
+	SequencePlayerTest->SequencePlayer;
+}
