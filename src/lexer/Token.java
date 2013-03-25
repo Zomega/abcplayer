@@ -27,6 +27,6 @@ public class Token {
 	}
 
 	public String toString() {
-		return contents;
+		return type.name+" "+contents;
 	}
 }
