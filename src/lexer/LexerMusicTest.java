@@ -57,6 +57,8 @@ public class LexerMusicTest {
             Pattern.compile("\\[2"));
     public final TokenType FRACTION = new TokenType("FRACTION",
             Pattern.compile("\\d+/\\d+"));
+    public final TokenType FRACTION_NOT_STRICT = new TokenType("FRACTION_NOT_STRICT",
+            Pattern.compile("\\d*/\\d*"));
     public final  TokenType DIGITS = new TokenType("DIGITS",
             Pattern.compile("\\d+"));
     public final  TokenType REST = new TokenType("REST",
@@ -100,6 +102,7 @@ public class LexerMusicTest {
         types.add(ONE_REPEAT);
         types.add(TWO_REPEAT);
         types.add(FRACTION);
+        types.add(FRACTION_NOT_STRICT);
         types.add(DIGITS);
         types.add(REST);
         types.add(OPEN_CHORD);
@@ -114,7 +117,7 @@ public class LexerMusicTest {
         BufferedReader f = null;
         String line = "";
         try {
-          f = new BufferedReader(new FileReader("sample_abc/paddy.abc"));
+          f = new BufferedReader(new FileReader("sample_abc/fur_elise.abc"));
           String nextLine = f.readLine();
           while (nextLine != null) {
             line += nextLine + "\n";
