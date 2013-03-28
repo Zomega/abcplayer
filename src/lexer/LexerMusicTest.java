@@ -8,6 +8,11 @@ import java.util.regex.Pattern;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test class for lexing abc music files
+ * 
+ * @author kimtoy
+ */
 public class LexerMusicTest {
     public final TokenType FIELD_NUM = new TokenType("FIELD_NUM",
             Pattern.compile("X:"));
@@ -28,7 +33,7 @@ public class LexerMusicTest {
     public final  TokenType BASENOTE = new TokenType("BASENOTE",
             Pattern.compile("[a-gA-G]{1}"));
     public final  TokenType KEY_ACCIDENTAL = new TokenType("KEY_ACCIDENTAL",
-            Pattern.compile("[#b]+"));
+            Pattern.compile("[#b]"));
     public final  TokenType ACCIDENTAL = new TokenType("ACCIDENTAL",
             Pattern.compile("(\\^)|(\\^\\^)|(_)|(__)|(=)"));
     public final  TokenType MODE_MINOR = new TokenType("MODE_MINOR",
