@@ -27,10 +27,8 @@ public class Fraction {
 	 * Method which finds and returns the GCD of two nonzero integers by
 	 * implementing Euclid's algorithm.
 	 * 
-	 * @param first
-	 *            - a nonzero integer
-	 * @param second
-	 *            - a nonzero integer
+	 * @param first - an integer
+	 * @param second - an integer
 	 * @return their greatest common divisor
 	 */
 	public static int gcd(int first, int second) {
@@ -51,10 +49,8 @@ public class Fraction {
 	/**
 	 * Method which finds and returns the LCM of two nonzero integers
 	 * 
-	 * @param first
-	 *            - a nonzero integer
-	 * @param second
-	 *            - a nonzero integer
+	 * @param first - an integer
+	 * @param second - an integer
 	 * @return their least common multiple
 	 */
 	public static int lcm(int first, int second) {
