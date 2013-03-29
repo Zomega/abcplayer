@@ -10,6 +10,7 @@ import org.junit.Test;
 
 /**
  * Test class for lexing abc music files
+ * @category no_didit
  * 
  * @author kimtoy
  */

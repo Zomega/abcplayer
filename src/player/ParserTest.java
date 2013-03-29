@@ -9,6 +9,7 @@ import org.junit.Test;
 /**
  * Parser test file
  * @author kimtoy
+ * @category no_didit
  *
  */
 public class ParserTest {

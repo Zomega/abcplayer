@@ -6,6 +6,7 @@ import org.junit.Test;
 /**
  * Test class for CircleOfFifths
  * @author kimtoy
+ * @category no_didit
  *
  */
 public class CircleOfFifthsTest {

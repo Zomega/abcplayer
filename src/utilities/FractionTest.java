@@ -8,6 +8,7 @@ import org.junit.Test;
  * Fraction test file
  * 
  * @author kimtoy
+ * @category no_didit
  */
 public class FractionTest {
     @Test
