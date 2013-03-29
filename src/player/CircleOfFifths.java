@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * This class takes a basenote and accidental, and returns the eight scale notes corresponding to that key.  
  * 
- * All String comparisons are made case insenstive, although there may be problems with dependent classes
+ * All String comparisons are made case insensitive, although there may be problems with dependent classes
  * which do not ignore case.  
  * 
  * @author kimtoy
@@ -20,9 +20,8 @@ public class CircleOfFifths {
     public static final String[] FLATS = {"Bb","Eb","Ab","Db","Gb","Cb","Fb"};
     
     /**
-     * Parameter key must be a valid key non-terminal according to the defined abc grammar.  
-     * @param key
-     * @return 
+     * @param key must be a valid key non-terminal according to the defined abc grammar.
+     * @return A List of the appropriate accidentals in String form.
      */
     public static String[] getKeySignature(String key){
         for(int i=0; i<FIFTHS_MAJOR_SHARP.length; i++){
