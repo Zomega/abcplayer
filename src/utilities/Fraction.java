@@ -29,26 +29,30 @@ public class Fraction {
 	 * Method which finds and returns the GCD of two nonzero integers by
 	 * implementing Euclid's algorithm.
 	 * 
-	 * @param first
-	 *            - a nonzero integer
-	 * @param second
-	 *            - a nonzero integer
+	 * @param first - an integer
+	 * @param second - an integer
 	 * @return their greatest common divisor
 	 */
 	public static int gcd(int first, int second) {
-		if (second == 0) {
-			return 0;
-		}
-		return gcd(second, first % second);
+	    if(first>second){
+	        if (second == 0) {
+                return first;
+            }
+            return gcd(second, first % second);
+	    }
+	    else{
+	        if (first == 0) {
+                return second;
+            }
+            return gcd(first, second % first);
+	    }
 	}
 
 	/**
 	 * Method which finds and returns the LCM of two nonzero integers
 	 * 
-	 * @param first
-	 *            - a nonzero integer
-	 * @param second
-	 *            - a nonzero integer
+	 * @param first - an integer
+	 * @param second - an integer
 	 * @return their least common multiple
 	 */
 	public static int lcm(int first, int second) {
