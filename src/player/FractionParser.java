@@ -4,14 +4,12 @@ import utilities.Fraction;
 
 public class FractionParser {
 
-    public FractionParser()
-    {
-        //Think of fields later... possibly numDefault and denomDefault
-        //instead of hardcoding it down in parseFraction method?
-    }
-    
-    /** Assumes no whitespace, and the string is parsable as a Fraction**/
-    public Fraction parseFraction(String fract)
+	//TODO: It is possible that this should be a static member of Fraction.
+	/**
+	 * @param fract A string with no whitespace that can be parsed as a Fraction.
+	 * @return The parsed fraction object.
+	 */
+    public static Fraction parseFraction(String fract)
     {
         int cutoff = fract.indexOf('/');
         if (cutoff == -1)
