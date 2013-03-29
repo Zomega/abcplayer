@@ -14,8 +14,8 @@ import java.util.Arrays;
 public class CircleOfFifths {
     public static final String[] FIFTHS_MAJOR_SHARP = {"C","G","D","A","E","B","F#","C#"};
     public static final String[] FIFTHS_MAJOR_FLAT= {"C","F","Bb","Eb","Ab","Db","Gb","Cb"};
-    public static final String[] FIFTHS_MINOR_SHARP = {"a","e","b","f#","c#","g#","d#","a#"};
-    public static final String[] FIFTHS_MINOR_FLAT = {"a","d","g","c","f","bb","eb","ab"};
+    public static final String[] FIFTHS_MINOR_SHARP = {"am","em","bm","f#m","c#m","g#m","d#m","a#m"};
+    public static final String[] FIFTHS_MINOR_FLAT = {"am","dm","gm","cm","fm","bbm","ebm","abm"};
     public static final String[] SHARPS = {"F#","C#","G#","D#","A#","E#","B#"};
     public static final String[] FLATS = {"Bb","Eb","Ab","Db","Gb","Cb","Fb"};
     
@@ -24,7 +24,7 @@ public class CircleOfFifths {
      * @param key
      * @return 
      */
-    public String[] getKeySignature(String key){
+    public static String[] getKeySignature(String key){
         for(int i=0; i<FIFTHS_MAJOR_SHARP.length; i++){
             if(key.equalsIgnoreCase(FIFTHS_MAJOR_SHARP[i])){
                 return Arrays.copyOfRange(SHARPS, 0, i);
