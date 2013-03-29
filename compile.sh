@@ -5,7 +5,7 @@ dot -T png docs/classes.dot > docs/classes.png
 dot -T png docs/measure_example.dot > docs/measure_example.png
 
 # TODO: compile all .tex to .pdf
-cd docs
+cd design
 pdflatex design-milestone.tex
 pdflatex team-contract.tex
 cd ..

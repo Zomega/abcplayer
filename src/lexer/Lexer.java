@@ -36,8 +36,7 @@ public class Lexer {
 	public List<Token> lex(String input) throws RuntimeException {
 		List<Token> tokens = new ArrayList<Token>();
 
-		// Ensure we have a non-whitespace character right off the bat.
-		String current = input.trim();
+		String current = input;
 
 		while (current.length() > 0) {
 
@@ -48,9 +47,7 @@ public class Lexer {
 				if (matcher.lookingAt()) {
 					tokens.add(new Token(current.substring(matcher.start(),
 							matcher.end()), type));
-					// Remove the token (and any whitespace trailing it) from
-					// the string...
-					current = current.substring(matcher.end()).trim();
+					current = current.substring(matcher.end());
 					foundValidToken = true;
 					break;
 				}
