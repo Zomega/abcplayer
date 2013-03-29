@@ -34,10 +34,18 @@ public class Fraction {
 	 * @return their greatest common divisor
 	 */
 	public static int gcd(int first, int second) {
-		if (second == 0) {
-			return 0;
-		}
-		return gcd(second, first % second);
+	    if(first>second){
+	        if (second == 0) {
+                return first;
+            }
+            return gcd(second, first % second);
+	    }
+	    else{
+	        if (first == 0) {
+                return second;
+            }
+            return gcd(first, second % first);
+	    }
 	}
 
 	/**

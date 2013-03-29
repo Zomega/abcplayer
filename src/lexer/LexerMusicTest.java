@@ -15,13 +15,13 @@ import org.junit.Test;
  */
 public class LexerMusicTest {
     public final TokenType FIELD_NUM = new TokenType("FIELD_NUM",
-            Pattern.compile("X:"));
+            Pattern.compile("X:.*\\n"));
     public final  TokenType FIELD_TITLE = new TokenType("FIELD_TITLE",
             Pattern.compile("T:.*\\n"));
     public final  TokenType FIELD_COMP = new TokenType("FIELD_COMP",
             Pattern.compile("C:.*\\n"));
     public final  TokenType FIELD_DEFAULT_LEN = new TokenType("FIELD_DEFAULT_LEN",
-            Pattern.compile("L:\\d+/\\d+\\n"));
+            Pattern.compile("L:"));
     public final  TokenType FIELD_METER = new TokenType("FIELD_METER",
             Pattern.compile("M:"));
     public final  TokenType FIELD_TEMPO = new TokenType("FIELD_TEMPO",
@@ -39,7 +39,7 @@ public class LexerMusicTest {
     public final  TokenType MODE_MINOR = new TokenType("MODE_MINOR",
             Pattern.compile("m"));
     public final  TokenType METER = new TokenType("METER",
-            Pattern.compile("(C)|(C\\|)|(\\d+/\\d+)"));
+            Pattern.compile("(C)|(C\\|)"));
     public final  TokenType OCTAVE = new TokenType("OCTAVE",
             Pattern.compile("('+)|(,+)"));
     public final  TokenType DUPLET = new TokenType("DUPLET",
@@ -117,12 +117,13 @@ public class LexerMusicTest {
         types.add(SPACE);
     }
     
+    //TODO: write actual Junit tests...
     @Test
     public void test1() {
         BufferedReader f = null;
         String line = "";
         try {
-          f = new BufferedReader(new FileReader("sample_abc/fur_elise.abc"));
+          f = new BufferedReader(new FileReader("sample_abc/piece1.abc"));
           String nextLine = f.readLine();
           while (nextLine != null) {
             line += nextLine + "\n";
