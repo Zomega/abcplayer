@@ -1,35 +1,55 @@
 package player;
 
 import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.junit.Test;
 
 /**
  * Test class for CircleOfFifths
+ * 
  * @author kimtoy
  * @category no_didit
- *
+ * 
  */
 public class CircleOfFifthsTest {
-    @Test
-    public void testMajorKeySignatures(){
-        assertArrayEquals(CircleOfFifths.getKeySignature("C"), new String[]{});
-        assertArrayEquals(CircleOfFifths.getKeySignature("G"), new String[]{"F#"});
-        assertArrayEquals(CircleOfFifths.getKeySignature("E"), new String[]{"F#","C#","G#","D#"});
-        assertArrayEquals(CircleOfFifths.getKeySignature("Eb"), new String[]{"Bb","Eb","Ab"});
-        assertArrayEquals(CircleOfFifths.getKeySignature("Cb"), new String[]{"Bb","Eb","Ab","Db","Gb","Cb","Fb"});
-    }
-    
-    @Test
-    public void testMinorKeySignatures(){
-        assertArrayEquals(CircleOfFifths.getKeySignature("am"), new String[]{});
-        assertArrayEquals(CircleOfFifths.getKeySignature("em"), new String[]{"F#"});
-        assertArrayEquals(CircleOfFifths.getKeySignature("c#m"), new String[]{"F#","C#","G#","D#"});
-        assertArrayEquals(CircleOfFifths.getKeySignature("cm"), new String[]{"Bb","Eb","Ab"});
-        assertArrayEquals(CircleOfFifths.getKeySignature("abm"), new String[]{"Bb","Eb","Ab","Db","Gb","Cb","Fb"});
-    }
-    
-    @Test
-    public void testIgnoreCase(){
-        assertArrayEquals(CircleOfFifths.getKeySignature("c"), new String[]{});
-    }
+	@Test
+	public void testMajorKeySignatures() {
+		assertEquals(CircleOfFifths.getKeySignature("C"), new Key(
+				new ArrayList<String>()));
+		assertEquals(CircleOfFifths.getKeySignature("G"),
+				new Key(Arrays.asList(new String[] { "F#" })));
+		assertEquals(CircleOfFifths.getKeySignature("E"),
+				new Key(Arrays.asList(new String[] { "F#", "C#", "G#", "D#" })));
+		assertEquals(CircleOfFifths.getKeySignature("Eb"),
+				new Key(Arrays.asList(new String[] { "Bb", "Eb", "Ab" })));
+		assertEquals(
+				CircleOfFifths.getKeySignature("Cb"),
+				new Key(Arrays.asList(new String[] { "Bb", "Eb", "Ab", "Db",
+						"Gb", "Cb", "Fb" })));
+	}
+
+	@Test
+	public void testMinorKeySignatures() {
+		assertEquals(CircleOfFifths.getKeySignature("am"), new Key(
+				new ArrayList<String>()));
+		assertEquals(CircleOfFifths.getKeySignature("em"),
+				new Key(Arrays.asList(new String[] { "F#" })));
+		assertEquals(CircleOfFifths.getKeySignature("c#m"),
+				new Key(Arrays.asList(new String[] { "F#", "C#", "G#", "D#" })));
+		assertEquals(CircleOfFifths.getKeySignature("cm"),
+				new Key(Arrays.asList(new String[] { "Bb", "Eb", "Ab" })));
+		assertEquals(
+				CircleOfFifths.getKeySignature("abm"),
+				new Key(Arrays.asList(new String[] { "Bb", "Eb", "Ab", "Db",
+						"Gb", "Cb", "Fb" })));
+	}
+
+	@Test
+	public void testIgnoreCase() {
+		assertEquals(CircleOfFifths.getKeySignature("c"), new Key(
+				new ArrayList<String>()));
+	}
 }
