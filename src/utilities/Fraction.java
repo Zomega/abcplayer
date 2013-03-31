@@ -25,15 +25,21 @@ public class Fraction {
 	public final int denominator;
 
 	// Static helper methods...
+	
 	/**
-	 * Method which finds and returns the GCD of two nonzero integers by
+	 * Method which finds and returns the greatest common factor of two nonzero integers by
 	 * implementing Euclid's algorithm.
+	 * 
+	 * If one or both of the numbers is negative, it returns the positive common factor
 	 * 
 	 * @param first - an integer
 	 * @param second - an integer
-	 * @return their greatest common divisor
+	 * @return their greatest common factor
 	 */
 	public static int gcd(int first, int second) {
+	    if(first<0||second<0){
+	        return gcd(Math.abs(first), Math.abs(second));
+	    }
 	    if(first>second){
 	        if (second == 0) {
                 return first;
@@ -122,8 +128,8 @@ public class Fraction {
 	public Fraction plus(Fraction other) {
 		try {
 			return new Fraction(this.numerator * other.denominator
-					+ other.numerator * this.denominator, this.numerator
-					* other.numerator);
+					+ other.numerator * this.denominator, this.denominator
+					* other.denominator);
 		} catch (Exception e) {
 			// This shouldn't happen.
 			return null;
