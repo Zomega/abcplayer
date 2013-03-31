@@ -248,10 +248,17 @@ public class Parser {
 	    //The relative position in the Measure we're in right now.  
 	    
 	    boolean startMusic = false;
-	     
+	    boolean startTokenYet = false;
+	    Token next = null;
 	    while (iter.hasNext())
 	    {
-	        Token next = iter.next();
+	        boolean setNextYet = false;
+	        if (startTokenYet == false)
+	        //This should only be the case when reading in music for the first time.  
+	        {
+	            startTokenYet = true;
+	            next = iter.next();
+	        }
 	        if(next.type==FIELD_VOICE){
                 boolean hasSeen = false;
 	            for (int i = 0; i < piece.getVoices().size(); i++)
@@ -283,11 +290,13 @@ public class Parser {
 	                startMusic = true;
 	            }
 	            //TODO: add the notes to the currentMeasure; change relTime as needed
+	            //Manually set the Token next if no multiplier (setNextYet = true)
 	        }
 	        else if (next.type == REST)
 	        {
 	            Fraction noteLength=null;
 	            //TODO: Something like we do for Note; change relTime as needed
+	            //Manually set the Token next if no multiplier (setNextYet = true)
 	        }
 	        else if (next.type == BARLINE || next.type == DOUBLE_BARLINE)
 	        {
@@ -332,6 +341,10 @@ public class Parser {
 	        else
 	        {
 	            throw new IllegalArgumentException("Bad Tokens found in parsing music");
+	        }
+	        if (setNextYet == false && iter.hasNext())
+	        {
+	            next = iter.next();
 	        }
  
 	        
