@@ -35,7 +35,7 @@ public class LexerMusicTest {
     public final  TokenType KEY_ACCIDENTAL = new TokenType("KEY_ACCIDENTAL",
             Pattern.compile("[#b]"));
     public final  TokenType ACCIDENTAL = new TokenType("ACCIDENTAL",
-            Pattern.compile("(\\^)|(\\^\\^)|(_)|(__)|(=)"));
+            Pattern.compile("(\\^{1,2})|(_{1,2})|(=)"));
     public final  TokenType MODE_MINOR = new TokenType("MODE_MINOR",
             Pattern.compile("m"));
     public final  TokenType METER = new TokenType("METER",
@@ -137,7 +137,26 @@ public class LexerMusicTest {
         Lexer l = new Lexer(types);
         List<Token> tokens = l.lex(line);
         for(int i=0; i<tokens.size(); i++){
-            System.out.println(tokens.get(i).toString());
-        }
+            //System.out.println(tokens.get(i).toString());
+        } 
     }
+    
+    @Test
+    public void testFractionLexing(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens = l.lex("3/ /3 3/12 /12 / 2/ 12/ 12 12/12");
+        for(int i=0; i<tokens.size(); i++){
+            System.out.println(tokens.get(i).toString());
+        } 
+    }
+    
+    @Test
+    public void testAccidentalLexing(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens = l.lex("=C ^^C __C _c ^b ^^^");
+        for(int i=0; i<tokens.size(); i++){
+            System.out.println(tokens.get(i).toString());
+        } 
+    }
+    
 }

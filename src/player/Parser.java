@@ -2,11 +2,14 @@ package player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import sound.Pitch;
 import utilities.Fraction;
+import utilities.Pair;
 
 import lexer.*;
 
@@ -39,7 +42,7 @@ public class Parser {
     public final static TokenType KEY_ACCIDENTAL = new TokenType("KEY_ACCIDENTAL",
             Pattern.compile("[#b]"));
     public final static TokenType ACCIDENTAL = new TokenType("ACCIDENTAL",
-            Pattern.compile("(\\^)|(\\^\\^)|(_)|(__)|(=)"));
+            Pattern.compile("(\\^{1,2})|(_{1,2})|(=)"));
     public final static TokenType MODE_MINOR = new TokenType("MODE_MINOR",
             Pattern.compile("m"));
     public final static TokenType METER = new TokenType("METER",
@@ -104,7 +107,10 @@ public class Parser {
 		Piece piece = new Piece();
 		//Parse header
 		Token next = parseHeaderInfo(piece, iter);
-		//TODO: Iterate over tokens, adding Measures to the voices in piece.
+		//Parse abc music lines, piece is expected to have one or more lines, so exception is thrown no more tokens
+		if(next==null)
+		    throw new IllegalArgumentException("File must contain at least one line of abc music.");
+		
 		return piece;		
 	}
 	
@@ -198,6 +204,155 @@ public class Parser {
         return null;
 	}
 	
+	public static void parseABCLines(Piece piece, Iterator<Token> iter){
+	    //TODO:Currently assuming single voice
+	    //Voice and measure setup
+	    HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature(piece.getKey());
+	    Measure mStart = new Measure(piece.getDefaultNoteLength());
+	    Voice vStart = new Voice("start", mStart);
+	    
+	}
+	
+	 /**
+	  * Parses a note element, which includes a basenote, and may be preceded by an accidental or followed by an octave
+	  * 
+	  * @param measure - that the note element belongs to
+	  * @param piece
+	  * @param iter
+	  */
+	public static Pair<Token, Note> parseNoteElement(Piece piece, Iterator<Token> iter, HashMap<String, Pitch> scale){
+	    Token next;
+	    Pitch p = null;
+	    Fraction noteLength=null;
+	    
+	    //pull first token, expected to be accidental or basenote
+	    if(iter.hasNext()){
+	        next = iter.next();
+	        if(next.type==ACCIDENTAL)//if accidental, parse note pitch and correct accidental
+	            p = parseAccidental(next, iter, scale);
+	        else if(next.type==BASENOTE)//if only basenote, parse the note pitch with default accidental of 3
+	            p = parseBasenote(next, 3, scale);
+	        else//if basenote was not encountered, throw an exception
+	            throw new IllegalArgumentException("Note element must contain a basenote");
+	    }
+	    //check for optional modifiers
+	    if(iter.hasNext()){
+	        next = iter.next();
+	        if(next.type==OCTAVE){//if octave token, parse accordingly
+	            p = parseOctave(next, p);
+	            if(iter.hasNext()){//check if followed by note length token, else return next token
+	                next = iter.next();
+	                if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT)
+	                    noteLength = parseNoteLength(next);
+	                else if(next.type==OCTAVE)
+	                    throw new IllegalArgumentException("Note should not have mixed octave modifiers");
+	                else
+	                    return new Pair<Token, Note>(next, new Note(piece.getDefaultNoteLength(), p));
+	            }
+	        }
+	        else if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT)//is note length token
+	            noteLength=parseNoteLength(next);
+	        else
+	            return new Pair<Token, Note>(next, new Note(piece.getDefaultNoteLength(), p));
+	    }
+	    //return next token and parsed Note
+	    if(iter.hasNext()){
+	        if(noteLength==null)//if note length was not set, set length to default value
+	            return new Pair<Token, Note>(iter.next(), new Note(piece.getDefaultNoteLength(), p));
+	        else
+	            return new Pair<Token, Note>(iter.next(), new Note(noteLength, p));
+	    }
+	    else{
+	        if(noteLength==null)
+                return new Pair<Token, Note>(null, new Note(piece.getDefaultNoteLength(), p));
+            else
+                return new Pair<Token, Note>(null, new Note(noteLength, p));
+	    }
+	}
+	
+	/**
+	 * Returns a pitch with correct accidental when passed a token that is an accidental
+	 * @param next
+	 * @param iter
+	 * @param scale
+	 * @return
+	 */
+	public static Pitch parseAccidental(Token next, Iterator<Token> iter, HashMap<String, Pitch> scale){
+	    int accidental = 0;
+	    if(next.contents.equals("^"))
+            accidental = 1;
+        else if(next.contents.equals("^^"))
+            accidental = 2;
+        else if(next.contents.equals("_"))
+            accidental = -1;
+        else if(next.contents.equals("__"))
+            accidental = -2;
+        else if(next.contents.equals("="))
+            accidental = 0;
+        else
+            throw new IllegalArgumentException("Invalid type of accidental");
+	    Token basenote;
+	    if(iter.hasNext()){//parse basenote
+	        basenote=iter.next();
+	        if(basenote.type!=BASENOTE)
+	            throw new IllegalArgumentException("Accidental must be followed by basenote");
+	        return parseBasenote(basenote, accidental, scale);
+	    }
+	    else
+	        throw new IllegalArgumentException("Accidental must be followed by basenote");
+	}
+	
+	/**
+	 * Returns a Pitch value correctly representing the Token next with the given accidental/key signature
+	 * @param next
+	 * @param accidental
+	 * @param scale
+	 * @return
+	 */
+	public static Pitch parseBasenote(Token next, int accidental, HashMap<String, Pitch> scale){
+	    int octave = 0;
+	    if(next.contents.equals(next.contents.toLowerCase())) //if lowercase (octave higher)
+            octave = 12;//raise the pitch by 12 halfsteps for an octave
+        if(accidental==3)//3 signifies default key value according to key signature, if there was no accidental
+            return scale.get(next.contents.toUpperCase()).transpose(octave);
+        else
+            return new Pitch(next.contents.toUpperCase().toCharArray()[0]).transpose(accidental+octave);
+	}
+	
+	/**
+	 * Transposes pitch to correct octave given the pitch and an octave token
+	 * Assumes that the octave token is valid (i.e. contains only commas or only apostrophes, not a mixture)
+	 * @param next
+	 * @param p
+	 * @return
+	 */
+	public static Pitch parseOctave(Token next, Pitch p){
+	    if(next.contents.contains(",")){
+	        int octavesDown = next.contents.length();
+	        return p.transpose(-octavesDown*12);
+	    }
+	    else{
+	        int octavesUp = next.contents.length();
+	        return p.transpose(octavesUp*12);
+	    }
+	}
+	
+	/**
+	 * Returns a fraction representation of note length given either a DIGIT, FRACTION, or FRACTION_NOT_STRICT token
+	 * @param next
+	 * @return
+	 */
+	public static Fraction parseNoteLength(Token next){
+	    if(next.type==DIGITS)
+	        return new Fraction(Integer.parseInt(next.contents), 2);
+	    else if(next.type==FRACTION)
+	        return parseFraction(next.contents);
+	    else if(next.type==FRACTION_NOT_STRICT)
+	        return parseFractionNotStrict(next.contents);
+	    else
+	        throw new IllegalArgumentException("Token argument to parseNoteLength must be either digit or strict or non-strict fraction");
+	}
+	
 	/**
 	 * Ignores whitespace tokens, excluding the newline character, that are spaces and returns the next non whitespace
 	 * character.  Returns null if there none of the tokens are non whitespace and there are no tokens left to iterate over.
@@ -230,7 +385,7 @@ public class Parser {
 	}
 	
 	/**
-	 * Parses a fraction token and returns a Fraction represention
+	 * Parses a FRACTION token and returns a Fraction represention
 	 * @param f - must be a string of the regex form "\\d+/\\d+"
 	 * @return
 	 */
@@ -240,6 +395,22 @@ public class Parser {
     	int denom = Integer.parseInt(frac.substring(slashPos+1));
     	return new Fraction(num, denom);
 	}
+	
+	/**
+     * Parses a FRACTION_NOT_STRICT token and returns a Fraction representation
+     * A non strict fraction could be 3/ or /3 or /
+     * 
+     * @param next
+     * @return
+     */
+    public static Fraction parseFractionNotStrict(String frac){
+        if(frac.equals("/"))
+            return new Fraction(1,2);
+        else if(frac.endsWith("/"))
+            return new Fraction(Integer.parseInt(frac.substring(0, frac.length()-1)), 2);
+        else //assume that token is of form /digits+
+            return new Fraction(1, Integer.parseInt(frac.substring(1)));
+    }
 	
 	/**
 	 * Check and parse for other information in the key header, such as accidentals or minor mode.
@@ -270,6 +441,16 @@ public class Parser {
 	            throw new IllegalArgumentException("Field K: must be ended by a newline character");
 	    }
 	    return key;
+	}
+	
+	/**
+	 * For testing purposes, lex a string into valid tokens
+	 * @param string
+	 * @return
+	 */
+	public static List<Token> lex(String string){
+	    Lexer l = new Lexer( types );
+	    return l.lex(string);
 	}
 
 }

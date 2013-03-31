@@ -18,5 +18,16 @@ public class FractionTest {
         assertEquals(Fraction.gcd(0, 10), 10);
         assertEquals(Fraction.gcd(9, 27), 9);
         assertEquals(Fraction.gcd(42, 35), 7);
+        assertEquals(Fraction.gcd(1, 2), 1);
+    }
+    
+    /**
+     * Check that the Fraction constructor correctly reduces the fraction
+     */
+    @Test 
+    public void testConstructorReduce(){
+        Fraction f = new Fraction(1,2);
+        assertEquals(1, f.numerator);
+        assertEquals(2, f.denominator);
     }
 }
