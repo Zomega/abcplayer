@@ -132,14 +132,17 @@ public class Parser {
         while(iter.hasNext()){
             Token next = iter.next();
             if(next.type==FIELD_NUM){
+                piece.setTrackNumber(Integer.parseInt(next.contents));
                 //discard this information, the whole header line is one token
                 System.out.println("Discard field num "+next.contents);
             }
             else if(next.type==FIELD_TITLE){
+                piece.setTitle(next.contents);
                 //discard this information, the whole header line is one token
                 System.out.println("Discard field title "+next.contents);
             }
             else if(next.type==FIELD_COMP){
+                piece.setComposer(next.contents);
                 //discard this information, the whole header line is one token
                 System.out.println("Discard field composer "+next.contents);
             }
