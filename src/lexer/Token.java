@@ -1,7 +1,5 @@
 package lexer;
 
-import utilities.Pair;
-
 /**
  * A token is a lexical item that the parser uses.
  * 
