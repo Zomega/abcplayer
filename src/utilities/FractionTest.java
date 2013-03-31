@@ -40,6 +40,25 @@ public class FractionTest {
     }
     
     /**
+     * Check LCM to see that:
+     * -it correctly finds the least common multiple
+     * -it returns 0 when one of the parameters is 0
+     * -it returns a positive value for negative parameters
+     * -it returns n if lcm(n,n)
+     * -it returns 1 if one of the values is 1
+     * -it correctly returns values for numbers that don't have common divisors
+     */
+    @Test
+    public void testLCM(){
+        assertEquals(12, Fraction.lcm(4, 12));
+        assertEquals(0, Fraction.lcm(0, 12));
+        assertEquals(6, Fraction.lcm(-6, 3));
+        assertEquals(4, Fraction.lcm(4, 4));
+        assertEquals(5, Fraction.lcm(1, 5));
+        assertEquals(63, Fraction.lcm(9, 7));
+    }
+    
+    /**
      * Check that the Fraction constructor correctly reduces the fraction
      * Should:
      * -Have correct numerator/denominator if fraction cannot be reduced further
@@ -142,5 +161,53 @@ public class FractionTest {
         assertEquals(new Fraction(19,10), new Fraction(9,10).plus(1));
         assertEquals(new Fraction(-3,4), new Fraction(-1,4).plus(new Fraction(-1,2)));
         assertEquals(new Fraction(-1,10), new Fraction(9,10).plus(-1));
+    }
+    
+    /**
+     * Test subtract(Fraction other) and subtract(int other) methods
+     * -Should correctly subtract fractions with diff denom
+     * -Should subtract negative fractions
+     */
+    @Test
+    public void testSubtract(){
+        assertEquals(new Fraction(5,12), new Fraction(3,4).minus(new Fraction(1,3)) );
+        assertEquals(new Fraction(1,12), new Fraction(13,12).minus(1));
+        assertEquals(new Fraction(13,12), new Fraction(3,4).minus(new Fraction(-1,3)) );
+        assertEquals(new Fraction(25,12), new Fraction(13,12).minus(-1));
+        assertEquals(new Fraction(-5,12), new Fraction(-3,4).minus(new Fraction(-1,3)) );
+        assertEquals(new Fraction(-1,12), new Fraction(-13,12).minus(-1));
+    }
+    
+    /**
+     * Test times(Fraction other) and times(int other)
+     * -Should correctly reduce fractions
+     * -Should keep correct signs
+     */
+    @Test
+    public void testMultiply(){
+        assertEquals(new Fraction(1,8), new Fraction(1,4).times(new Fraction(1,2)));
+        assertEquals(new Fraction(2,1), new Fraction(2,4).times(4));
+        assertEquals(new Fraction(1,8), new Fraction(-1,4).times(new Fraction(-1,2)));
+        assertEquals(new Fraction(-9,10), new Fraction(9,10).times(-1));
+    }
+    
+    /**
+     * Test quotient(Fraction other) and quotient(int other)
+     * -Should keep correct signs
+     * -Should correctly reduce
+     */
+    @Test 
+    public void testDivide(){
+        assertEquals(new Fraction(1,2), new Fraction(1,4).quotient(new Fraction(1,2)));
+        assertEquals(new Fraction(1,8), new Fraction(2,4).quotient(4));
+        assertEquals(new Fraction(1,2), new Fraction(-1,4).quotient(new Fraction(-1,2)));
+        assertEquals(new Fraction(-9,10), new Fraction(9,10).quotient(-1));
+    }
+    
+    @Test
+    public void testInverse(){
+        assertEquals(new Fraction(4,1), new Fraction(1,4).inverse());
+        assertEquals(new Fraction(2,1), new Fraction(2,4).inverse());
+        assertEquals(new Fraction(-1,3), new Fraction(3,-1).inverse());
     }
 }

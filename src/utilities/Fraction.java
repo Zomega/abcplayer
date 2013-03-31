@@ -56,13 +56,17 @@ public class Fraction {
 
 	/**
 	 * Method which finds and returns the LCM of two nonzero integers
+	 * If one of the parameters is negative, returns the positive least common multiple
+	 * Even though the LCM of 0 and another number does not exist, we return 0
 	 * 
 	 * @param first - an integer
 	 * @param second - an integer
 	 * @return their least common multiple
 	 */
 	public static int lcm(int first, int second) {
-		return (first * second) / gcd(first, second);
+	    if(gcd(first, second)==0)
+	        return 0;
+		return (Math.abs(first) * Math.abs(second)) / gcd(first, second);
 	}
 
 	// Other Methods.
@@ -220,13 +224,16 @@ public class Fraction {
 	}
 
 	/**
-	 * Takes the inverse of this fraction.
+	 * Takes the inverse of this fraction.  
+	 * If the fraction is negative, keeps the negative sign in the numerator
 	 * 
 	 * @return a new Fraction, the inverse of this Fraction.
 	 * @throws FractionValueException
 	 *             if this fraction is zero.
 	 */
 	public Fraction inverse() throws FractionValueException {
+	    if(this.denominator*this.numerator<0)
+	        return new Fraction(-this.denominator, -this.numerator);
 		return new Fraction(this.denominator, this.numerator);
 	}
 
