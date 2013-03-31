@@ -15,7 +15,7 @@ import org.junit.Test;
  */
 public class LexerMusicTest {
     public final TokenType FIELD_NUM = new TokenType("FIELD_NUM",
-            Pattern.compile("X:.*\\n"));
+            Pattern.compile("X:\\s*\\d+\\n"));
     public final  TokenType FIELD_TITLE = new TokenType("FIELD_TITLE",
             Pattern.compile("T:.*\\n"));
     public final  TokenType FIELD_COMP = new TokenType("FIELD_COMP",

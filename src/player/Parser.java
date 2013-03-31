@@ -22,7 +22,7 @@ public class Parser {
     
     // Define TokenTypes
     public final static TokenType FIELD_NUM = new TokenType("FIELD_NUM",
-            Pattern.compile("X:.*\\n"));
+            Pattern.compile("X:\\s*\\d+\\n"));
     public final static TokenType FIELD_TITLE = new TokenType("FIELD_TITLE",
             Pattern.compile("T:.*\\n"));
     public final static TokenType FIELD_COMP = new TokenType("FIELD_COMP",
@@ -127,24 +127,21 @@ public class Parser {
 	    Fraction defaultLen = new Fraction(1,8);
         piece.setMeter(new Fraction(4,4));
         boolean setDefaultLenFlag = false;
-        
         //Extract header information.
         while(iter.hasNext()){
             Token next = iter.next();
             if(next.type==FIELD_NUM){
-                piece.setTrackNumber(Integer.parseInt(next.contents));
-                //discard this information, the whole header line is one token
-                System.out.println("Discard field num "+next.contents);
+                int track = Integer.parseInt(next.contents.substring(2).trim());
+                piece.setTrackNumber(track);
+                System.out.println("Set track number to "+track);
             }
             else if(next.type==FIELD_TITLE){
-                piece.setTitle(next.contents);
-                //discard this information, the whole header line is one token
-                System.out.println("Discard field title "+next.contents);
+                piece.setTitle(next.contents.substring(2).trim());
+                System.out.println("Set field title to "+next.contents.substring(2).trim());
             }
             else if(next.type==FIELD_COMP){
-                piece.setComposer(next.contents);
-                //discard this information, the whole header line is one token
-                System.out.println("Discard field composer "+next.contents);
+                piece.setComposer(next.contents.substring(2).trim());
+                System.out.println("Set field composer to "+next.contents.substring(2).trim());
             }
             else if(next.type==FIELD_DEFAULT_LEN){
                 next = eatSpaces(iter);
