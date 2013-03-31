@@ -93,6 +93,7 @@ public class Parser {
     DIGITS,REST,OPEN_CHORD,CLOSE_CHORD,COMMENT,NEWLINE,SPACE};
     
     public static List<TokenType> types = new ArrayList<TokenType>(Arrays.asList(typeArray));
+
     
     /**
      * Parse the contents of an abc music file. 
@@ -103,6 +104,19 @@ public class Parser {
 		
 		Lexer l = new Lexer( types );
 		List<Token> tokens = l.lex( abcContents );
+		if (tokens.size() < 2)
+		{
+		    throw new IllegalArgumentException("Field has invalid number of fields");
+		}
+		if (tokens.get(0).type != FIELD_NUM)
+		{
+		    throw new IllegalArgumentException("Header must start with Track Number");
+		}
+		if (tokens.get(1).type != FIELD_TITLE)
+        {
+            throw new IllegalArgumentException("2nd field in header must be Title");
+        }
+		
 		Iterator<Token> iter = tokens.iterator();
 		Piece piece = new Piece();
 		//Parse header
@@ -180,8 +194,10 @@ public class Parser {
                     throw new IllegalArgumentException("Field Q: must be followed by an integer tempo defintion");
             }
             else if(next.type==FIELD_VOICE){
-                //TODO: ignoring voice header for now, set voices in piece later
-                System.out.println("Saw field voice");
+                //These would be Voice Declarations
+                //Add to our Piece's list of 'recognized' Voices
+                piece.addVoice(new Voice(next.contents.substring(2).trim()));
+                System.out.println("Made new Voice (no first measure) "+ next.contents.substring(2).trim());
             }
             else if(next.type==FIELD_KEY){
                 next = eatSpaces(iter);
@@ -190,11 +206,20 @@ public class Parser {
                     key+=parseHeaderKey(iter);//find other key info and take out the end of line character
                     piece.setKey(key);
                     System.out.println("Set field key");
+                    //Key should be the final line in the header
+                    //So from now on, we cannot have non-Notes/Voice Tokens
+                    if(setDefaultLenFlag==false)
+                    {
+                        piece.setDefaultNoteLength(defaultLen);
                     }
+                    System.out.println("Done with header");
+                    return next;
+                }
                 else
                     throw new IllegalArgumentException("Field K: must be followed by a keynote");
                 }
             else{
+                //See the beginning of a musical line; requires a default voice too
                 if(setDefaultLenFlag==false)
                     piece.setDefaultNoteLength(defaultLen);
                 System.out.println("Done with header");
@@ -208,9 +233,116 @@ public class Parser {
 	    //TODO:Currently assuming single voice
 	    //Voice and measure setup
 	    HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature(piece.getKey());
-	    Measure mStart = new Measure(piece.getDefaultNoteLength());
-	    Voice vStart = new Voice("start", mStart);
+	    //Measure mStart = new Measure(piece.getDefaultNoteLength());
+	    //Voice vStart = new Voice("start", mStart);
 	    
+	    //Since this should be called right after parsing header, we can assume
+	    //that the first line will be of musical notes or a voice.  
+	    Voice currentVoice;
+	    Measure currentMeasure = new Measure(piece.getDefaultNoteLength());
+	    Measure lastOpen = currentMeasure;
+	    Measure lastPreOne = currentMeasure;
+	    //In order to know the Measure right before a first ending
+	    
+	    Fraction relTime = new Fraction(0);
+	    //The relative position in the Measure we're in right now.  
+	    
+	    boolean startMusic = false;
+	     
+	    while (iter.hasNext())
+	    {
+	        Token next = iter.next();
+	        if(next.type==FIELD_VOICE){
+                boolean hasSeen = false;
+	            for (int i = 0; i < piece.getVoices().size(); i++)
+	            {
+	                Voice v = piece.getVoices().get(i);
+	                if (v.name == next.contents.substring(2).trim())
+	                {
+	                    currentVoice = v;
+	                    hasSeen = true;
+	                }
+	            }
+	            if (hasSeen == false)
+	            {
+	                piece.addVoice(new Voice(next.contents.substring(2).trim()));
+	                System.out.println("Made new Voice (no first measure) "+ next.contents.substring(2).trim());
+	                currentVoice = piece.getVoices().get(piece.getVoices().size() - 1);
+	            }
+	        }
+	        else if (next.type == ACCIDENTAL || next.type == BASENOTE)
+	        {
+	            if (startMusic == false)
+	            //the first time musical notes are read in
+	            {
+	                if (piece.getVoices().size() < 1)
+	                {
+	                    piece.addVoice(new Voice("Default", currentMeasure));
+	                }
+	                currentVoice = piece.getVoices().get(piece.getVoices().size() - 1);
+	                startMusic = true;
+	            }
+	            //TODO: add the notes to the currentMeasure; change relTime as needed
+	        }
+	        else if (next.type == REST)
+	        {
+	            Fraction noteLength=null;
+	            //TODO: Something like we do for Note; change relTime as needed
+	        }
+	        else if (next.type == BARLINE || next.type == DOUBLE_BARLINE)
+	        {
+	            lastPreOne = currentMeasure;
+	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+	            currentMeasure.setNext(newMeasure);
+	            
+	            currentMeasure = newMeasure;
+	            relTime = new Fraction(0);
+                //reset the relative time to start of measure...
+	        }
+	        else if (next.type == CLOSE_REPEAT)
+	        {
+	            lastPreOne = currentMeasure;
+	            //TODO: Implement this as a stack to deal with nesting.
+	            
+	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+	            currentMeasure.setNext(lastOpen);
+	            //Has this measure first loop back to the last Open
+	            currentMeasure.setAlternateNext(newMeasure);
+	            //...before going to the next measure
+	            currentMeasure = newMeasure;
+	            //Now go onto the next (currently empty) measure...
+	            lastOpen = newMeasure;
+	            //Which will now be the open parenthesis for the next repeat
+	            relTime = new Fraction(0);
+	            //reset the relative time to start of measure...
+	        }
+	        else if (next.type == ONE_REPEAT)
+	        {
+	            //Do NOT set lastPreOne to this!!!  This pointer lets us
+	            //link to the second ending.  
+	            
+	        }
+	        else if (next.type == TWO_REPEAT)
+            {
+	            lastPreOne.setAlternateNext(currentMeasure);
+	            //Tell the measure right before the first ending to go here next time
+                lastPreOne = currentMeasure ;
+                //Now this becomes the lastPreOne
+            }
+	        else
+	        {
+	            throw new IllegalArgumentException("Bad Tokens found in parsing music");
+	        }
+ 
+	        
+	    }
+	    //get the most 'recent' Voice as the starting currentVoice
+	    
+	    
+	    //When reach Voice Token, see if it's already seen; if not, add to recog voices
+	    //Then switch current Voice to that one.  
+	    
+	    //We assume music for each Voice is in a whole number of Measures
 	}
 	
 	 /**
