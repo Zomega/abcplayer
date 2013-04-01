@@ -246,6 +246,7 @@ public class Parser {
 	    Fraction relTime = new Fraction(0);
 	    //The relative position in the Measure we're in right now.  
 	    
+	    //TODO: Current measure isn't set right.
 	    boolean startMusic = false;
 	    boolean startTokenYet = false;
 	    Token next = null;
@@ -257,13 +258,16 @@ public class Parser {
 	    
 	    while (iter.hasNext())
 	    {
-	        boolean setNextYet = false;
-	        if (startTokenYet == false)
-	        //This should only be the case when reading in music for the first time.  
-	        {
-	            startTokenYet = true;
-	            next = iter.next();
-	        }
+	    	// Try to put the current tokens into the current measure.
+	    	parseMeasure( currentMeasure, iter );
+	    	
+	    	if( ! iter.hasNext() ) {
+	    		break;
+	    	}
+	    	
+	        next = iter.next();
+	        
+	        //TODO: I don't think this belongs here.
 	        if(next.type==FIELD_VOICE){
                 boolean hasSeen = false;
 	            for (int i = 0; i < piece.getVoices().size(); i++)
@@ -281,59 +285,6 @@ public class Parser {
 	            }
 	        }
 	        
-	        
-	        //TODO: Handle duplets; use substring to grab char in position 1
-            //in the Token's contents; that's the number of notes in the chord. 
-	        //In the end, add on a new Note with a duration of 
-	        //the product of returned Note.getDuration and the appropriate modifier
-            //Use same relTime when adding to Measure.  
-	        //Watch out for shortest subdivision.  
-	        if (next.type == DUPLET)
-	        {
-	            
-	        }
-	        else if (next.type == TUPLET)
-            {
-                
-            }
-	        else if (next.type == QUADRUPLET)
-            {
-                
-            }
-	        
-	        //TODO: Handle chords; 
-	        else if (next.type == OPEN_CHORD)
-	        {
-	            next = iter.next();
-	            while (next.type != CLOSE_CHORD)
-	            {
-	                //TODO: Grab the notes inside
-	                if (iter.hasNext())
-	                {
-	                    next = iter.next();
-	                }
-	                else
-	                {
-	                    throw new IllegalArgumentException("Unclosed chord");
-	                }
-	            }
-	        }
-	        
-	        else if (next.type == ACCIDENTAL || next.type == BASENOTE)
-	        {
-	            
-	            //TODO: add the notes to the currentMeasure; change relTime as needed
-	            //Manually set the Token next if no multiplier (setNextYet = true)
-	            //In addition, look at duration - see if this Fraction < smallestDivision
-	        }
-	        else if (next.type == REST)
-	        {
-	            Fraction noteLength=null;
-	            //TODO: Something like we do for Note but just return a Fraction; 
-	            //which is amount we need to change relTime by
-	            //Manually set the Token next if no multiplier (setNextYet = true)
-	            //In addition, look at duration - see if this Fraction < smallestDivision
-	        }
 	        else if (next.type == BARLINE || next.type == DOUBLE_BARLINE)
 	        {
 	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
@@ -393,18 +344,9 @@ public class Parser {
 	            currentMeasure = newMeasure;
 	            relTime = new Fraction(0);
             }
-	        else if (next.type == SPACE)
-	        {
-	            //pass
-	        }
 	        else
 	        {
-	            throw new IllegalArgumentException("Bad Tokens found in parsing music");
-	        }
-	        
-	        if (setNextYet == false && iter.hasNext())
-	        {
-	            next = iter.next();
+	            throw new IllegalArgumentException("Bad Tokens found in parsing music.");
 	        }
 	    }
 	    //get the most 'recent' Voice as the starting currentVoice
@@ -484,7 +426,7 @@ public class Parser {
 	        }
 	        else if (next.type == BARLINE || next.type == DOUBLE_BARLINE || next.type == OPEN_REPEAT || next.type == CLOSE_REPEAT || next.type == ONE_REPEAT || next.type == TWO_REPEAT )
             {
-	            iter.previous();
+	            iter.previous(); // TODO: possibly call this twice?
 	            return;
             }
 	        else
