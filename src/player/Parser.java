@@ -239,7 +239,7 @@ public class Parser {
 	    //that the first line will be of musical notes or a voice.  
 	    Measure currentMeasure = new Measure(piece.getDefaultNoteLength());
 	    Stack<Measure> openRepeatStack = new Stack<Measure>();
-	    Measure lastPreOne = currentMeasure;
+	    Measure lastPreOne = null;
 	    //In order to know the Measure right before a first ending
 	    
 	    Fraction smallestDev = new Fraction(1);
@@ -336,7 +336,6 @@ public class Parser {
 	        }
 	        else if (next.type == BARLINE || next.type == DOUBLE_BARLINE)
 	        {
-	            lastPreOne = currentMeasure;
 	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
 	            currentMeasure.setNext(newMeasure);
 	            
@@ -345,7 +344,6 @@ public class Parser {
                 //reset the relative time to start of measure...
 	        }
 	        else if ( next.type == OPEN_REPEAT ) {
-	        	lastPreOne = currentMeasure;
 	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
 	            currentMeasure.setNext(newMeasure);
 	            
@@ -359,7 +357,6 @@ public class Parser {
 	        }
 	        else if (next.type == CLOSE_REPEAT)
 	        {
-	            lastPreOne = currentMeasure;
 	            //TODO: Implement this as a stack to deal with nesting.
 	            
 	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
@@ -377,16 +374,24 @@ public class Parser {
 	        }
 	        else if (next.type == ONE_REPEAT)
 	        {
-	            //Do NOT set lastPreOne to this!!!  This pointer lets us
-	            //link to the second ending.  
+	            lastPreOne = currentMeasure;
+
+	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+	            currentMeasure.setNext(newMeasure);
+	            
+	            currentMeasure = newMeasure;
+	            relTime = new Fraction(0);
 	            
 	        }
 	        else if (next.type == TWO_REPEAT)
             {
 	            lastPreOne.setAlternateNext(currentMeasure);
-	            //Tell the measure right before the first ending to go here next time
-                lastPreOne = currentMeasure ;
-                //Now this becomes the lastPreOne
+	            
+	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+	            currentMeasure.setNext(newMeasure);
+	            
+	            currentMeasure = newMeasure;
+	            relTime = new Fraction(0);
             }
 	        else if (next.type == SPACE)
 	        {
