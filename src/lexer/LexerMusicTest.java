@@ -181,6 +181,16 @@ public class LexerMusicTest {
     }
 
     /**
+     * Ensures that null input correctly throw an error.  
+     */
+    @Test (expected=RuntimeException.class)
+    public void testNullLex(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens = l.lex(null);
+        
+    }
+    
+    /**
      * Ensures that non-recognized patterns correctly throw an error.  
      */
     @Test (expected=RuntimeException.class)
