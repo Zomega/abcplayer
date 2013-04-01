@@ -262,7 +262,12 @@ public class Parser {
 					if( currentVoice == null ) {
 						throw new RuntimeException("Undeclared voice!");
 					}
-					parseABCLines(piece, currentVoice.tail(), iter);
+					Measure tail = currentVoice.tail();
+					if( tail == null ) {
+						tail = new Measure(piece.getDefaultNoteLength());
+						currentVoice.setStart( tail );
+					}
+					parseABCLines(piece, tail, iter);
 				}
 			}
 		}
