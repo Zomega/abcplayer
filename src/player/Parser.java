@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Pattern;
 
 import sound.Pitch;
@@ -237,7 +238,7 @@ public class Parser {
 	    //Since this should be called right after parsing header, we can assume
 	    //that the first line will be of musical notes or a voice.  
 	    Measure currentMeasure = new Measure(piece.getDefaultNoteLength());
-	    Measure lastOpen = currentMeasure;
+	    Stack<Measure> openRepeatStack = new Stack<Measure>();
 	    Measure lastPreOne = currentMeasure;
 	    //In order to know the Measure right before a first ending
 	    
@@ -343,20 +344,34 @@ public class Parser {
 	            relTime = new Fraction(0);
                 //reset the relative time to start of measure...
 	        }
+	        else if ( next.type == OPEN_REPEAT ) {
+	        	lastPreOne = currentMeasure;
+	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+	            currentMeasure.setNext(newMeasure);
+	            
+	            currentMeasure = newMeasure;
+	            relTime = new Fraction(0);
+                //reset the relative time to start of measure...
+	            
+	            // Push the current measure onto the open stack.
+	            openRepeatStack.push(currentMeasure);
+	            //TODO: the :|: token.
+	        }
 	        else if (next.type == CLOSE_REPEAT)
 	        {
 	            lastPreOne = currentMeasure;
 	            //TODO: Implement this as a stack to deal with nesting.
 	            
 	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
-	            currentMeasure.setNext(lastOpen);
-	            //Has this measure first loop back to the last Open
-	            currentMeasure.setAlternateNext(newMeasure);
+	            if( openRepeatStack.size() == 0 ) {
+	            	throw new RuntimeException("No matching open repeat.");
+	            }
+	            currentMeasure.setNext( openRepeatStack.pop() ); // TODO: Throw an error if linking fails.
+	            //Has this measure first loop back to the open repeat we saw...
+	            currentMeasure.setAlternateNext( newMeasure );
 	            //...before going to the next measure
 	            currentMeasure = newMeasure;
 	            //Now go onto the next (currently empty) measure...
-	            lastOpen = newMeasure;
-	            //Which will now be the open parenthesis for the next repeat
 	            relTime = new Fraction(0);
 	            //reset the relative time to start of measure...
 	        }
