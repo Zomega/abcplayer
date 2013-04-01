@@ -142,105 +142,116 @@ public class Parser {
 	    Fraction defaultLen = new Fraction(1,8);
         piece.setMeter(new Fraction(4,4));
         boolean setDefaultLenFlag = false;
+        
+        boolean seenKey = false;
+        
+        Voice currentVoice = null;
+        
         //Extract header information.
         while(iter.hasNext()){
             Token next = iter.next();
-            if(next.type==FIELD_NUM){
-                int track = Integer.parseInt(next.contents.substring(2).trim());
-                piece.setTrackNumber(track);
-                System.out.println("Set track number to "+track);
+            // If we're in the header...
+            if( !seenKey ) {
+	            if(next.type==FIELD_NUM){
+	                int track = Integer.parseInt(next.contents.substring(2).trim());
+	                piece.setTrackNumber(track);
+	                System.out.println("Set track number to "+track);
+	            }
+	            else if(next.type==FIELD_TITLE){
+	                piece.setTitle(next.contents.substring(2).trim());
+	                System.out.println("Set field title to "+next.contents.substring(2).trim());
+	            }
+	            else if(next.type==FIELD_COMP){
+	                piece.setComposer(next.contents.substring(2).trim());
+	                System.out.println("Set field composer to "+next.contents.substring(2).trim());
+	            }
+	            else if(next.type==FIELD_DEFAULT_LEN){
+	                next = eatSpaces(iter);
+	                if(next!=null&&next.type==FRACTION){
+	                    defaultLen=parseFraction(next.contents);
+	                    piece.setDefaultNoteLength(defaultLen);
+	                    setDefaultLenFlag = true;
+	                    if(!eatNewLine(iter))//next token should be end of line character to end the header field
+	                        throw new IllegalArgumentException("Field L: must be ended by an end of line character");
+	                    System.out.println("Set default length ");
+	                }
+	                else
+	                    throw new IllegalArgumentException("Field L: must be followed by a fraction note length "+next.type.name+ " "+next.contents);
+	            }
+	            else if(next.type==FIELD_METER){
+	                next = eatSpaces(iter);
+	                if(next!=null&&(next.type==METER||next.type==FRACTION)){
+	                    if(!next.contents.equals("C")&&!next.contents.equals("C|"))
+	                        piece.setMeter(parseFraction(next.contents));
+	                    if(!eatNewLine(iter))//next token should be end of line character to end the header field
+	                        throw new IllegalArgumentException("Field L: must be ended by an end of line character");
+	                    System.out.println("Set field meter");
+	                }
+	                else
+	                    throw new IllegalArgumentException("Field M: must be followed by a meter definition");
+	            }
+	            else if(next.type==FIELD_TEMPO){
+	                next = eatSpaces(iter);
+	                if(next!=null&&next.type==DIGITS){
+	                    piece.setTempo(Integer.parseInt(next.contents));
+	                    if(!eatNewLine(iter))//next token should be end of line character to end the header field
+	                        throw new IllegalArgumentException("Field L: must be ended by an end of line character");
+	                    System.out.println("Set field tempo");
+	                }
+	                else
+	                    throw new IllegalArgumentException("Field Q: must be followed by an integer tempo defintion");
+	            }
+	            else if(next.type==FIELD_VOICE){
+	                //These would be Voice Declarations
+	                //Add to our Piece's list of 'recognized' Voices
+	                piece.addVoice(new Voice(next.contents.substring(2).trim()));
+	                System.out.println("Made new Voice (no first measure) "+ next.contents.substring(2).trim());
+	            }
+	            else if(next.type==FIELD_KEY){
+	                next = eatSpaces(iter);
+	                if(next.type!=null&&next.type==BASENOTE){
+	                    String key = next.contents;
+	                    key+=parseHeaderKey(iter);//find other key info and take out the end of line character
+	                    piece.setKey(key);
+	                    System.out.println("Set field key");
+	                    //Key should be the final line in the header
+	                    //So from now on, we cannot have non-Notes/Voice Tokens
+	                    if(setDefaultLenFlag==false)
+	                    {
+	                        piece.setDefaultNoteLength(defaultLen);
+	                    }
+	                    
+	                    seenKey = true;
+	                    
+	                    if (piece.getVoices().size() == 0)
+	                    {
+	                        piece.addVoice(new Voice("default", new Measure( piece.getDefaultNoteLength() ) ));
+	                        currentVoice = piece.getVoice("default");
+	                    }
+	                }
+	                else
+	                    throw new IllegalArgumentException("Field K: must be followed by a keynote");
+	                }
             }
-            else if(next.type==FIELD_TITLE){
-                piece.setTitle(next.contents.substring(2).trim());
-                System.out.println("Set field title to "+next.contents.substring(2).trim());
-            }
-            else if(next.type==FIELD_COMP){
-                piece.setComposer(next.contents.substring(2).trim());
-                System.out.println("Set field composer to "+next.contents.substring(2).trim());
-            }
-            else if(next.type==FIELD_DEFAULT_LEN){
-                next = eatSpaces(iter);
-                if(next!=null&&next.type==FRACTION){
-                    defaultLen=parseFraction(next.contents);
-                    piece.setDefaultNoteLength(defaultLen);
-                    setDefaultLenFlag = true;
-                    if(!eatNewLine(iter))//next token should be end of line character to end the header field
-                        throw new IllegalArgumentException("Field L: must be ended by an end of line character");
-                    System.out.println("Set default length ");
-                }
-                else
-                    throw new IllegalArgumentException("Field L: must be followed by a fraction note length "+next.type.name+ " "+next.contents);
-            }
-            else if(next.type==FIELD_METER){
-                next = eatSpaces(iter);
-                if(next!=null&&(next.type==METER||next.type==FRACTION)){
-                    if(!next.contents.equals("C")&&!next.contents.equals("C|"))
-                        piece.setMeter(parseFraction(next.contents));
-                    if(!eatNewLine(iter))//next token should be end of line character to end the header field
-                        throw new IllegalArgumentException("Field L: must be ended by an end of line character");
-                    System.out.println("Set field meter");
-                }
-                else
-                    throw new IllegalArgumentException("Field M: must be followed by a meter definition");
-            }
-            else if(next.type==FIELD_TEMPO){
-                next = eatSpaces(iter);
-                if(next!=null&&next.type==DIGITS){
-                    piece.setTempo(Integer.parseInt(next.contents));
-                    if(!eatNewLine(iter))//next token should be end of line character to end the header field
-                        throw new IllegalArgumentException("Field L: must be ended by an end of line character");
-                    System.out.println("Set field tempo");
-                }
-                else
-                    throw new IllegalArgumentException("Field Q: must be followed by an integer tempo defintion");
-            }
-            else if(next.type==FIELD_VOICE){
-                //These would be Voice Declarations
-                //Add to our Piece's list of 'recognized' Voices
-                piece.addVoice(new Voice(next.contents.substring(2).trim()));
-                System.out.println("Made new Voice (no first measure) "+ next.contents.substring(2).trim());
-            }
-            else if(next.type==FIELD_KEY){
-                next = eatSpaces(iter);
-                if(next.type!=null&&next.type==BASENOTE){
-                    String key = next.contents;
-                    key+=parseHeaderKey(iter);//find other key info and take out the end of line character
-                    piece.setKey(key);
-                    System.out.println("Set field key");
-                    //Key should be the final line in the header
-                    //So from now on, we cannot have non-Notes/Voice Tokens
-                    if(setDefaultLenFlag==false)
-                    {
-                        piece.setDefaultNoteLength(defaultLen);
-                    }
-                    System.out.println("Done with header");
-                    return next;
-                }
-                else
-                    throw new IllegalArgumentException("Field K: must be followed by a keynote");
-                }
-            else{
-                //See the beginning of a musical line; requires a default voice too
-                if(setDefaultLenFlag==false)
-                    piece.setDefaultNoteLength(defaultLen);
-                System.out.println("Done with header");
-                return next;
+            // We're not in the header anymore.
+            else {
+            	if(next.type==FIELD_VOICE){
+            		String voiceName = next.contents.substring(2).trim();
+    	            currentVoice = piece.getVoice( voiceName );
+    	        }
+	            else{
+	            	parseABCLines( piece, currentVoice.tail(), iter );
+	            }
             }
         }
         return null;
 	}
 	
-	public static void parseABCLines(Piece piece, ListIterator<Token> iter){
-	    //TODO:Currently assuming single voice
-	    //Voice and measure setup
-	    HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature(piece.getKey());
-	    
-	    //Since this should be called right after parsing header, we can assume
-	    //that the first line will be of musical notes or a voice.  
-	    Measure currentMeasure = new Measure(piece.getDefaultNoteLength());
+	public static void parseABCLines(Piece piece, Measure currentMeasure, ListIterator<Token> iter){
+		
+	    // These handle repeats...
 	    Stack<Measure> openRepeatStack = new Stack<Measure>();
 	    Measure lastPreOne = null;
-	    //In order to know the Measure right before a first ending
 	    
 	    Fraction smallestDev = new Fraction(1);
 	    Fraction relTime = new Fraction(0);
@@ -250,11 +261,6 @@ public class Parser {
 	    boolean startMusic = false;
 	    boolean startTokenYet = false;
 	    Token next = null;
-	    if (piece.getVoices().size() == 0)
-        {
-            piece.addVoice(new Voice("Default", currentMeasure));
-        }
-        Voice currentVoice = piece.getVoices().get(piece.getVoices().size() - 1);
 	    
 	    while (iter.hasNext())
 	    {
@@ -267,25 +273,7 @@ public class Parser {
 	    	
 	        next = iter.next();
 	        
-	        //TODO: I don't think this belongs here.
-	        if(next.type==FIELD_VOICE){
-                boolean hasSeen = false;
-	            for (int i = 0; i < piece.getVoices().size(); i++)
-	            {
-	                Voice v = piece.getVoices().get(i);
-	                if (v.name == next.contents.substring(2).trim())
-	                {
-	                    currentVoice = v;
-	                    hasSeen = true;
-	                }
-	            }
-	            if (hasSeen == false)
-	            {
-	                throw new IllegalArgumentException("Invalid in-body voice called.");
-	            }
-	        }
-	        
-	        else if (next.type == BARLINE || next.type == DOUBLE_BARLINE)
+	        if (next.type == BARLINE || next.type == DOUBLE_BARLINE)
 	        {
 	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
 	            currentMeasure.setNext(newMeasure);
@@ -304,12 +292,10 @@ public class Parser {
 	            
 	            // Push the current measure onto the open stack.
 	            openRepeatStack.push(currentMeasure);
-	            //TODO: the :|: token.
+	            //TODO: the :|: token?
 	        }
 	        else if (next.type == CLOSE_REPEAT)
-	        {
-	            //TODO: Implement this as a stack to deal with nesting.
-	            
+	        {	            
 	            Measure newMeasure = new Measure(piece.getDefaultNoteLength());
 	            if( openRepeatStack.size() == 0 ) {
 	            	throw new RuntimeException("No matching open repeat.");
@@ -344,6 +330,11 @@ public class Parser {
 	            currentMeasure = newMeasure;
 	            relTime = new Fraction(0);
             }
+	        else if( next.type == FIELD_VOICE )
+	        {
+	        	iter.previous();
+	        	return;
+	        }
 	        else
 	        {
 	            throw new IllegalArgumentException("Bad Tokens found in parsing music.");

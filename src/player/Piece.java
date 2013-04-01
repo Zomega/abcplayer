@@ -145,4 +145,13 @@ public class Piece {
 	    this.voices.add(voice);
 	}
 
+	public Voice getVoice(String name) {
+		for( Voice voice : this.voices ) {
+			if( voice.name.equals( name ) ) {
+				return voice;
+			}
+		}
+		return null;
+	}
+
 }

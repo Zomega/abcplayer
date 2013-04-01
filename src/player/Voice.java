@@ -45,4 +45,17 @@ public class Voice implements Iterable<Measure> {
 		return this.getStart().iterator();
 	}
 
+	/**
+	 * @return the last measure in this voice.
+	 */
+	public Measure tail() {
+		// TODO: Improve this!
+		Iterator<Measure> iter = this.iterator();
+		Measure last = null;
+		while( iter.hasNext() ) {
+			last = iter.next();		
+		}
+		return last;
+	}
+
 }
