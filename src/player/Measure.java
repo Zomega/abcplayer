@@ -139,6 +139,7 @@ public class Measure implements Iterable<Measure> {
 	 * @throws NoteOutOfBoundsException if the passed note is not fully contained in the measure.
 	 */
 	public void addNote(Note note, Fraction startTime ) throws NoteOutOfBoundsException {
+		
 		// Check to ensure the note is fully within the measure...
 		// Check to ensure it starts after 0...
 		if( startTime.numerator < 0 )
@@ -148,6 +149,9 @@ public class Measure implements Iterable<Measure> {
 		Fraction endTime = startTime.plus( note.duration );
 		if( endTime.minus( this.length ).numerator > 0 )
 			throw new NoteOutOfBoundsException("Tried to add a note which ended after the measure.");
+		
+		// Rests have null pitch. We don't actually want to add them to our notes.
+		if( note.pitch == null ) return;
 		
 		this.notes.add(new Pair<Note, Fraction>(note, startTime ));
 	}
