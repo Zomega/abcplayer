@@ -13,7 +13,7 @@ import org.junit.Test;
 /**
  * Test class for lexing abc music files
  * @category no_didit
- * @author kimtoy
+ * @author kimtoy, czuo
  */
 public class LexerMusicTest {
     public final TokenType FIELD_NUM = new TokenType("FIELD_NUM",
@@ -119,9 +119,112 @@ public class LexerMusicTest {
         types.add(SPACE);
     }
     
-    //TODO: write actual Junit tests...
+
+    
     @Test
-    public void test1() {
+    public void testFractionLexing(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens = l.lex("3/ /3 3/12 /12 / 2/ 12/ 12 12/12");
+
+        List<Token> expected = new ArrayList<Token>();
+        expected.add(new Token("3/", FRACTION_NOT_STRICT));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("/3", FRACTION_NOT_STRICT));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("3/12", FRACTION));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("/12", FRACTION_NOT_STRICT));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("/", FRACTION_NOT_STRICT));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("2/", FRACTION_NOT_STRICT));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("12/", FRACTION_NOT_STRICT));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("12", DIGITS));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("12/12", FRACTION));
+        for (int i = 0; i < expected.size(); i++)
+        {
+            assertEquals(tokens.get(i), expected.get(i));
+        }
+    }
+    
+    @Test
+    public void testAccidentalLexing(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens = l.lex("=C ^^C __C _c ^b ^^^");
+        
+        List<Token> expected = new ArrayList<Token>();
+        expected.add(new Token("=", ACCIDENTAL));
+        expected.add(new Token("C", BASENOTE));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("^^", ACCIDENTAL));
+        expected.add(new Token("C", BASENOTE));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("__", ACCIDENTAL));
+        expected.add(new Token("C", BASENOTE));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("_", ACCIDENTAL));
+        expected.add(new Token("c", BASENOTE));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("^", ACCIDENTAL));
+        expected.add(new Token("b", BASENOTE));
+        expected.add(new Token(" ", SPACE));
+        expected.add(new Token("^^", ACCIDENTAL));
+        expected.add(new Token("^", ACCIDENTAL));
+        for (int i = 0; i < expected.size(); i++)
+        {
+            assertEquals(tokens.get(i), expected.get(i));
+        }
+        
+    }
+
+    /**
+     * Ensures that non-recognized patterns correctly throw an error.  
+     */
+    @Test (expected=RuntimeException.class)
+    public void testBadDecimals(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens = l.lex("3/ /.3 3/12 /12 / 2/ 12/ 12 12/12");
+        
+    }
+    
+    @Test (expected=RuntimeException.class)
+    public void testInvalidHead(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens = l.lex("X: 1  U:" + "\n");
+    }
+
+    
+    /**
+     * Ensures that Space tokens are being lexed correctly and 
+     * play a part in determining the parsing of future tokens.  
+     */
+    @Test 
+    public void testParseSpaceOrder(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens1 = l.lex("|:||");
+        List<Token> expected1 = new ArrayList<Token>();
+        expected1.add(new Token("|:", OPEN_REPEAT));
+        expected1.add(new Token("||", DOUBLE_BARLINE));
+        assertEquals(expected1, tokens1);
+        
+        List<Token> tokens2 = l.lex("| :||" + "\n");
+        List<Token> expected2 = new ArrayList<Token>();
+        expected2.add(new Token("|", BARLINE));
+        expected2.add(new Token(" ", SPACE));
+        expected2.add(new Token(":|", CLOSE_REPEAT));
+        expected2.add(new Token("|", BARLINE));
+        expected2.add(new Token("\n", NEWLINE));
+        assertEquals(expected2, tokens2);
+    }
+    
+    /**
+     * Sample test using the given sample piece 1.  
+     */
+    @Test
+    public void sampleTest1() {
         BufferedReader f = null;
         String line = "";
         try {
@@ -140,56 +243,102 @@ public class LexerMusicTest {
         List<Token> tokens = l.lex(line);
         for(int i=0; i<tokens.size(); i++){
             //System.out.println(tokens.get(i).toString());
-        } 
-    }
-    
-    @Test
-    public void testFractionLexing(){
-        Lexer l = new Lexer(types);
-        List<Token> tokens = l.lex("3/ /3 3/12 /12 / 2/ 12/ 12 12/12");
-        for(int i=0; i<tokens.size(); i++){
-            //System.out.println(tokens.get(i).toString());
-        } 
-    }
-    
-    @Test
-    public void testAccidentalLexing(){
-        Lexer l = new Lexer(types);
-        List<Token> tokens = l.lex("=C ^^C __C _c ^b ^^^");
-        for(int i=0; i<tokens.size(); i++){
-            //System.out.println(tokens.get(i).toString());
-        } 
-    }
-
-    /**
-     * Ensures that non-recognized patterns correctly throw an error.  
-     */
-    @Test (expected=RuntimeException.class)
-    public void testBadDecimals(){
-        Lexer l = new Lexer(types);
-        List<Token> tokens = l.lex("3/ /.3 3/12 /12 / 2/ 12/ 12 12/12");
-    }
-    
-    /**
-     * Ensures that Space tokens are being lexed correctly and 
-     * play a part in determining the parsing of future tokens.  
-     */
-    @Test 
-    public void testParseSpaceOrder(){
-        Lexer l = new Lexer(types);
-        List<Token> tokens1 = l.lex("|:||");
-        List<Token> expected1 = new ArrayList<Token>();
-        expected1.add(new Token("|:", OPEN_REPEAT));
-        expected1.add(new Token("||", DOUBLE_BARLINE));
-        assertEquals(expected1, tokens1);
+        }
         
-        List<Token> tokens2 = l.lex("| :||");
-        List<Token> expected2 = new ArrayList<Token>();
-        expected2.add(new Token("|", BARLINE));
-        expected2.add(new Token(" ", SPACE));
-        expected2.add(new Token(":|", CLOSE_REPEAT));
-        expected2.add(new Token("|", BARLINE));
-        assertEquals(expected2, tokens2);
+    }
+    
+    /**
+     * General test for an abc file with a variety of features.  
+     */
+    @Test
+    public void genTest1() {
+        BufferedReader f = null;
+        String line = "";
+        try {
+          f = new BufferedReader(new FileReader("sample_abc/LexerTest1.abc"));
+          String nextLine = f.readLine();
+          while (nextLine != null) {
+            line += nextLine + "\n";
+            nextLine = f.readLine();
+          }
+          f.close();
+        } catch (IOException e) {
+          System.err.println("File couldn't be read");
+        }
+        //System.out.println(line);
+        Lexer l = new Lexer(types);
+        List<Token> tokens = l.lex(line);
+        /*for(int i=0; i<tokens.size(); i++){
+            System.out.println(tokens.get(i).toString());
+        }*/
+        List<String> expected = new ArrayList<String>();
+        expected.add("FIELD_NUM X: 1" + "\n");
+        expected.add("FIELD_TITLE T: Piece No.1" + "\n");
+        expected.add("FIELD_METER M:");
+        expected.add("SPACE" + " " + " ");
+        //Extra spacing needed
+        expected.add("FRACTION 4/4");
+        expected.add("NEWLINE" + " " + "\n");
+        //Extra spacing needed
+        expected.add("FIELD_VOICE V: Voice 2" + "\n");
+        expected.add("FIELD_DEFAULT_LEN L:");
+        expected.add("SPACE" + "  ");
+        expected.add("FRACTION 1/4");
+        expected.add("NEWLINE" + " " + "\n");
+        expected.add("FIELD_TEMPO Q:");
+        expected.add("SPACE" + "  ");
+        expected.add("DIGITS 140");
+        expected.add("NEWLINE" + " " + "\n");
+        expected.add("FIELD_VOICE V: Voice 1" + "\n");
+        expected.add("FIELD_COMP C: Tim the Beaver" + "\n");
+        expected.add("FIELD_KEY K:");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE C");
+        expected.add("NEWLINE" + " " + "\n");
+        
+        expected.add("OPEN_CHORD [");
+        expected.add("BASENOTE C");
+        expected.add("SPACE  ");
+        expected.add("BASENOTE c");
+        expected.add("OCTAVE '");
+        expected.add("CLOSE_CHORD ]");
+        expected.add("SPACE  ");
+        expected.add("BASENOTE C");
+        expected.add("FRACTION_NOT_STRICT /");
+        expected.add("SPACE  ");
+        expected.add("BASENOTE C");
+        expected.add("FRACTION 3/4");
+        expected.add("SPACE  ");
+        expected.add("BARLINE |");
+        expected.add("SPACE  ");
+        expected.add("TUPLET (3");
+        expected.add("SPACE  ");
+        expected.add("BASENOTE C");
+        expected.add("BASENOTE B");
+        expected.add("ACCIDENTAL __");
+        expected.add("BASENOTE A");
+        expected.add("SPACE  ");
+        expected.add("CLOSE_REPEAT :|");
+        expected.add("SPACE  " + " " + "\n");
+        //Not quite sure how this turned out...
+        
+        expected.add("FIELD_VOICE V: Voice 2         " + "\n");
+        //As expected, all the spaces are also captured...
+        expected.add("ONE_REPEAT [1");
+        expected.add("OCTAVE '");
+        expected.add("SPACE  ");
+        expected.add("BASENOTE C");
+        expected.add("OCTAVE ,");
+        expected.add("FRACTION_NOT_STRICT /4");
+        expected.add("SPACE" + "  ");
+        expected.add("BARLINE |");
+        expected.add("NEWLINE" + " " + "\n");
+        //assertEquals(tokens.get(3).toString(), expected.get(3));
+        
+        for (int i = 0; i < expected.size(); i++)
+        {
+            assertEquals(tokens.get(i).toString(), expected.get(i));
+        }
     }
     
 }

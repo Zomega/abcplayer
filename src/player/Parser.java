@@ -15,7 +15,7 @@ import lexer.*;
 
 /**
  * Class to convert abc files into Piece data structures.
- * @author kimtoy
+ * @author kimtoy, czuo
  * @version prealpha
  */
 public class Parser {
@@ -233,8 +233,6 @@ public class Parser {
 	    //TODO:Currently assuming single voice
 	    //Voice and measure setup
 	    HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature(piece.getKey());
-	    //Measure mStart = new Measure(piece.getDefaultNoteLength());
-	    //Voice vStart = new Voice("start", mStart);
 	    
 	    //Since this should be called right after parsing header, we can assume
 	    //that the first line will be of musical notes or a voice.  
@@ -243,6 +241,7 @@ public class Parser {
 	    Measure lastPreOne = currentMeasure;
 	    //In order to know the Measure right before a first ending
 	    
+	    Fraction smallestDev = new Fraction(1);
 	    Fraction relTime = new Fraction(0);
 	    //The relative position in the Measure we're in right now.  
 	    
@@ -282,20 +281,56 @@ public class Parser {
 	        }
 	        
 	        
-	        //TODO: Handle duplets; simply change Fraction modifier as needed.  
+	        //TODO: Handle duplets; use substring to grab char in position 1
+            //in the Token's contents; that's the number of notes in the chord. 
+	        //This also determines what Fraction modifier is.
+            //Use same relTime when adding to Measure.  
+	        if (next.type == DUPLET)
+	        {
+	            
+	        }
+	        else if (next.type == TUPLET)
+            {
+                
+            }
+	        else if (next.type == QUADRUPLET)
+            {
+                
+            }
 	        
-	        if (next.type == ACCIDENTAL || next.type == BASENOTE)
+	        //TODO: Handle chords; 
+	        else if (next.type == OPEN_CHORD)
+	        {
+	            next = iter.next();
+	            while (next.type != CLOSE_CHORD)
+	            {
+	                //TODO: Grab the notes inside
+	                if (iter.hasNext())
+	                {
+	                    next = iter.next();
+	                }
+	                else
+	                {
+	                    throw new IllegalArgumentException("Unclosed chord");
+	                }
+	            }
+	        }
+	        
+	        else if (next.type == ACCIDENTAL || next.type == BASENOTE)
 	        {
 	            
 	            //TODO: add the notes to the currentMeasure; change relTime as needed
 	            //Manually set the Token next if no multiplier (setNextYet = true)
 	            //Set Fraction modifier in parseNote method to 1
+	            //In addition, look at duration - see if this Fraction < smallestDivision
 	        }
 	        else if (next.type == REST)
 	        {
 	            Fraction noteLength=null;
-	            //TODO: Something like we do for Note; change relTime as needed
+	            //TODO: Something like we do for Note but just return a Fraction; 
+	            //which is amount we need to change relTime by
 	            //Manually set the Token next if no multiplier (setNextYet = true)
+	            //In addition, look at duration - see if this Fraction < smallestDivision
 	        }
 	        else if (next.type == BARLINE || next.type == DOUBLE_BARLINE)
 	        {
