@@ -283,8 +283,10 @@ public class Parser {
 	        
 	        //TODO: Handle duplets; use substring to grab char in position 1
             //in the Token's contents; that's the number of notes in the chord. 
-	        //This also determines what Fraction modifier is.
+	        //In the end, add on a new Note with a duration of 
+	        //the product of returned Note.getDuration and the appropriate modifier
             //Use same relTime when adding to Measure.  
+	        //Watch out for shortest subdivision.  
 	        if (next.type == DUPLET)
 	        {
 	            
@@ -321,7 +323,6 @@ public class Parser {
 	            
 	            //TODO: add the notes to the currentMeasure; change relTime as needed
 	            //Manually set the Token next if no multiplier (setNextYet = true)
-	            //Set Fraction modifier in parseNote method to 1
 	            //In addition, look at duration - see if this Fraction < smallestDivision
 	        }
 	        else if (next.type == REST)
@@ -404,7 +405,7 @@ public class Parser {
 	  * @param piece
 	  * @param iter
 	  */
-	public static Pair<Token, Note> parseNoteElement(Piece piece, Iterator<Token> iter, HashMap<String, Pitch> scale, Fraction modifier){
+	public static Pair<Token, Note> parseNoteElement(Piece piece, Iterator<Token> iter, HashMap<String, Pitch> scale){
 	    Token next;
 	    Pitch p = null;
 	    Fraction noteLength=null;
@@ -427,28 +428,28 @@ public class Parser {
 	            if(iter.hasNext()){//check if followed by note length token, else return next token
 	                next = iter.next();
 	                if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT)
-	                    noteLength = parseNoteLength(next).times(modifier);
+	                    noteLength = parseNoteLength(next);
 	                else if(next.type==OCTAVE)
 	                    throw new IllegalArgumentException("Note should not have mixed octave modifiers");
 	                else
-	                    return new Pair<Token, Note>(next, new Note(piece.getDefaultNoteLength().times(modifier), p));
+	                    return new Pair<Token, Note>(next, new Note(piece.getDefaultNoteLength(), p));
 	            }
 	        }
 	        else if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT)//is note length token
-	            noteLength=parseNoteLength(next).times(modifier);
+	            noteLength=parseNoteLength(next);
 	        else
 	            return new Pair<Token, Note>(next, new Note(piece.getDefaultNoteLength(), p));
 	    }
 	    //return next token and parsed Note
 	    if(iter.hasNext()){
 	        if(noteLength==null)//if note length was not set, set length to default value
-	            return new Pair<Token, Note>(iter.next(), new Note(piece.getDefaultNoteLength().times(modifier), p));
+	            return new Pair<Token, Note>(iter.next(), new Note(piece.getDefaultNoteLength(), p));
 	        else
 	            return new Pair<Token, Note>(iter.next(), new Note(noteLength, p));
 	    }
 	    else{
 	        if(noteLength==null)
-                return new Pair<Token, Note>(null, new Note(piece.getDefaultNoteLength().times(modifier), p));
+                return new Pair<Token, Note>(null, new Note(piece.getDefaultNoteLength(), p));
             else
                 return new Pair<Token, Note>(null, new Note(noteLength, p));
 	    }
