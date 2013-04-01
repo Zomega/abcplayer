@@ -92,6 +92,13 @@ public class Piece {
 	public void setSmallestDivision(Fraction smallestDivision) {
 		this.smallestDivision = smallestDivision;
 	}
+	
+	public void checkSmallestNote(Note n) {
+	    if (! (n.getDuration().minus(this.smallestDivision)).isPositive())
+	    {
+	        setSmallestDivision(n.getDuration());
+	    }
+	}
 
 	public String getKey() {
 		return key;

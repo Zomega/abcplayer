@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 
 import lexer.Token;
 
@@ -18,7 +19,7 @@ import utilities.Pair;
 
 /**
  * Parser test file
- * @author kimtoy
+ * @author kimtoy, czuo
  * @category no_didit
  *
  */
@@ -114,6 +115,66 @@ public class ParserTest {
         assertEquals(new Fraction(1,2), Parser.parseFractionNotStrict("/"));
         assertEquals(new Fraction(3,2), Parser.parseFractionNotStrict("3/"));
         assertEquals(new Fraction(1,11), Parser.parseFractionNotStrict("/11"));
+    }
+    
+    @Test
+    public void testBasic1() {
+        //("A B C D|")
+        List<String> expected = new ArrayList<String>();
+        expected.add("< ( 1 / 4 ) A, ( 0 / 1 ) >");
+        expected.add("< ( 1 / 4 ) B, ( 1 / 4 ) >");
+        expected.add("< ( 1 / 4 ) C, ( 1 / 2 ) >");
+        expected.add("< ( 1 / 4 ) D, ( 3 / 4 ) >");
+    }
+    
+    @Test
+    public void testRest1() {
+        //"z B C D|"
+        List<String> expected = new ArrayList<String>();
+        expected.add("< ( 1 / 4 ) B, ( 1 / 4 ) >");
+        expected.add("< ( 1 / 4 ) C, ( 1 / 2 ) >");
+        expected.add("< ( 1 / 4 ) D, ( 3 / 4 ) >");
+    }
+    
+    @Test
+    public void testAccidentals1() {
+        //("^A, b1/8 C1/8 _D F|");
+        List<String> expected = new ArrayList<String>();
+        expected.add("< ( 1 / 4 ) ^A,, ( 0 / 1 ) >");
+        expected.add("< ( 1 / 8 ) b, ( 1 / 4 ) >");
+        expected.add("< ( 1 / 8 ) C, ( 3 / 8 ) >");
+        expected.add("< ( 1 / 4 ) ^C, ( 1 / 2 ) >");
+        expected.add("< ( 1 / 4 ) ^F, ( 3 / 4 ) >");
+    }
+    
+    @Test
+    public void testDuplet1() {
+        //"A (2BD|"
+        List<String> expected = new ArrayList<String>();
+        expected.add("< ( 1 / 4 ) A, ( 0 / 1 ) >");
+        expected.add("< ( 3 / 8 ) B, ( 1 / 4 ) >");
+        expected.add("< ( 3 / 8 ) D, ( 5 / 8 ) >");
+    }
+    
+    @Test
+    public void testMixed1() {
+        //"A1/3 (3^B1/4_D1/8^C1/8 f1/3|"
+        List<String> expected = new ArrayList<String>();
+        expected.add("< ( 1 / 3 ) A, ( 0 / 1 ) >");
+        expected.add("< ( 1 / 6 ) c, ( 1 / 3 ) >");
+        expected.add("< ( 1 / 12 ) ^C, ( 1 / 2 ) >");
+        expected.add("< ( 1 / 12 ) ^C, ( 7 / 12 ) >");
+        expected.add("< ( 1 / 3 ) ^f, ( 2 / 3 ) >");
+    }
+    
+    @Test
+    public void testMixed2() {
+        //"z1/8 (4a''b''c''d'' z1/8|"
+        List<String> expected = new ArrayList<String>();
+        expected.add("< ( 3 / 16 ) a'', ( 1 / 8 ) >");
+        expected.add("< ( 3 / 16 ) b'', ( 5 / 16 ) >");
+        expected.add("< ( 3 / 16 ) c'', ( 1 / 2 ) >");
+        expected.add("< ( 3 / 16 ) d'', ( 11 / 16 ) >");
     }
     
 }

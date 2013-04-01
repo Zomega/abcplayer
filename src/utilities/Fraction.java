@@ -120,6 +120,13 @@ public class Fraction {
 		this.denominator = denominator / gcd;
 	}
 
+	 /**
+     * Returns boolean telling if this Fraction is positive. 
+     */
+    public boolean isPositive() {
+        return (this.numerator>= 0);
+    }
+    
 	/**
 	 * Returns the sum of the current fraction with the other fraction. Note
 	 * that other can never be invalid by construction thus the returned value
