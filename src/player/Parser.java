@@ -371,7 +371,6 @@ public class Parser {
                 measureLen = measureLen.plus(nextNote.duration);
                 //second note
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(3,2));
-                System.out.println(nextNote);
                 measure.addNote(nextNote, measureLen);
                 measureLen = measureLen.plus(nextNote.duration);
 			} else if (next.type == TUPLET) {
@@ -405,24 +404,19 @@ public class Parser {
 			}
 			else if (next.type == OPEN_CHORD) {
 			    Fraction longestDuration = new Fraction(0);
-			    if (iter.hasNext()) 
-			        next = iter.next();
-			    else
-			        throw new IllegalArgumentException("Chord does not contain any elements");
 				while (iter.hasNext()) {
 						next = iter.next();			
     				if(next.type==BASENOTE || next.type==ACCIDENTAL || next.type==REST){
-    				    System.out.println(next);
     				    iter.previous();
     					nextNote = parseNoteElement(piece, iter, scale, new Fraction(1));
                         measure.addNote(nextNote, measureLen);
                         if(nextNote.duration.minus(longestDuration).isPositive())//keep longest length
                             longestDuration = nextNote.duration;
     				}
-    				else if(next.type==CLOSE_CHORD)
+    				else if(next.type==CLOSE_CHORD){
     				    break;
+    				}
     				else{
-    				    System.out.print("invalid "+next);
     				    throw new IllegalArgumentException("Invalid elements in chord");
     				}
 				}
@@ -431,7 +425,7 @@ public class Parser {
 				measureLen = measureLen.plus(longestDuration);
 			}
 			else if (next.type == ACCIDENTAL || next.type == BASENOTE || next.type == REST) {
-
+			    iter.previous();
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(1));
                 measure.addNote(nextNote, measureLen);
                 measureLen = measureLen.plus(nextNote.duration);
@@ -467,35 +461,31 @@ public class Parser {
 		Pitch p = null;
 		Fraction noteLength = null;
 
-		//Deal with rests as if they were Notes with Pitch = null
-		if (iter.previous().type == REST) {
-		    iter.next(); //return iterator's head to directly after the first rest seen
-            if(iter.hasNext()){
-                next = iter.next();
-                if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT){
-                    noteLength = parseNoteLength(next);
-                }
-                else{
-                    noteLength = piece.getDefaultNoteLength();
-                    iter.previous();
-                }
-            }
-            else{
-                noteLength = piece.getDefaultNoteLength();
-            }
-            return new Note(noteLength.times(modifier), p);
-        } 
-		
 		// pull first token, expected to be accidental or basenote
 		if (iter.hasNext()) {
 			next = iter.next();
+		    System.out.println("note parser"+next);
 			if (next.type == ACCIDENTAL)// if accidental, parse note pitch and
 										// correct accidental
 				p = parseAccidental(next, iter, scale);
-			else if (next.type == BASENOTE)// if only basenote, parse the note
-											// pitch with default accidental of
-											// 3
+			else if (next.type == BASENOTE)// if only basenote, parse the note pitch with default accidental of 3
 				p = parseBasenote(next, 3, scale);
+			else if (next.type == REST){//Deal with rests as if they were Notes with Pitch = null
+			    if(iter.hasNext()){
+	                next = iter.next();
+	                if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT){
+	                    noteLength = parseNoteLength(next);
+	                }
+	                else{
+	                    noteLength = piece.getDefaultNoteLength();
+	                    iter.previous();
+	                }
+	            }
+	            else{
+	                noteLength = piece.getDefaultNoteLength();
+	            }
+	            return new Note(noteLength.times(modifier), p);
+			}
 			else
 				// if basenote was not encountered, throw an exception
 				throw new IllegalArgumentException(
@@ -509,8 +499,10 @@ public class Parser {
 				if (iter.hasNext()) {// check if followed by note length token, else return next token
 					next = iter.next();
 					if (next.type == DIGITS || next.type == FRACTION
-							|| next.type == FRACTION_NOT_STRICT)
+							|| next.type == FRACTION_NOT_STRICT){
 						noteLength = parseNoteLength(next);
+						return new Note(noteLength.times(modifier), p);
+					}
 					else if (next.type == OCTAVE)
 						throw new IllegalArgumentException(
 								"Note should not have mixed octave modifiers");
@@ -520,8 +512,10 @@ public class Parser {
 					}
 				}
 			} else if (next.type == DIGITS || next.type == FRACTION
-					|| next.type == FRACTION_NOT_STRICT)// is note length token
+					|| next.type == FRACTION_NOT_STRICT){// is note length token
 				noteLength = parseNoteLength(next);
+				return new Note(noteLength.times(modifier), p);
+			}
 			else{
 			    iter.previous();
 				return new Note(piece.getDefaultNoteLength().times(modifier), p);
