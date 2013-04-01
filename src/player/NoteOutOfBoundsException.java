@@ -8,7 +8,7 @@ package player;
  * @version RC1
  */
 @SuppressWarnings("serial")
-public class NoteOutOfBoundsException extends Exception {
+public class NoteOutOfBoundsException extends RuntimeException {
 	/**
 	 * Basic constructor.
 	 * 
