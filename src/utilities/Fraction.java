@@ -257,6 +257,17 @@ public class Fraction {
 		return false;
 	}
 
+	/**
+     * Returns true if a fraction is positive. Returns false for negative or zero fractions.
+     * @return
+     */
+    public boolean isPositive(){
+        if(this.numerator*this.denominator>0)
+            return true;
+        else
+            return false;
+    }
+	
 	public String toString() {
 		return "( " + this.numerator + " / " + this.denominator + " )";
 	}

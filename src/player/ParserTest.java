@@ -25,7 +25,7 @@ import utilities.Pair;
 public class ParserTest {
     
     @Test
-    public void testParseHeader(){
+    public void testParseHeader() throws NoteOutOfBoundsException{
         BufferedReader f = null;
         String line = "";
         try {
@@ -56,25 +56,25 @@ public class ParserTest {
         HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("D");
         
         List<Token> note1 = Parser.lex("G");
-        assertEquals(new Pair<Token, Note>(null, new Note(new Fraction(1,4), new Pitch('G'))), Parser.parseNoteElement(piece, note1.iterator(), scale));
+        assertEquals(new Note(new Fraction(1,4), new Pitch('G')), Parser.parseNoteElement(piece, note1.listIterator(), scale, new Fraction(1)));
         
         List<Token> note2 = Parser.lex("G'");
-        assertEquals(new Pair<Token, Note>(null, new Note(new Fraction(1,4), new Pitch('G').transpose(12))), Parser.parseNoteElement(piece, note2.iterator(), scale));
+        assertEquals(new Note(new Fraction(1,4), new Pitch('G').transpose(12)), Parser.parseNoteElement(piece, note2.listIterator(), scale, new Fraction(1)));
         
         List<Token> note3 = Parser.lex("C,1/8");
-        assertEquals(new Pair<Token, Note>(null, new Note(new Fraction(1,8), new Pitch('C').transpose(-11))), Parser.parseNoteElement(piece, note3.iterator(), scale));
+        assertEquals(new Note(new Fraction(1,8), new Pitch('C').transpose(-11)), Parser.parseNoteElement(piece, note3.listIterator(), scale, new Fraction(1)));
         
         List<Token> note4 = Parser.lex("=c''2");
-        assertEquals(new Pair<Token, Note>(null, new Note(new Fraction(1,1), new Pitch('C').transpose(36))), Parser.parseNoteElement(piece, note4.iterator(), scale));
+        assertEquals(new Note(new Fraction(1,1), new Pitch('C').transpose(36)), Parser.parseNoteElement(piece, note4.listIterator(), scale, new Fraction(1)));
         
         List<Token> note5 = Parser.lex("_B,,/3");
-        assertEquals(new Pair<Token, Note>(null, new Note(new Fraction(1,3), new Pitch('B').transpose(-25))), Parser.parseNoteElement(piece, note5.iterator(), scale));
+        assertEquals(new Note(new Fraction(1,3), new Pitch('B').transpose(-25)), Parser.parseNoteElement(piece, note5.listIterator(), scale, new Fraction(1)));
         
         List<Token> note6 = Parser.lex("^^F/");
-        assertEquals(new Pair<Token, Note>(null, new Note(new Fraction(1,2), new Pitch('F').transpose(2))), Parser.parseNoteElement(piece, note6.iterator(), scale));
+        assertEquals(new Note(new Fraction(1,2), new Pitch('F').transpose(2)), Parser.parseNoteElement(piece, note6.listIterator(), scale, new Fraction(1)));
         
         List<Token> note7 = Parser.lex("_b'4/4 ");
-        assertEquals(new Pair<Token, Note>(new Token(" ",Parser.SPACE), new Note(new Fraction(1,1), new Pitch('B').transpose(23))), Parser.parseNoteElement(piece, note7.iterator(), scale));
+        assertEquals(new Note(new Fraction(1,1), new Pitch('B').transpose(23)), Parser.parseNoteElement(piece, note7.listIterator(), scale, new Fraction(1)));
     }
     
     /**
@@ -87,7 +87,7 @@ public class ParserTest {
         HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("D");
         
         List<Token> note1 = Parser.lex("G,,'");
-        Parser.parseNoteElement(piece, note1.iterator(), scale);
+        Parser.parseNoteElement(piece, note1.listIterator(), scale, new Fraction(1));
     }
     
     /**
@@ -100,7 +100,7 @@ public class ParserTest {
         HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("D");
         
         List<Token> note1 = Parser.lex("^^_G");
-        Parser.parseNoteElement(piece, note1.iterator(), scale);
+        Parser.parseNoteElement(piece, note1.listIterator(), scale, new Fraction(1));
     }
     
     /**
