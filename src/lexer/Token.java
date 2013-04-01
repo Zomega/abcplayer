@@ -29,4 +29,12 @@ public class Token {
 	public String toString() {
 		return type.name+" "+contents;
 	}
+	
+	public boolean equals(Object other) {
+        if (other instanceof Token) {
+            Token otherPair = (Token) other;
+                return (this.contents.equals(otherPair.contents)) && (this.type==otherPair.type);
+        }
+        return false;
+    }
 }

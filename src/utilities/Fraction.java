@@ -25,15 +25,21 @@ public class Fraction {
 	public final int denominator;
 
 	// Static helper methods...
+	
 	/**
-	 * Method which finds and returns the GCD of two nonzero integers by
+	 * Method which finds and returns the greatest common factor of two nonzero integers by
 	 * implementing Euclid's algorithm.
+	 * 
+	 * If one or both of the numbers is negative, it returns the positive common factor
 	 * 
 	 * @param first - an integer
 	 * @param second - an integer
-	 * @return their greatest common divisor
+	 * @return their greatest common factor
 	 */
 	public static int gcd(int first, int second) {
+	    if(first<0||second<0){
+	        return gcd(Math.abs(first), Math.abs(second));
+	    }
 	    if(first>second){
 	        if (second == 0) {
                 return first;
@@ -50,13 +56,17 @@ public class Fraction {
 
 	/**
 	 * Method which finds and returns the LCM of two nonzero integers
+	 * If one of the parameters is negative, returns the positive least common multiple
+	 * Even though the LCM of 0 and another number does not exist, we return 0
 	 * 
 	 * @param first - an integer
 	 * @param second - an integer
 	 * @return their least common multiple
 	 */
 	public static int lcm(int first, int second) {
-		return (first * second) / gcd(first, second);
+	    if(gcd(first, second)==0)
+	        return 0;
+		return (Math.abs(first) * Math.abs(second)) / gcd(first, second);
 	}
 
 	// Other Methods.
@@ -122,8 +132,8 @@ public class Fraction {
 	public Fraction plus(Fraction other) {
 		try {
 			return new Fraction(this.numerator * other.denominator
-					+ other.numerator * this.denominator, this.numerator
-					* other.numerator);
+					+ other.numerator * this.denominator, this.denominator
+					* other.denominator);
 		} catch (Exception e) {
 			// This shouldn't happen.
 			return null;
@@ -214,13 +224,16 @@ public class Fraction {
 	}
 
 	/**
-	 * Takes the inverse of this fraction.
+	 * Takes the inverse of this fraction.  
+	 * If the fraction is negative, keeps the negative sign in the numerator
 	 * 
 	 * @return a new Fraction, the inverse of this Fraction.
 	 * @throws FractionValueException
 	 *             if this fraction is zero.
 	 */
 	public Fraction inverse() throws FractionValueException {
+	    if(this.denominator*this.numerator<0)
+	        return new Fraction(-this.denominator, -this.numerator);
 		return new Fraction(this.denominator, this.numerator);
 	}
 
