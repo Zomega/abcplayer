@@ -422,24 +422,10 @@ public class Parser {
 				}
 				measureLen = measureLen.plus(longestDuration);
 			}
-			else if (next.type == ACCIDENTAL || next.type == BASENOTE) {
+			else if (next.type == ACCIDENTAL || next.type == BASENOTE || next.type == REST) {
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(1));
                 measure.addNote(nextNote, measureLen);
                 measureLen = measureLen.plus(nextNote.duration);
-			} else if (next.type == REST) {
-                if(iter.hasNext()){
-                    next = iter.next();
-                    if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT){
-                        measureLen = measureLen.plus(parseNoteLength(next));
-                    }
-                    else{
-                        measureLen = measureLen.plus(piece.getDefaultNoteLength());
-                        iter.previous();
-                    }
-                }
-                else{
-                    measureLen = measureLen.plus(piece.getDefaultNoteLength());
-                }
 			} else if (next.type == SPACE) {
 				// pass
 			} else if (next.type == BARLINE || next.type == DOUBLE_BARLINE
@@ -472,6 +458,25 @@ public class Parser {
 		Pitch p = null;
 		Fraction noteLength = null;
 
+		//Deal with rests as if they were Notes with Pitch = null
+		if (iter.previous().type == REST) {
+		    iter.next(); //return iterator's head to directly after the first rest seen
+            if(iter.hasNext()){
+                next = iter.next();
+                if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT){
+                    noteLength = parseNoteLength(next);
+                }
+                else{
+                    noteLength = piece.getDefaultNoteLength();
+                    iter.previous();
+                }
+            }
+            else{
+                noteLength = piece.getDefaultNoteLength();
+            }
+            return new Note(noteLength.times(modifier), p);
+        } 
+		
 		// pull first token, expected to be accidental or basenote
 		if (iter.hasNext()) {
 			next = iter.next();
