@@ -343,6 +343,7 @@ public class Parser {
 		// Then switch current Voice to that one.
 
 		// We assume music for each Voice is in a whole number of Measures
+
 	}
 
 	/**
