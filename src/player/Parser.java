@@ -238,7 +238,6 @@ public class Parser {
 	    
 	    //Since this should be called right after parsing header, we can assume
 	    //that the first line will be of musical notes or a voice.  
-	    Voice currentVoice;
 	    Measure currentMeasure = new Measure(piece.getDefaultNoteLength());
 	    Measure lastOpen = currentMeasure;
 	    Measure lastPreOne = currentMeasure;
@@ -250,6 +249,12 @@ public class Parser {
 	    boolean startMusic = false;
 	    boolean startTokenYet = false;
 	    Token next = null;
+	    if (piece.getVoices().size() == 0)
+        {
+            piece.addVoice(new Voice("Default", currentMeasure));
+        }
+        Voice currentVoice = piece.getVoices().get(piece.getVoices().size() - 1);
+	    
 	    while (iter.hasNext())
 	    {
 	        boolean setNextYet = false;
@@ -272,25 +277,19 @@ public class Parser {
 	            }
 	            if (hasSeen == false)
 	            {
-	                piece.addVoice(new Voice(next.contents.substring(2).trim()));
-	                System.out.println("Made new Voice (no first measure) "+ next.contents.substring(2).trim());
-	                currentVoice = piece.getVoices().get(piece.getVoices().size() - 1);
+	                throw new IllegalArgumentException("Invalid in-body voice called.");
 	            }
 	        }
-	        else if (next.type == ACCIDENTAL || next.type == BASENOTE)
+	        
+	        
+	        //TODO: Handle duplets; simply change Fraction modifier as needed.  
+	        
+	        if (next.type == ACCIDENTAL || next.type == BASENOTE)
 	        {
-	            if (startMusic == false)
-	            //the first time musical notes are read in
-	            {
-	                if (piece.getVoices().size() < 1)
-	                {
-	                    piece.addVoice(new Voice("Default", currentMeasure));
-	                }
-	                currentVoice = piece.getVoices().get(piece.getVoices().size() - 1);
-	                startMusic = true;
-	            }
+	            
 	            //TODO: add the notes to the currentMeasure; change relTime as needed
 	            //Manually set the Token next if no multiplier (setNextYet = true)
+	            //Set Fraction modifier in parseNote method to 1
 	        }
 	        else if (next.type == REST)
 	        {
@@ -338,10 +337,15 @@ public class Parser {
                 lastPreOne = currentMeasure ;
                 //Now this becomes the lastPreOne
             }
+	        else if (next.type == SPACE)
+	        {
+	            //pass
+	        }
 	        else
 	        {
 	            throw new IllegalArgumentException("Bad Tokens found in parsing music");
 	        }
+	        
 	        if (setNextYet == false && iter.hasNext())
 	        {
 	            next = iter.next();
@@ -365,7 +369,7 @@ public class Parser {
 	  * @param piece
 	  * @param iter
 	  */
-	public static Pair<Token, Note> parseNoteElement(Piece piece, Iterator<Token> iter, HashMap<String, Pitch> scale){
+	public static Pair<Token, Note> parseNoteElement(Piece piece, Iterator<Token> iter, HashMap<String, Pitch> scale, Fraction modifier){
 	    Token next;
 	    Pitch p = null;
 	    Fraction noteLength=null;
@@ -388,28 +392,28 @@ public class Parser {
 	            if(iter.hasNext()){//check if followed by note length token, else return next token
 	                next = iter.next();
 	                if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT)
-	                    noteLength = parseNoteLength(next);
+	                    noteLength = parseNoteLength(next).times(modifier);
 	                else if(next.type==OCTAVE)
 	                    throw new IllegalArgumentException("Note should not have mixed octave modifiers");
 	                else
-	                    return new Pair<Token, Note>(next, new Note(piece.getDefaultNoteLength(), p));
+	                    return new Pair<Token, Note>(next, new Note(piece.getDefaultNoteLength().times(modifier), p));
 	            }
 	        }
 	        else if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT)//is note length token
-	            noteLength=parseNoteLength(next);
+	            noteLength=parseNoteLength(next).times(modifier);
 	        else
 	            return new Pair<Token, Note>(next, new Note(piece.getDefaultNoteLength(), p));
 	    }
 	    //return next token and parsed Note
 	    if(iter.hasNext()){
 	        if(noteLength==null)//if note length was not set, set length to default value
-	            return new Pair<Token, Note>(iter.next(), new Note(piece.getDefaultNoteLength(), p));
+	            return new Pair<Token, Note>(iter.next(), new Note(piece.getDefaultNoteLength().times(modifier), p));
 	        else
 	            return new Pair<Token, Note>(iter.next(), new Note(noteLength, p));
 	    }
 	    else{
 	        if(noteLength==null)
-                return new Pair<Token, Note>(null, new Note(piece.getDefaultNoteLength(), p));
+                return new Pair<Token, Note>(null, new Note(piece.getDefaultNoteLength().times(modifier), p));
             else
                 return new Pair<Token, Note>(null, new Note(noteLength, p));
 	    }

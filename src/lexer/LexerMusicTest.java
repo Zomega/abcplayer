@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import org.junit.Before;
 import org.junit.Test;
 
+
+
 /**
  * Test class for lexing abc music files
  * @category no_didit
@@ -146,7 +148,7 @@ public class LexerMusicTest {
         Lexer l = new Lexer(types);
         List<Token> tokens = l.lex("3/ /3 3/12 /12 / 2/ 12/ 12 12/12");
         for(int i=0; i<tokens.size(); i++){
-            System.out.println(tokens.get(i).toString());
+            //System.out.println(tokens.get(i).toString());
         } 
     }
     
@@ -155,8 +157,39 @@ public class LexerMusicTest {
         Lexer l = new Lexer(types);
         List<Token> tokens = l.lex("=C ^^C __C _c ^b ^^^");
         for(int i=0; i<tokens.size(); i++){
-            System.out.println(tokens.get(i).toString());
+            //System.out.println(tokens.get(i).toString());
         } 
+    }
+
+    /**
+     * Ensures that non-recognized patterns correctly throw an error.  
+     */
+    @Test (expected=RuntimeException.class)
+    public void testBadDecimals(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens = l.lex("3/ /.3 3/12 /12 / 2/ 12/ 12 12/12");
+    }
+    
+    /**
+     * Ensures that Space tokens are being lexed correctly and 
+     * play a part in determining the parsing of future tokens.  
+     */
+    @Test 
+    public void testParseSpaceOrder(){
+        Lexer l = new Lexer(types);
+        List<Token> tokens1 = l.lex("|:||");
+        List<Token> expected1 = new ArrayList<Token>();
+        expected1.add(new Token("|:", OPEN_REPEAT));
+        expected1.add(new Token("||", DOUBLE_BARLINE));
+        assertEquals(expected1, tokens1);
+        
+        List<Token> tokens2 = l.lex("| :||");
+        List<Token> expected2 = new ArrayList<Token>();
+        expected2.add(new Token("|", BARLINE));
+        expected2.add(new Token(" ", SPACE));
+        expected2.add(new Token(":|", CLOSE_REPEAT));
+        expected2.add(new Token("|", BARLINE));
+        assertEquals(expected2, tokens2);
     }
     
 }
