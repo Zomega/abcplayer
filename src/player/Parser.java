@@ -17,7 +17,7 @@ import lexer.*;
 /**
  * Class to convert abc files into Piece data structures.
  * 
- * @author kimtoy, czuo
+ * @author kimtoy, czuo, woursler
  * @version prealpha
  */
 public class Parser {
@@ -306,7 +306,6 @@ public class Parser {
 				openRepeatStack.push(currentMeasure);
 				// TODO: the :|: token?
 			} else if (next.type == CLOSE_REPEAT) {
-				Measure newMeasure = new Measure(piece.getDefaultNoteLength());
 				if (openRepeatStack.size() == 0) {
 					throw new RuntimeException("No matching open repeat.");
 				}
@@ -315,6 +314,7 @@ public class Parser {
 																// linking
 																// fails.
 				// Has this measure first loop back to the open repeat we saw...
+				Measure newMeasure = new Measure(piece.getDefaultNoteLength());
 				currentMeasure.setAlternateNext(newMeasure);
 				// ...before going to the next measure
 				currentMeasure = newMeasure;
@@ -444,8 +444,8 @@ public class Parser {
 				// pass
 			} else if (next.type == BARLINE || next.type == DOUBLE_BARLINE
 					|| next.type == OPEN_REPEAT || next.type == CLOSE_REPEAT
-					|| next.type == ONE_REPEAT || next.type == TWO_REPEAT) {
-				iter.previous(); // TODO: possibly call this twice?
+					|| next.type == ONE_REPEAT || next.type == TWO_REPEAT || next.type == FIELD_VOICE) {
+				iter.previous();
 				return;
 			} else {
 				throw new IllegalArgumentException(
