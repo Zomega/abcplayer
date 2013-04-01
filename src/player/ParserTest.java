@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 import lexer.Token;
 
@@ -116,6 +117,145 @@ public class ParserTest {
         assertEquals(new Fraction(3,2), Parser.parseFractionNotStrict("3/"));
         assertEquals(new Fraction(1,11), Parser.parseFractionNotStrict("/11"));
     }
+    
+
+    @Test
+    public void testMeasureParsing() throws NoteOutOfBoundsException{
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1,4));
+        piece.setMeter(new Fraction(4,4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+        
+        List<Token>  measure = Parser.lex("A B C D|");
+        System.out.println(measure);
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure(piece.getMeter());
+        Parser.parseMeasure(piece, m, iter, scale);
+        System.out.println(m);
+    }
+    
+    @Test
+    public void testMeasureParsingNotesWithModifiers() throws NoteOutOfBoundsException{
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1,4));
+        piece.setMeter(new Fraction(4,4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+        
+        List<Token>  measure = Parser.lex("^A, b1/8 C1/8 _D F|");
+        System.out.println(measure);
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure(piece.getMeter());
+        Parser.parseMeasure(piece, m, iter, scale);
+        System.out.println(m);
+    }
+    
+    @Test
+    public void testMeasureParsingRests() throws NoteOutOfBoundsException{
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1,4));
+        piece.setMeter(new Fraction(4,4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+        
+        List<Token>  measure = Parser.lex("z B C D|");
+        System.out.println(measure);
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure(piece.getMeter());
+        Parser.parseMeasure(piece, m, iter, scale);
+        System.out.println(m);
+    }
+    
+    @Test
+    public void testMeasureParsingDuplets() throws NoteOutOfBoundsException{
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1,4));
+        piece.setMeter(new Fraction(4,4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+        
+        List<Token>  measure = Parser.lex("A (2BD|");
+        System.out.println(measure);
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure(piece.getMeter());
+        Parser.parseMeasure(piece, m, iter, scale);
+        System.out.println(m);
+    }
+    
+    @Test
+    public void testMeasureParsingTuplets() throws NoteOutOfBoundsException{
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1,4));
+        piece.setMeter(new Fraction(4,4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+        
+        List<Token>  measure = Parser.lex("A1/3 (3^B1/4_D1/8^C1/8 f1/3|");
+        System.out.println(measure);
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure(piece.getMeter());
+        Parser.parseMeasure(piece, m, iter, scale);
+        System.out.println(m);
+    }
+    
+    
+    @Test
+    public void testMeasureParsingQuadruplets() throws NoteOutOfBoundsException{
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1,4));
+        piece.setMeter(new Fraction(4,4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+        
+        List<Token>  measure = Parser.lex("z1/8 (4a''b''c''d'' z1/8|");
+        System.out.println(measure);
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure(piece.getMeter());
+        Parser.parseMeasure(piece, m, iter, scale);
+        System.out.println(m);
+    }
+    
+    @Test
+    public void testMeasureParsingChords() throws NoteOutOfBoundsException{
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1,4));
+        piece.setMeter(new Fraction(4,4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+        
+        List<Token>  measure = Parser.lex("[CDE] F G A|");
+        System.out.println(measure);
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure(piece.getMeter());
+        Parser.parseMeasure(piece, m, iter, scale);
+        System.out.println(m);
+    }
+    
+    @Test
+    public void testMeasureParsingChordsWithModifiers() throws NoteOutOfBoundsException{
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1,4));
+        piece.setMeter(new Fraction(4,4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+        
+        List<Token>  measure = Parser.lex("[C1/8d'F=f^E,1/8] F G A|");
+        System.out.println(measure);
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure(piece.getMeter());
+        Parser.parseMeasure(piece, m, iter, scale);
+        System.out.println(m);
+    }
+    
+    
+    @Test
+    public void testMeasureParsingChordsTupletsRests() throws NoteOutOfBoundsException{
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1,4));
+        piece.setMeter(new Fraction(4,4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+        
+        List<Token>  measure = Parser.lex("(3ABC [C1/8d'F1/3^E,1/8] z1/6|");
+        System.out.println(measure);
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure(piece.getMeter());
+        Parser.parseMeasure(piece, m, iter, scale);
+        System.out.println(m);
+    }
+    
     
     @Test
     public void testBasic1() {

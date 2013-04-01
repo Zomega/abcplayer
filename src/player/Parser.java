@@ -400,24 +400,33 @@ public class Parser {
 			}
 			else if (next.type == OPEN_CHORD) {
 			    Fraction longestDuration = new Fraction(0);
-				while (next.type!=CLOSE_CHORD) {
-					if (iter.hasNext()) {
-						next = iter.next();
-						if(next.type==BASENOTE || next.type==ACCIDENTAL){
-    						nextNote = parseNoteElement(piece, iter, scale, new Fraction(1));
-                            measure.addNote(nextNote, measureLen);
-                            if(nextNote.duration.minus(longestDuration).isPositive())//keep longest length
-                                longestDuration = nextNote.duration;
-						}
-						else
-						    throw new IllegalArgumentException("Invalid elements in chord");
-					} else {
-						throw new IllegalArgumentException("Unclosed chord");
-					}
+			    if (iter.hasNext()) 
+			        next = iter.next();
+			    else
+			        throw new IllegalArgumentException("Chord does not contain any elements");
+				while (iter.hasNext()) {
+						next = iter.next();			
+    				if(next.type==BASENOTE || next.type==ACCIDENTAL || next.type==REST){
+    				    System.out.println(next);
+    				    iter.previous();
+    					nextNote = parseNoteElement(piece, iter, scale, new Fraction(1));
+                        measure.addNote(nextNote, measureLen);
+                        if(nextNote.duration.minus(longestDuration).isPositive())//keep longest length
+                            longestDuration = nextNote.duration;
+    				}
+    				else if(next.type==CLOSE_CHORD)
+    				    break;
+    				else{
+    				    System.out.print("invalid "+next);
+    				    throw new IllegalArgumentException("Invalid elements in chord");
+    				}
 				}
+				if(next.type!=CLOSE_CHORD)
+				    throw new IllegalArgumentException("Chord isn't closed");
 				measureLen = measureLen.plus(longestDuration);
 			}
 			else if (next.type == ACCIDENTAL || next.type == BASENOTE) {
+			    iter.previous();
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(1));
                 measure.addNote(nextNote, measureLen);
                 measureLen = measureLen.plus(nextNote.duration);
