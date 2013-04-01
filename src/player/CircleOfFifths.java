@@ -5,13 +5,14 @@ import java.util.HashMap;
 import sound.Pitch;
 
 /**
- * This class takes a basenote and accidental, and returns the eight scale notes corresponding to that key.  
+ * This class takes a basenote and accidental, and returns the eight scale notes
+ * corresponding to that key.
  * 
- * All String comparisons are made case insensitive, although there may be problems with dependent classes
- * which do not ignore case.  
+ * All String comparisons are made case insensitive, although there may be
+ * problems with dependent classes which do not ignore case.
  * 
  * @author kimtoy
- *
+ * 
  */
 public class CircleOfFifths {
     public static final String[] FIFTHS_MAJOR_SHARP = {"C","G","D","A","E","B","F#","C#"};

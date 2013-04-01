@@ -60,6 +60,17 @@ public class Pitch {
 		this.octave = 0;
 		checkRep();
 	}
+	
+	public Pitch( char c, int semitonesUp ) {
+		int index = c - 'A';
+		if (index < 0 || index >= scale.length)
+			throw new IllegalArgumentException(c + " must be in the range A-G");
+
+		this.value = scale[index];
+		this.accidental = semitonesUp;
+		this.octave = 0;
+		checkRep();
+	}
 
 	/**
 	 * Number of pitches in an octave.
