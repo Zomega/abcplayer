@@ -257,6 +257,9 @@ public class Parser {
 					String voiceName = next.contents.substring(2).trim();
 					currentVoice = piece.getVoice(voiceName);
 				} else {
+					if( currentVoice == null ) {
+						throw new RuntimeException("Undeclared voice!");
+					}
 					parseABCLines(piece, currentVoice.tail(), iter);
 				}
 			}
