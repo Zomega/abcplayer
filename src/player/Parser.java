@@ -438,6 +438,23 @@ public class Parser {
 		
 	}
 	
+	public static Fraction parseRest(Piece piece, ListIterator<Token> iter){
+	    Token next=null;  //iter should have just pulled rest token
+	    Fraction restLength = null;
+	    if(iter.hasNext())
+	    {
+	        if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT)
+	        {
+	            restLength = parseNoteLength(next);
+	            return restLength;
+	        }
+	        else
+	            iter.previous();
+	            return piece.getDefaultNoteLength();
+	    }
+	    throw new IllegalArgumentException("No closing barline after rest.");
+	}
+	    
 	 /**
 	  * Parses a note element, which includes a basenote, and may be preceded by an accidental or followed by an octave
 	  * 
