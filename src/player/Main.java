@@ -57,6 +57,7 @@ public class Main {
 	 */
 	public static void main(String[] args) throws Exception {
 		Main.play("sample_abc/finalfantasy.abc");
+
 		// CALL play() HERE
 	}
 

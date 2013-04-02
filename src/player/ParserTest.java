@@ -152,7 +152,7 @@ public class ParserTest {
 		System.out.println(measure);
 		ListIterator<Token> iter = measure.listIterator();
 		Measure m = new Measure(piece.getMeter());
-		Parser.parseMeasure(piece, m, iter, scale);
+		Parser.parseMeasureContents(piece, m, iter, scale);
 		System.out.println(m);
 	}
 
@@ -168,7 +168,7 @@ public class ParserTest {
 		System.out.println(measure);
 		ListIterator<Token> iter = measure.listIterator();
 		Measure m = new Measure(piece.getMeter());
-		Parser.parseMeasure(piece, m, iter, scale);
+		Parser.parseMeasureContents(piece, m, iter, scale);
 		System.out.println(m);
 	}
 
@@ -183,7 +183,7 @@ public class ParserTest {
 		System.out.println(measure);
 		ListIterator<Token> iter = measure.listIterator();
 		Measure m = new Measure(piece.getMeter());
-		Parser.parseMeasure(piece, m, iter, scale);
+		Parser.parseMeasureContents(piece, m, iter, scale);
 		System.out.println(m);
 	}
 
@@ -198,7 +198,7 @@ public class ParserTest {
 		System.out.println(measure);
 		ListIterator<Token> iter = measure.listIterator();
 		Measure m = new Measure(piece.getMeter());
-		Parser.parseMeasure(piece, m, iter, scale);
+		Parser.parseMeasureContents(piece, m, iter, scale);
 		System.out.println(m);
 	}
 
@@ -213,7 +213,7 @@ public class ParserTest {
 		System.out.println(measure);
 		ListIterator<Token> iter = measure.listIterator();
 		Measure m = new Measure(piece.getMeter());
-		Parser.parseMeasure(piece, m, iter, scale);
+		Parser.parseMeasureContents(piece, m, iter, scale);
 		System.out.println(m);
 	}
 
@@ -228,7 +228,7 @@ public class ParserTest {
 		System.out.println(measure);
 		ListIterator<Token> iter = measure.listIterator();
 		Measure m = new Measure(piece.getMeter());
-		Parser.parseMeasure(piece, m, iter, scale);
+		Parser.parseMeasureContents(piece, m, iter, scale);
 		System.out.println(m);
 	}
 
@@ -243,7 +243,7 @@ public class ParserTest {
 		System.out.println(measure);
 		ListIterator<Token> iter = measure.listIterator();
 		Measure m = new Measure(piece.getMeter());
-		Parser.parseMeasure(piece, m, iter, scale);
+		Parser.parseMeasureContents(piece, m, iter, scale);
 		System.out.println(m);
 	}
 
@@ -259,7 +259,7 @@ public class ParserTest {
 		System.out.println(measure);
 		ListIterator<Token> iter = measure.listIterator();
 		Measure m = new Measure(piece.getMeter());
-		Parser.parseMeasure(piece, m, iter, scale);
+		Parser.parseMeasureContents(piece, m, iter, scale);
 		System.out.println(m);
 	}
 
@@ -275,7 +275,7 @@ public class ParserTest {
 		System.out.println(measure);
 		ListIterator<Token> iter = measure.listIterator();
 		Measure m = new Measure(piece.getMeter());
-		Parser.parseMeasure(piece, m, iter, scale);
+		Parser.parseMeasureContents(piece, m, iter, scale);
 		System.out.println(m);
 	}
 

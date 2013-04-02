@@ -34,6 +34,7 @@ public class Player {
 	 *             start.
 	 */
 	public void play() throws Exception {
+		System.out.println("Playing " + this.piece.getTitle() + "." );
 		PieceVisitor.process(this.piece).play();
 	}
 
