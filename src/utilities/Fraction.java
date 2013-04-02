@@ -1,7 +1,6 @@
 package utilities;
 
 //TODO: Proofread / sync documentation.
-//TODO: FractionTest may be in order.
 /**
  * Fraction Instances are immutable objects. They are guaranteed to be in least
  * terms by structural induction. If the fraction is zero ( 0 ), least terms is
@@ -10,10 +9,13 @@ package utilities;
  * numerator or denominator (in either simplified or unsimplified form).
  * Invariant: the fraction is always in lowest terms.
  * 
+ * The class if final to ensure that no mutable versions can be made, as this
+ * would be disastrous.
+ * 
  * @author woursler and czuo
  * @version beta
  */
-public class Fraction {
+public final class Fraction {
 
 	/**
 	 * The fraction's numerator. May take on any value, including negative ones.
@@ -25,47 +27,60 @@ public class Fraction {
 	public final int denominator;
 
 	// Static helper methods...
-	
+
 	/**
-	 * Method which finds and returns the greatest common factor of two nonzero integers by
-	 * implementing Euclid's algorithm.
+	 * Method which finds and returns the greatest common factor of two nonzero
+	 * integers by implementing Euclid's algorithm.
 	 * 
-	 * If one or both of the numbers is negative, it returns the positive common factor
+	 * If one or both of the numbers is negative, it returns the positive common
+	 * factor
 	 * 
-	 * @param first - an integer
-	 * @param second - an integer
+	 * @param first
+	 *            - an integer
+	 * @param second
+	 *            - an integer
 	 * @return their greatest common factor
 	 */
 	public static int gcd(int first, int second) {
-	    if(first<0||second<0){
-	        return gcd(Math.abs(first), Math.abs(second));
-	    }
-	    if(first>second){
-	        if (second == 0) {
-                return first;
-            }
-            return gcd(second, first % second);
-	    }
-	    else{
-	        if (first == 0) {
-                return second;
-            }
-            return gcd(first, second % first);
-	    }
+		if (first < 0 || second < 0) {
+			return gcd(Math.abs(first), Math.abs(second));
+		}
+		if (first > second) {
+			if (second == 0) {
+				return first;
+			}
+			return gcd(second, first % second);
+		} else {
+			if (first == 0) {
+				return second;
+			}
+			return gcd(first, second % first);
+		}
+	}
+
+	public static Fraction gcd(Fraction first, Fraction second) {
+		// Fraction( 1, first.denominator * second.denominator ) must divide
+		// both. Thus, we seek to find the largest multiple of this fraction that
+		// divides both. This can be accomplished with the **int** gcd function.
+		return new Fraction(Fraction.gcd(first.numerator * second.denominator,
+				second.numerator * first.denominator), first.denominator
+				* second.denominator);
 	}
 
 	/**
-	 * Method which finds and returns the LCM of two nonzero integers
-	 * If one of the parameters is negative, returns the positive least common multiple
+	 * Method which finds and returns the LCM of two nonzero integers If one of
+	 * the parameters is negative, returns the positive least common multiple
 	 * Even though the LCM of 0 and another number does not exist, we return 0
 	 * 
-	 * @param first - an integer
-	 * @param second - an integer
+	 * @param first
+	 *            - an integer
+	 * @param second
+	 *            - an integer
 	 * @return their least common multiple
 	 */
 	public static int lcm(int first, int second) {
-	    if(gcd(first, second)==0)
-	        return 0;
+		if (gcd(first, second) == 0)
+			return 0;
 		return (Math.abs(first) * Math.abs(second)) / gcd(first, second);
 	}
 
@@ -120,13 +135,13 @@ public class Fraction {
 		this.denominator = denominator / gcd;
 	}
 
-	 /**
-     * Returns boolean telling if this Fraction is positive. 
-     */
-    public boolean isPositive() {
-        return (this.numerator>= 0);
-    }
-    
+	/**
+	 * Returns boolean telling if this Fraction is positive.
+	 */
+	public boolean isPositive() {
+		return (this.numerator >= 0);
+	}
+
 	/**
 	 * Returns the sum of the current fraction with the other fraction. Note
 	 * that other can never be invalid by construction thus the returned value
@@ -231,16 +246,16 @@ public class Fraction {
 	}
 
 	/**
-	 * Takes the inverse of this fraction.  
-	 * If the fraction is negative, keeps the negative sign in the numerator
+	 * Takes the inverse of this fraction. If the fraction is negative, keeps
+	 * the negative sign in the numerator
 	 * 
 	 * @return a new Fraction, the inverse of this Fraction.
 	 * @throws FractionValueException
 	 *             if this fraction is zero.
 	 */
 	public Fraction inverse() throws FractionValueException {
-	    if(this.denominator*this.numerator<0)
-	        return new Fraction(-this.denominator, -this.numerator);
+		if (this.denominator * this.numerator < 0)
+			return new Fraction(-this.denominator, -this.numerator);
 		return new Fraction(this.denominator, this.numerator);
 	}
 
@@ -263,7 +278,7 @@ public class Fraction {
 		}
 		return false;
 	}
-	
+
 	public String toString() {
 		return "( " + this.numerator + " / " + this.denominator + " )";
 	}
