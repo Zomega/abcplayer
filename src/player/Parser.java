@@ -336,6 +336,7 @@ public class Parser {
 				currentMeasure = newMeasure;
 
 				// Push the current measure onto the open stack.
+				//System.out.println(openRepeatStack.size());
 				openRepeatStack.push(currentMeasure);
 				// TODO: the :|: token?
 			} else if (next.type == CLOSE_REPEAT) {
