@@ -186,8 +186,7 @@ public class LexerMusicTest {
     @Test (expected=RuntimeException.class)
     public void testNullLex(){
         Lexer l = new Lexer(types);
-        List<Token> tokens = l.lex(null);
-        
+        l.lex(null);
     }
     
     /**
@@ -196,14 +195,13 @@ public class LexerMusicTest {
     @Test (expected=RuntimeException.class)
     public void testBadDecimals(){
         Lexer l = new Lexer(types);
-        List<Token> tokens = l.lex("3/ /.3 3/12 /12 / 2/ 12/ 12 12/12");
-        
+        l.lex("3/ /.3 3/12 /12 / 2/ 12/ 12 12/12");   
     }
     
     @Test (expected=RuntimeException.class)
     public void testInvalidHead(){
         Lexer l = new Lexer(types);
-        List<Token> tokens = l.lex("X: 1  U:" + "\n");
+        l.lex("X: 1  U:" + "\n");
     }
 
     

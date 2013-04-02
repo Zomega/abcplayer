@@ -131,7 +131,8 @@ public class Parser {
 		ListIterator<Token> iter = tokens.listIterator();
 		Piece piece = new Piece();
 		// Parse header
-		Token next = parseHeaderInfo(piece, iter);
+		@SuppressWarnings("unused")
+        Token next = parseHeaderInfo(piece, iter);
 		return piece;
 	}
 
@@ -762,8 +763,10 @@ public class Parser {
 								// parsed
 
 		while (iter.hasNext()) {
+		    
 			next = iter.next();
-			if (next.type == KEY_ACCIDENTAL) {
+			System.out.println("header "+next);
+			if (next.type == BASENOTE || next.type == KEY_ACCIDENTAL) {
 				if (minor == false)
 					key += next.contents;
 				else
