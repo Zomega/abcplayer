@@ -58,6 +58,15 @@ public final class Fraction {
 		}
 	}
 
+	public static Fraction gcd(Fraction first, Fraction second) {
+		// Fraction( 1, first.denominator * second.denominator ) must divide
+		// both. Thus, we seek to find the largest multiple of this fraction that
+		// divides both. This can be accomplished with the **int** gcd function.
+		return new Fraction(Fraction.gcd(first.numerator * second.denominator,
+				second.numerator * first.denominator), first.denominator
+				* second.denominator);
+	}
+
 	/**
 	 * Method which finds and returns the LCM of two nonzero integers If one of
 	 * the parameters is negative, returns the positive least common multiple

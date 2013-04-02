@@ -184,4 +184,13 @@ public class Measure implements Iterable<Measure> {
         return notes.toString();
     }
 
+	public Fraction getSmallestDivision() {
+		Fraction smallestDivision = this.length;
+		for( Pair<Note, Fraction> pair  : this.notes ) {
+			smallestDivision = Fraction.gcd( smallestDivision, pair.first.duration );
+			smallestDivision = Fraction.gcd( smallestDivision, pair.second );
+		}
+		return smallestDivision;
+	}
+
 }

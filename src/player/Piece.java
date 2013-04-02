@@ -54,12 +54,6 @@ public class Piece {
 	 */
 	private List<Voice> voices;
 
-	/**
-	 * The (largest, ideally) smallest division needed such that the length of
-	 * each note (and rest) is an integer multiple.
-	 */
-	private Fraction smallestDivision;
-
     /**
      * Constructor
      */
@@ -86,18 +80,15 @@ public class Piece {
 	}
 
 	public Fraction getSmallestDivision() {
+		/**
+		 * The (largest, ideally) smallest division needed such that the length of
+		 * each note (and rest) is an integer multiple.
+		 */
+		Fraction smallestDivision = this.getMeter();
+		for( Voice voice  : this.voices ) {
+			smallestDivision = Fraction.gcd( smallestDivision, voice.getSmallestDivision() );
+		}
 		return smallestDivision;
-	}
-
-	public void setSmallestDivision(Fraction smallestDivision) {
-		this.smallestDivision = smallestDivision;
-	}
-	
-	public void checkSmallestNote(Note n) {
-	    if (! (n.getDuration().minus(this.smallestDivision)).isPositive())
-	    {
-	        setSmallestDivision(n.getDuration());
-	    }
 	}
 
 	public String getKey() {

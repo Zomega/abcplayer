@@ -2,6 +2,8 @@ package player;
 
 import java.util.Iterator;
 
+import utilities.Fraction;
+
 public class Voice implements Iterable<Measure> {
 	public final String name;
 	private Measure firstMeasure;
@@ -56,6 +58,19 @@ public class Voice implements Iterable<Measure> {
 			last = iter.next();		
 		}
 		return last;
+	}
+
+	public Fraction getSmallestDivision() {
+		Fraction smallestDivision = null;
+		for( Measure measure : this.firstMeasure ) {
+			if( smallestDivision == null ) {
+				smallestDivision = measure.getSmallestDivision();
+			}
+			else {
+				smallestDivision = Fraction.gcd( smallestDivision, measure.getSmallestDivision() ); // TODO: Don't add, do something more clever.
+			}
+		}
+		return smallestDivision;
 	}
 
 }
