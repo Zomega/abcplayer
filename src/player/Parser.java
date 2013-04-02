@@ -331,31 +331,40 @@ public class Parser {
 
 			Token next = iter.next();
 	        System.out.println("token "+next);
+	        // If we need to, go up a level and swich voices.
+	        if (next.type == FIELD_VOICE) {
+	        	iter.previous();
+	        	return;
+	        }
+	        
+	        // The ONE_REPEAT and TWO_REPEAT tokens also cause special behavior not related to incrementing the measure.
+	        if (next.type == ONE_REPEAT) {
+				continue;
+				//TODO: Add some sort of note of this here?
+			} else if (next.type == TWO_REPEAT) {
+				//TODO: This will not do quite the right thing if the endings are many bars long.
+				// Add this measure as the alternate ending  for the last measure before 1].
+				previousMeasures.get( previousMeasures.size() - 2 ).setAlternateNext( currentMeasure );
+				continue;
+			}
+	        
+	        //If we get here, it's time to increment the measure
+	        
+	        Measure newMeasure = new Measure();
+			currentMeasure.setNext(newMeasure);
+
+			previousMeasures.add(currentMeasure);
+			Measure previousMeasure = currentMeasure;
+            currentMeasure = newMeasure;
+	        
 			if (next.type == BARLINE) {
-				Measure newMeasure = new Measure();
-				currentMeasure.setNext(newMeasure);
-
-				previousMeasures.add(currentMeasure);
-                currentMeasure = newMeasure;
-                
+				// Pass
 			} else if( next.type == DOUBLE_BARLINE ) {
-				Measure newMeasure = new Measure();
-				currentMeasure.setNext(newMeasure);
-
-				previousMeasures.add(currentMeasure);
-				currentMeasure = newMeasure;
-				
 				// Reset the linking structure...
 				openRepeatStack.clear();
 				openRepeatStack.push( newMeasure );
 				
 			} else if (next.type == OPEN_REPEAT) {
-				Measure newMeasure = new Measure();
-				currentMeasure.setNext(newMeasure);
-
-				previousMeasures.add(currentMeasure);
-                currentMeasure = newMeasure;
-
 				// Push the current measure onto the open stack.
 				//System.out.println(openRepeatStack.size());
 				openRepeatStack.push(currentMeasure);
@@ -364,31 +373,8 @@ public class Parser {
 				if (openRepeatStack.size() == 0) {
 					throw new RuntimeException("No matching open repeat.");
 				}
-				currentMeasure.setNext(openRepeatStack.pop());
-				// Has this measure first loop back to the open repeat we saw...
-				Measure newMeasure = new Measure();
-				currentMeasure.setAlternateNext(newMeasure);
-				// ...before going to the next measure
-				previousMeasures.add(currentMeasure);
-                currentMeasure = newMeasure;
-				// Now go onto the next (currently empty) measure...
-			} else if (next.type == ONE_REPEAT) {
-
-				Measure newMeasure = new Measure();
-				currentMeasure.setNext(newMeasure);
-
-				previousMeasures.add(currentMeasure);
-                currentMeasure = newMeasure;
-			} else if (next.type == TWO_REPEAT) {
-				previousMeasures.get( previousMeasures.size() - 2 ).setAlternateNext(currentMeasure);
-
-				Measure newMeasure = new Measure();
-				currentMeasure.setNext(newMeasure);
-
-				currentMeasure = newMeasure;
-			} else if (next.type == FIELD_VOICE) {
-				iter.previous();
-				return;
+				previousMeasure.setNext(openRepeatStack.pop());
+				previousMeasure.setAlternateNext(currentMeasure);
 			} else {
 				throw new IllegalArgumentException(
 						"Bad Tokens found in parsing music.");
