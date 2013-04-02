@@ -12,6 +12,13 @@ import org.junit.Test;
 
 /**
  * Test class for lexing abc music files
+
+ * 
+ * Testing strategy:
+ * -Comprehensive tests that check each type of Token that Lexer could encounter
+ * -Check that exceptions are thrown when expected (null input, non-token input)
+ * Individual component strategies are explained
+ * 
  * @category no_didit
  * @author kimtoy, czuo
  */
@@ -120,7 +127,9 @@ public class LexerMusicTest {
     }
     
 
-    
+    /**
+     * Ensures that lexer correctly lexes Fractions.
+     */
     @Test
     public void testFractionLexing(){
         Lexer l = new Lexer(types);
@@ -150,6 +159,9 @@ public class LexerMusicTest {
         }
     }
     
+    /**
+     * Ensures that lexer correctly lexes accidentals with basenotes.
+     */
     @Test
     public void testAccidentalLexing(){
         Lexer l = new Lexer(types);
@@ -181,7 +193,7 @@ public class LexerMusicTest {
     }
 
     /**
-     * Ensures that null input correctly throw an error.  
+     * Ensures that null input correctly throws an error.  
      */
     @Test (expected=RuntimeException.class)
     public void testNullLex(){
@@ -229,7 +241,9 @@ public class LexerMusicTest {
     }
     
     /**
-     * Sample test using the given sample piece 1.  
+     * General test using the given sample piece1.abc file.  
+     * Requires Lexer to lex basic Tokens, including whitespace,
+     * base notes, Fractions, barlines and tuplets.  
      */
     @Test
     public void sampleTest1() {
@@ -249,14 +263,125 @@ public class LexerMusicTest {
         //System.out.println(line);
         Lexer l = new Lexer(types);
         List<Token> tokens = l.lex(line);
-        for(int i=0; i<tokens.size(); i++){
-            //System.out.println(tokens.get(i).toString());
-        }
         
+        List<String> expected = new ArrayList<String>();
+        expected.add("FIELD_NUM X: 1" + "\n");
+        expected.add("FIELD_TITLE T: Piece No.1" + "\n");
+        expected.add("FIELD_METER M:");
+        expected.add("SPACE" + " " + " ");
+        //Extra spacing needed
+        expected.add("FRACTION 4/4");
+        expected.add("NEWLINE" + " " + "\n");
+        //Extra spacing needed
+        expected.add("FIELD_DEFAULT_LEN L:");
+        expected.add("SPACE" + "  ");
+        expected.add("FRACTION 1/4");
+        expected.add("NEWLINE" + " " + "\n");
+        expected.add("FIELD_TEMPO Q:");
+        expected.add("SPACE" + "  ");
+        expected.add("DIGITS 140");
+        expected.add("NEWLINE" + " " + "\n");
+        expected.add("FIELD_KEY K:");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE C");
+        expected.add("NEWLINE" + " " + "\n");
+        expected.add("BASENOTE C");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE C");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE C");
+        expected.add("FRACTION 3/4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE D");
+        expected.add("FRACTION_NOT_STRICT /4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE E");
+        expected.add("SPACE" + "  ");
+        expected.add("BARLINE |");
+        expected.add("NEWLINE" + " " + "\n");
+        
+        expected.add("BASENOTE E");
+        expected.add("FRACTION 3/4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE D");
+        expected.add("FRACTION_NOT_STRICT /4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE E");
+        expected.add("FRACTION 3/4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE F");
+        expected.add("FRACTION_NOT_STRICT /4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE G");
+        expected.add("DIGITS 2");
+        expected.add("SPACE" + "  ");
+        expected.add("BARLINE |");
+        expected.add("NEWLINE" + " " + "\n");
+        
+        expected.add("TUPLET (3");
+        expected.add("BASENOTE c");
+        expected.add("FRACTION 1/2");
+        expected.add("BASENOTE c");
+        expected.add("FRACTION 1/2");
+        expected.add("BASENOTE c");
+        expected.add("FRACTION 1/2");
+        expected.add("SPACE" + "  ");
+        expected.add("TUPLET (3");
+        expected.add("BASENOTE G");
+        expected.add("FRACTION 1/2");
+        expected.add("BASENOTE G");
+        expected.add("FRACTION 1/2");
+        expected.add("BASENOTE G");
+        expected.add("FRACTION 1/2");
+        expected.add("SPACE" + "  ");
+        expected.add("TUPLET (3");
+        expected.add("BASENOTE E");
+        expected.add("FRACTION 1/2");
+        expected.add("BASENOTE E");
+        expected.add("FRACTION 1/2");
+        expected.add("BASENOTE E");
+        expected.add("FRACTION 1/2");
+        expected.add("SPACE" + "  ");
+        expected.add("TUPLET (3");
+        expected.add("BASENOTE C");
+        expected.add("FRACTION 1/2");
+        expected.add("BASENOTE C");
+        expected.add("FRACTION 1/2");
+        expected.add("BASENOTE C");
+        expected.add("FRACTION 1/2");
+        expected.add("SPACE" + "  ");
+        expected.add("BARLINE |");
+        expected.add("NEWLINE" + " " + "\n");
+        
+        expected.add("BASENOTE G");
+        expected.add("FRACTION 3/4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE F");
+        expected.add("FRACTION_NOT_STRICT /4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE E");
+        expected.add("FRACTION 3/4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE D");
+        expected.add("FRACTION_NOT_STRICT /4");
+        expected.add("SPACE" + "  ");
+        expected.add("BASENOTE C");
+        expected.add("DIGITS 2");
+        expected.add("SPACE" + "  ");
+        expected.add("DOUBLE_BARLINE |]");
+        expected.add("NEWLINE" + " " + "\n");
+        
+        for (int i = 0; i < tokens.size(); i++)
+        {
+            assertEquals(tokens.get(i).toString(), expected.get(i));
+        }
     }
     
     /**
      * General test for an abc file with a variety of features.  
+     * Requies Lexer to lex different Tokens; in addition to whitespace,
+     * standard header Tokens, notes, accidentals, octaves, Fractions and rests,
+     * handle measure structures such as barlines and repeats (both open/close and n-th)
      */
     @Test
     public void genTest1() {
@@ -273,12 +398,9 @@ public class LexerMusicTest {
         } catch (IOException e) {
           System.err.println("File couldn't be read");
         }
-        //System.out.println(line);
         Lexer l = new Lexer(types);
         List<Token> tokens = l.lex(line);
-        /*for(int i=0; i<tokens.size(); i++){
-            System.out.println(tokens.get(i).toString());
-        }*/
+
         List<String> expected = new ArrayList<String>();
         expected.add("FIELD_NUM X: 1" + "\n");
         expected.add("FIELD_TITLE T: Piece No.1" + "\n");
@@ -343,7 +465,7 @@ public class LexerMusicTest {
         expected.add("NEWLINE" + " " + "\n");
         //assertEquals(tokens.get(3).toString(), expected.get(3));
         
-        for (int i = 0; i < expected.size(); i++)
+        for (int i = 0; i < tokens.size(); i++)
         {
             assertEquals(tokens.get(i).toString(), expected.get(i));
         }
