@@ -28,13 +28,13 @@ public class PieceVisitor {
 		/**
 		 * The fractional global time at which the current measure started.
 		 */
-		Fraction globalTime = new Fraction(0);
 		int ticksPerQuarterNote = fractionToTicks(new Fraction(1, 4),
 				piece.getSmallestDivision());
 		SequencePlayer player = new SequencePlayer(piece.getTempo(),
 				ticksPerQuarterNote);
 		Fraction smallestDivision = piece.getSmallestDivision();
 		for (Voice voice : piece.getVoices()) {
+			Fraction globalTime = new Fraction(0);
 			for (Measure measure : voice) {
 				for (Pair<Note, Fraction> p : measure.getNotes()) {
 					// Unpack the pair.
