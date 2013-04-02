@@ -8,6 +8,11 @@ import utilities.Fraction;
 import utilities.Pair;
 
 /**
+ * Represents a measure of music. It is guaranteed that all notes in this
+ * structure fit within the measure (i.e. they do not start before the measure,
+ * end after it, etc.). It is also ensured that these notes have positive
+ * length.
+ * 
  * @author woursler
  * @version beta
  */
@@ -23,7 +28,7 @@ public class Measure implements Iterable<Measure> {
 	 */
 	private List<Pair<Note, Fraction>> notes;
 
-	// Linking Structure...
+	// Linking Structures...
 
 	/**
 	 * The typical next measure in the larger piece.
@@ -50,7 +55,11 @@ public class Measure implements Iterable<Measure> {
 		this.notes = new ArrayList<Pair<Note, Fraction>>();
 		// Add each new note in a safe manner.
 		for (Pair<Note, Fraction> note : notes)
-			this.addNote(note.first, note.second);
+			try {
+				this.addNote(note.first, note.second);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		this.length = length;
 
 	}
@@ -131,18 +140,24 @@ public class Measure implements Iterable<Measure> {
 	}
 
 	/**
-	 * Safe method to add a note to this measure.
+	 * Invariant protecting method to add a note to this measure.
 	 * 
 	 * @param note
 	 *            The Note to add...
 	 * @param startTime
 	 *            The time at which the note starts with respect to the start of
 	 *            the measure.
-	 * @throws NoteOutOfBoundsException
-	 *             if the passed note is not fully contained in the measure.
 	 */
 	public void addNote(Note note, Fraction startTime)
-			throws NoteOutOfBoundsException {
+			throws Exception {
+		
+		if( note == null )
+			throw new NoteOutOfBoundsException("Cannot add note = null...");
+		
+		if (startTime == null)
+			throw new NoteOutOfBoundsException("You must provide a positive (i.e. non-null) start time.");
+		if ( note.duration == null )
+			throw new NoteOutOfBoundsException("You must provide a positive (i.e. non-null) duration.");
 
 		// Check to ensure the note is fully within the measure...
 		// Check to ensure it starts after 0...
