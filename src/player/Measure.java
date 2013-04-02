@@ -149,7 +149,7 @@ public class Measure implements Iterable<Measure> {
 	 *            the measure.
 	 */
 	public void addNote(Note note, Fraction startTime)
-			throws Exception {
+			throws NoteOutOfBoundsException {
 		
 		if( note == null )
 			throw new NoteOutOfBoundsException("Cannot add note = null...");
