@@ -219,11 +219,13 @@ public class Parser {
 						throw new IllegalArgumentException(
 								"Field Q: must be followed by an integer tempo defintion");
 				} else if (next.type == FIELD_VOICE) {
-					// These would be Voice Declarations
-					// Add to our Piece's list of 'recognized' Voices
-					piece.addVoice(new Voice(next.contents.substring(2).trim()));
-					System.out.println("Made new Voice (no first measure) "
-							+ next.contents.substring(2).trim());
+					// Add to our Piece's list of declared Voices
+					String voiceName = next.contents.substring(2).trim();
+					Voice voice = new Voice(voiceName);
+					piece.addVoice(voice);
+					openRepeatStackMap.put(voice, new Stack<Measure>());
+					lastPreOneMap.put(voice, null);
+					System.out.println("Made new Voice \"" + voiceName+ "\"" );
 				} else if (next.type == FIELD_KEY) {
 					next = eatSpaces(iter);
 					if (next.type != null && next.type == BASENOTE) {
@@ -263,11 +265,9 @@ public class Parser {
 					if(currentVoice.getStart()==null) {
 						//Initialize the Voice et al...
 						Measure startMeasure = new Measure(piece.getMeter());
-						currentVoice.setStart( startMeasure ); // TODO: Do when the voice is made...
-						openRepeatStackMap.put(currentVoice, new Stack<Measure>());
+						currentVoice.setStart( startMeasure );
 						// There is always an implicit begin repeat before the first bar...
 						openRepeatStackMap.get(currentVoice).push( startMeasure );
-						lastPreOneMap.put(currentVoice, null); // TODO: Do when the voice is made...
 					}
 					Measure tail = currentVoice.tail();
 					parseABCLines(piece, tail, iter, openRepeatStackMap.get(currentVoice), lastPreOneMap.get(currentVoice) );
@@ -314,10 +314,7 @@ public class Parser {
 				if (openRepeatStack.size() == 0) {
 					throw new RuntimeException("No matching open repeat.");
 				}
-				currentMeasure.setNext(openRepeatStack.pop()); // TODO: Throw an
-																// error if
-																// linking
-																// fails.
+				currentMeasure.setNext(openRepeatStack.pop());
 				// Has this measure first loop back to the open repeat we saw...
 				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setAlternateNext(newMeasure);
@@ -346,14 +343,6 @@ public class Parser {
 						"Bad Tokens found in parsing music.");
 			}
 		}
-		// get the most 'recent' Voice as the starting currentVoice
-
-		// When reach Voice Token, see if it's already seen; if not, add to
-		// recog voices
-		// Then switch current Voice to that one.
-
-		// We assume music for each Voice is in a whole number of Measures
-
 	}
 
 	/**
@@ -370,7 +359,7 @@ public class Parser {
 			Token next = iter.next();
 			Note nextNote;
 			System.out.println("next token"+next);
-			// TODO: Make a *PLET identifier, and use it to do this... redundant an limited.
+			// TODO: Make a NPLET identifier, and use it to do this... redundant an limited.
 			if (next.type == DUPLET) {
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(3,2));
                 measure.addNote(nextNote, measureLen);

@@ -67,7 +67,7 @@ public class Voice implements Iterable<Measure> {
 				smallestDivision = measure.getSmallestDivision();
 			}
 			else {
-				smallestDivision = Fraction.gcd( smallestDivision, measure.getSmallestDivision() ); // TODO: Don't add, do something more clever.
+				smallestDivision = Fraction.gcd( smallestDivision, measure.getSmallestDivision() );
 			}
 		}
 		return smallestDivision;
