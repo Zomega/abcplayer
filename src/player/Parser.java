@@ -354,9 +354,8 @@ public class Parser {
 	 * 
 	 * @param measure
 	 * @param iter
-	 * @throws NoteOutOfBoundsException 
 	 */
-	public static void parseMeasure(Piece piece, Measure measure, ListIterator<Token> iter, HashMap<String, Pitch> scale) throws NoteOutOfBoundsException {
+	public static void parseMeasure(Piece piece, Measure measure, ListIterator<Token> iter, HashMap<String, Pitch> scale) {
         Fraction measureLen = new Fraction(0);
 		while (iter.hasNext()) {
 			Token next = iter.next();
