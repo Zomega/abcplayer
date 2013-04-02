@@ -330,8 +330,7 @@ public class Parser {
 			}
 
 			Token next = iter.next();
-	        System.out.println("token "+next);
-	        // If we need to, go up a level and swich voices.
+	        // If we need to, go up a level and switch voices.
 	        if (next.type == FIELD_VOICE) {
 	        	iter.previous();
 	        	return;
@@ -349,13 +348,12 @@ public class Parser {
 			}
 	        
 	        //If we get here, it's time to increment the measure
-	        
 	        Measure newMeasure = new Measure();
 			currentMeasure.setNext(newMeasure);
 
-			previousMeasures.add(currentMeasure);
 			Measure previousMeasure = currentMeasure;
             currentMeasure = newMeasure;
+			previousMeasures.add(previousMeasure);
 	        
 			if (next.type == BARLINE) {
 				// Pass
@@ -397,7 +395,6 @@ public class Parser {
 		while (iter.hasNext()) {
 			Token next = iter.next();
 			Note nextNote;
-			System.out.println("token "+next);
 			// TODO: Make a NPLET identifier, and use it to do this... redundant an limited.
 			if (next.type == DUPLET) {
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(3,2));
