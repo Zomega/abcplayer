@@ -128,12 +128,6 @@ public class Parser {
 		Piece piece = new Piece();
 		// Parse header
 		Token next = parseHeaderInfo(piece, iter);
-		// Parse abc music lines, piece is expected to have one or more lines,
-		// so exception is thrown no more tokens
-		if (next == null)
-			throw new IllegalArgumentException(
-					"File must contain at least one line of abc music.");
-
 		return piece;
 	}
 
@@ -152,11 +146,10 @@ public class Parser {
 		Fraction defaultLen = new Fraction(1, 8);
 		piece.setMeter(new Fraction(4, 4));
 		boolean setDefaultLenFlag = false;
-
+		boolean seenMusic = false;//flag if file contains abc lines
 		boolean seenKey = false;
 
 		Voice currentVoice = null;
-
 		// Extract header information.
 		while (iter.hasNext()) {
 			Token next = iter.next();
@@ -186,7 +179,7 @@ public class Parser {
 												// header field
 							throw new IllegalArgumentException(
 									"Field L: must be ended by an end of line character");
-						System.out.println("Set default length ");
+						System.out.println("Set default length to "+piece.getDefaultNoteLength());
 					} else
 						throw new IllegalArgumentException(
 								"Field L: must be followed by a fraction note length "
@@ -203,7 +196,7 @@ public class Parser {
 												// header field
 							throw new IllegalArgumentException(
 									"Field L: must be ended by an end of line character");
-						System.out.println("Set field meter");
+						System.out.println("Set field meter to "+piece.getMeter());
 					} else
 						throw new IllegalArgumentException(
 								"Field M: must be followed by a meter definition");
@@ -245,7 +238,7 @@ public class Parser {
 
 						if (piece.getVoices().size() == 0) {
 							piece.addVoice(new Voice("default", new Measure(
-									piece.getDefaultNoteLength())));
+									piece.getMeter())));
 							currentVoice = piece.getVoice("default");
 						}
 					} else
@@ -255,6 +248,7 @@ public class Parser {
 			}
 			// We're not in the header anymore.
 			else {
+			    seenMusic=true;
 				if (next.type == FIELD_VOICE) {
 					String voiceName = next.contents.substring(2).trim();
 					currentVoice = piece.getVoice(voiceName);
@@ -263,12 +257,15 @@ public class Parser {
 						throw new RuntimeException("Undeclared voice!");
 					}
 					if(currentVoice.getStart()==null)
-					    currentVoice.setStart( new Measure(piece.getDefaultNoteLength()) );
+					    currentVoice.setStart( new Measure(piece.getMeter()) );
 					Measure tail = currentVoice.tail();
 					parseABCLines(piece, tail, iter);
 				}
 			}
 		}
+	    //Throw an exception if there is no musical content
+        if(!seenMusic)
+            throw new IllegalArgumentException("abc file must have at least one line of abc music");
 		return null;
 	}
 
@@ -279,6 +276,7 @@ public class Parser {
 		Stack<Measure> openRepeatStack = new Stack<Measure>();
 		Measure lastPreOne = null;
 		HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature(piece.getKey());
+		iter.previous();
 		while (iter.hasNext()) {
 			// Try to put the current tokens into the current measure.
 			parseMeasure(piece, currentMeasure, iter, scale);
@@ -290,12 +288,12 @@ public class Parser {
 			Token next = iter.next();
 
 			if (next.type == BARLINE || next.type == DOUBLE_BARLINE) {
-				Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
 
 				currentMeasure = newMeasure;
 			} else if (next.type == OPEN_REPEAT) {
-				Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
 
 				currentMeasure = newMeasure;
@@ -312,7 +310,7 @@ public class Parser {
 																// linking
 																// fails.
 				// Has this measure first loop back to the open repeat we saw...
-				Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setAlternateNext(newMeasure);
 				// ...before going to the next measure
 				currentMeasure = newMeasure;
@@ -320,14 +318,14 @@ public class Parser {
 			} else if (next.type == ONE_REPEAT) {
 				lastPreOne = currentMeasure;
 
-				Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
 
 				currentMeasure = newMeasure;
 			} else if (next.type == TWO_REPEAT) {
 				lastPreOne.setAlternateNext(currentMeasure);
 
-				Measure newMeasure = new Measure(piece.getDefaultNoteLength());
+				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
 
 				currentMeasure = newMeasure;
@@ -363,6 +361,7 @@ public class Parser {
 		while (iter.hasNext()) {
 			Token next = iter.next();
 			Note nextNote;
+			System.out.println("next token"+next);
 			if (next.type == DUPLET) {
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(3,2));
                 measure.addNote(nextNote, measureLen);
@@ -425,9 +424,10 @@ public class Parser {
 			else if (next.type == ACCIDENTAL || next.type == BASENOTE || next.type == REST) {
 			    iter.previous();
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(1));
+                System.out.println("Parsed note: "+nextNote);
                 measure.addNote(nextNote, measureLen);
                 measureLen = measureLen.plus(nextNote.duration);
-			} else if (next.type == SPACE) {
+			} else if (next.type == SPACE || next.type == NEWLINE) {
 				// pass
 			} else if (next.type == BARLINE || next.type == DOUBLE_BARLINE
 					|| next.type == OPEN_REPEAT || next.type == CLOSE_REPEAT
@@ -453,7 +453,8 @@ public class Parser {
 	 * @param scale - scale to use to modify notes to match a given key signature
 	 * @param modifier - Fraction to multiple note duration by
 	 */
-	public static Note parseNoteElement(Piece piece,
+	@SuppressWarnings("unused")
+    public static Note parseNoteElement(Piece piece,
 			ListIterator<Token> iter, HashMap<String, Pitch> scale, Fraction modifier) {
 		Token next;
 		Pitch p = null;
@@ -462,7 +463,6 @@ public class Parser {
 		// pull first token, expected to be accidental or basenote
 		if (iter.hasNext()) {
 			next = iter.next();
-		    System.out.println("note parser"+next);
 			if (next.type == ACCIDENTAL)// if accidental, parse note pitch and
 										// correct accidental
 				p = parseAccidental(next, iter, scale);
@@ -472,7 +472,7 @@ public class Parser {
 			    if(iter.hasNext()){
 	                next = iter.next();
 	                if(next.type==DIGITS||next.type==FRACTION||next.type==FRACTION_NOT_STRICT){
-	                    noteLength = parseNoteLength(next);
+	                    noteLength = piece.getDefaultNoteLength().times(parseNoteLength(next));
 	                }
 	                else{
 	                    noteLength = piece.getDefaultNoteLength();
@@ -498,7 +498,7 @@ public class Parser {
 					next = iter.next();
 					if (next.type == DIGITS || next.type == FRACTION
 							|| next.type == FRACTION_NOT_STRICT){
-						noteLength = parseNoteLength(next);
+						noteLength = piece.getDefaultNoteLength().times(parseNoteLength(next));
 						return new Note(noteLength.times(modifier), p);
 					}
 					else if (next.type == OCTAVE)
@@ -511,7 +511,7 @@ public class Parser {
 				}
 			} else if (next.type == DIGITS || next.type == FRACTION
 					|| next.type == FRACTION_NOT_STRICT){// is note length token
-				noteLength = parseNoteLength(next);
+				noteLength = piece.getDefaultNoteLength().times(parseNoteLength(next));
 				return new Note(noteLength.times(modifier), p);
 			}
 			else{

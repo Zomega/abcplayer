@@ -156,6 +156,7 @@ public class Measure implements Iterable<Measure> {
 		if (endTime.minus(this.length).numerator > 0)
 			throw new NoteOutOfBoundsException(
 					"Tried to add a note which ended after the measure.");
+		
 
 		// Rests have null pitch. We don't actually want to add them.
 		if (note.pitch == null)
@@ -163,5 +164,9 @@ public class Measure implements Iterable<Measure> {
 
 		this.notes.add(new Pair<Note, Fraction>(note, startTime));
 	}
+	
+    public String toString(){
+        return notes.toString();
+    }
 
 }
