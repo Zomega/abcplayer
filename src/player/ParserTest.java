@@ -31,7 +31,7 @@ public class ParserTest {
 		BufferedReader f = null;
 		String line = "";
 		try {
-			f = new BufferedReader(new FileReader("sample_abc/piece2.abc"));
+			f = new BufferedReader(new FileReader("sample_abc/fur_elise.abc"));
 			String nextLine = f.readLine();
 			while (nextLine != null) {
 				line += nextLine + "\n";

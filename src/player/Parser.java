@@ -189,11 +189,20 @@ public class Parser {
 										+ next.type.name + " " + next.contents);
 				} else if (next.type == FIELD_METER) {
 					next = eatSpaces(iter);
+					System.out.println(next);
+					System.out.println(iter.next());
+					iter.previous();
 					if (next != null
-							&& (next.type == METER || next.type == FRACTION)) {
-						if (!next.contents.equals("C")
-								&& !next.contents.equals("C|"))
+							&& (next.type == METER || next.type == FRACTION || next.type == BASENOTE)) {
+						if (!next.contents.equals("C") && !next.contents.equals("C|"))
 							piece.setMeter(parseFraction(next.contents));
+						else if(next.contents.equals("C")){
+						    piece.setMeter(new Fraction(4,4));
+						    if(iter.hasNext())
+						        next = iter.next();
+						    if(!next.contents.equals("|"))
+						        iter.previous();
+						}
 						if (!eatNewLine(iter))// next token should be end of
 												// line character to end the
 												// header field
@@ -428,15 +437,15 @@ public class Parser {
 			else if (next.type == ACCIDENTAL || next.type == BASENOTE || next.type == REST) {
 			    iter.previous();
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(1));
-                System.out.println("Parsed note: "+nextNote);
                 measure.addNote(nextNote, measureLen);
                 measureLen = measureLen.plus(nextNote.duration);
-			} else if (next.type == SPACE || next.type == NEWLINE) {
+			} else if (next.type == SPACE || next.type == NEWLINE || next.type == COMMENT) {
 				// pass
 			} else if (next.type == BARLINE || next.type == DOUBLE_BARLINE
 					|| next.type == OPEN_REPEAT || next.type == CLOSE_REPEAT
 					|| next.type == ONE_REPEAT || next.type == TWO_REPEAT || next.type == FIELD_VOICE) {
 				iter.previous();
+				System.out.println(measure);
 				return;
 			} else {
 				throw new IllegalArgumentException(
