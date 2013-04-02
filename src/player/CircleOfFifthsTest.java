@@ -11,6 +11,11 @@ import sound.Pitch;
 /**
  * Test class for CircleOfFifths
  * 
+ * Testing Strategy:
+ * -Test using the whitebox testing method, knowing the implementation of the class
+ * 
+ * -Test each kind of keynote
+ * 
  * @author kimtoy
  * @category no_didit
  * 

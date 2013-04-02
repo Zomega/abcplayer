@@ -173,7 +173,7 @@ public class Parser {
 		Voice currentVoice = null;
 		
 		Map< Voice, Stack<Measure> > openRepeatStackMap = new HashMap< Voice, Stack<Measure> >();
-		Map< Voice, Measure > lastPreOneMap = new HashMap< Voice, Measure >(); // TODO: Ensure this updates correctly...
+		Map< Voice, List<Measure> > previousMeasuresMap = new HashMap< Voice, List<Measure> >();
 		
 		// Extract header information.
 		while (iter.hasNext()) {
@@ -253,7 +253,7 @@ public class Parser {
 					Voice voice = new Voice(voiceName);
 					piece.addVoice(voice);
 					openRepeatStackMap.put(voice, new Stack<Measure>());
-					lastPreOneMap.put(voice, null);
+					previousMeasuresMap.put(voice, new ArrayList<Measure>());
 					System.out.println("Made new Voice \"" + voiceName+ "\"" );
 				} else if (next.type == FIELD_KEY) {
 					next = eatSpaces(iter);
@@ -278,7 +278,7 @@ public class Parser {
 							piece.addVoice( voice );
 							currentVoice = voice;
 							openRepeatStackMap.put(voice, new Stack<Measure>());
-							lastPreOneMap.put(voice, null);
+							previousMeasuresMap.put(voice, new ArrayList<Measure>());
 							System.out.println("Made new Voice \"default\" because no voices were specified." );
 						}
 					} else
@@ -303,8 +303,7 @@ public class Parser {
 						openRepeatStackMap.get(currentVoice).push( startMeasure );
 					}
 					Measure tail = currentVoice.tail();
-					System.out.println(openRepeatStackMap.containsKey(currentVoice));
-					parseMeasureStructure(piece, tail, iter, openRepeatStackMap.get(currentVoice), lastPreOneMap.get(currentVoice) );
+					parseMeasureStructure(piece, tail, iter, openRepeatStackMap.get(currentVoice), previousMeasuresMap.get(currentVoice) );
 					seenMusic=true;
 				}
 			}
@@ -316,14 +315,14 @@ public class Parser {
 	}
 
 	public static void parseMeasureStructure(Piece piece, Measure currentMeasure,
-			ListIterator<Token> iter, Stack<Measure> openRepeatStack, Measure lastPreOne ) throws NoteOutOfBoundsException {
+			ListIterator<Token> iter, Stack<Measure> openRepeatStack, List<Measure> previousMeasures ) throws NoteOutOfBoundsException {
 		
 		HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature(piece.getKey());
 		iter.previous();
 		while (iter.hasNext()) {
 			// Try to put the current tokens into the current measure.
 			parseMeasureContents(piece, currentMeasure, iter, scale);
-
+			
 			if (!iter.hasNext()) {
 				break;
 			}
@@ -334,24 +333,26 @@ public class Parser {
 				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
 
-				currentMeasure = newMeasure;
+				previousMeasures.add(currentMeasure);
+                currentMeasure = newMeasure;
+                
 			} else if( next.type == DOUBLE_BARLINE ) {
 				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
 
+				previousMeasures.add(currentMeasure);
 				currentMeasure = newMeasure;
 				
 				// Reset the linking structure...
 				openRepeatStack.clear();
 				openRepeatStack.push( newMeasure );
 				
-				lastPreOne = null;
-				
 			} else if (next.type == OPEN_REPEAT) {
 				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
 
-				currentMeasure = newMeasure;
+				previousMeasures.add(currentMeasure);
+                currentMeasure = newMeasure;
 
 				// Push the current measure onto the open stack.
 				//System.out.println(openRepeatStack.size());
@@ -366,17 +367,18 @@ public class Parser {
 				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setAlternateNext(newMeasure);
 				// ...before going to the next measure
-				currentMeasure = newMeasure;
+				previousMeasures.add(currentMeasure);
+                currentMeasure = newMeasure;
 				// Now go onto the next (currently empty) measure...
 			} else if (next.type == ONE_REPEAT) {
-				lastPreOne = currentMeasure;
 
 				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
 
-				currentMeasure = newMeasure;
+				previousMeasures.add(currentMeasure);
+                currentMeasure = newMeasure;
 			} else if (next.type == TWO_REPEAT) {
-				lastPreOne.setAlternateNext(currentMeasure);
+				previousMeasures.get( previousMeasures.size() - 2 ).setAlternateNext(currentMeasure);
 
 				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
@@ -407,6 +409,7 @@ public class Parser {
 		while (iter.hasNext()) {
 			Token next = iter.next();
 			Note nextNote;
+			System.out.println("token "+next);
 			// TODO: Make a NPLET identifier, and use it to do this... redundant an limited.
 			if (next.type == DUPLET) {
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(3,2));

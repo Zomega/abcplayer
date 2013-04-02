@@ -41,7 +41,7 @@ public class ParserTest {
         BufferedReader f = null;
         String line = "";
         try {
-            f = new BufferedReader(new FileReader("sample_abc/piece1.abc"));
+            f = new BufferedReader(new FileReader("sample_abc/fur_elise.abc"));
             String nextLine = f.readLine();
             while (nextLine != null) {
                 line += nextLine + "\n";
@@ -67,7 +67,9 @@ public class ParserTest {
         Parser.parse(line);
     }
     
-    public void testMeterField(){}
+    public void testMeterField(){
+        
+    }
     
     public void testTitleComposerCanTakeAnyWhitespaceOrContentBeforeNewline(){}
     
