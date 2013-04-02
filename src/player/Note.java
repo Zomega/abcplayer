@@ -12,9 +12,22 @@ import utilities.Fraction;
  * @version RC1
  */
 public class Note {
+	
+	/**
+	 * The length of time the note lasts. Note that this is relative absolute time, not a default not length.
+	 */
 	public final Fraction duration;
+	
+	/**
+	 * The pitch of the note.
+	 */
 	public final Pitch pitch;
 
+	/**
+	 * Simple constructor. Directly initializes both elements.
+	 * @param duration
+	 * @param pitch
+	 */
     public Note(Fraction duration, Pitch pitch) {
         this.duration = duration;
         this.pitch = pitch;
@@ -33,7 +46,7 @@ public class Note {
 	}
 	
 	public String toString(){
-	    return this.duration+" "+this.pitch;
+	    return this.duration.toString()+" "+this.pitch.toString();
 	}
 
 }
