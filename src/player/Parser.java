@@ -193,7 +193,7 @@ public class Parser {
 										+ next.type.name + " " + next.contents);
 				} else if (next.type == FIELD_METER) {
 					next = eatSpaces(iter);
-					System.out.println(next);
+					System.out.println(next); // TODO: Clean this up?
 					System.out.println(iter.next());
 					iter.previous();
 					if (next != null
@@ -255,9 +255,13 @@ public class Parser {
 						seenKey = true;
 
 						if (piece.getVoices().size() == 0) {
-							piece.addVoice(new Voice("default", new Measure(
-									piece.getMeter())));
-							currentVoice = piece.getVoice("default");
+							Voice voice = new Voice("default", new Measure(
+									piece.getMeter()));
+							piece.addVoice( voice );
+							currentVoice = voice;
+							openRepeatStackMap.put(voice, new Stack<Measure>());
+							lastPreOneMap.put(voice, null);
+							System.out.println("Made new Voice \"default\" because no voices were specified." );
 						}
 					} else
 						throw new IllegalArgumentException(
@@ -281,6 +285,7 @@ public class Parser {
 						openRepeatStackMap.get(currentVoice).push( startMeasure );
 					}
 					Measure tail = currentVoice.tail();
+					System.out.println(openRepeatStackMap.containsKey(currentVoice));
 					parseMeasureStructure(piece, tail, iter, openRepeatStackMap.get(currentVoice), lastPreOneMap.get(currentVoice) );
 					seenMusic=true;
 				}
@@ -289,7 +294,7 @@ public class Parser {
 	    //Throw an exception if there is no musical content
         if(!seenMusic)
             throw new IllegalArgumentException("abc file must have at least one line of abc music");
-		return null;
+		return piece;
 	}
 
 	public static void parseMeasureStructure(Piece piece, Measure currentMeasure,
@@ -307,11 +312,23 @@ public class Parser {
 
 			Token next = iter.next();
 
-			if (next.type == BARLINE || next.type == DOUBLE_BARLINE) {
+			if (next.type == BARLINE) {
 				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
 
 				currentMeasure = newMeasure;
+			} else if( next.type == DOUBLE_BARLINE ) {
+				Measure newMeasure = new Measure(piece.getMeter());
+				currentMeasure.setNext(newMeasure);
+
+				currentMeasure = newMeasure;
+				
+				// Reset the linking structure...
+				openRepeatStack.clear();
+				openRepeatStack.push( newMeasure );
+				
+				lastPreOne = null;
+				
 			} else if (next.type == OPEN_REPEAT) {
 				Measure newMeasure = new Measure(piece.getMeter());
 				currentMeasure.setNext(newMeasure);
@@ -443,7 +460,6 @@ public class Parser {
 					|| next.type == ONE_REPEAT || next.type == TWO_REPEAT || next.type == FIELD_VOICE) {
 				// These are elements higher level parsers need to handle. Deal with them there.
 				iter.previous();
-				System.out.println(measure);
 				return;
 			} else {
 				throw new IllegalArgumentException(
