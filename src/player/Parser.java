@@ -482,6 +482,9 @@ public class Parser {
 					|| next.type == ONE_REPEAT || next.type == TWO_REPEAT || next.type == FIELD_VOICE) {
 				// These are elements higher level parsers need to handle. Deal with them there.
 				iter.previous();
+				if(measure.getDuration().minus(piece.getMeter()).isPositive()){
+				    throw new NoteOutOfBoundsException("Measure duration is too long");
+				}
 				return;
 			} else {
 				throw new IllegalArgumentException(
