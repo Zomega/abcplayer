@@ -62,13 +62,13 @@ public class ParserTest {
 
     @Test (expected=IllegalArgumentException.class)
     public void testHeadersRequired() throws NoteOutOfBoundsException{
-        BufferedReader f = null;
         String line = "T: 0 \n 2 3 4 5|";
         Parser.parse(line);
     }
     
-    public void testMeterField(){
-        
+    public void testMeterField() throws NoteOutOfBoundsException{
+        Piece piece = Parser.parse("X: \nT: blurgh\n M:C\nK:C\n|A B C D|");
+        assertEquals(new Fraction(4,4), piece.getMeter());
     }
     
     public void testTitleComposerCanTakeAnyWhitespaceOrContentBeforeNewline(){}
@@ -90,6 +90,10 @@ public class ParserTest {
     }
 
     public void testAccidentalKeyChangeWithinMeasureDoesntAffectOtherMeasures() {
+    }
+    
+    public void testMeasureStartsWithBarline(){
+        
     }
     
     /**

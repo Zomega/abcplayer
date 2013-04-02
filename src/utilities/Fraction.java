@@ -139,7 +139,7 @@ public final class Fraction {
 	 * Returns boolean telling if this Fraction is positive.
 	 */
 	public boolean isPositive() {
-		return (this.numerator >= 0);
+		return (this.numerator > 0);
 	}
 
 	/**

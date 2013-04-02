@@ -490,7 +490,6 @@ public class Parser {
 						"Bad Tokens found in parsing music");
 			}
 		}
-		//TODO: smallest fraction
 	}
 
 	/**
