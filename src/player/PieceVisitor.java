@@ -38,6 +38,8 @@ public class PieceVisitor {
 		Fraction smallestDivision = piece.getSmallestDivision();
 		for (Voice voice : piece.getVoices()) {
 			Fraction globalTime = new Fraction(0);
+			//Handle the case where a voice is declared, but not used.
+			if( voice.getStart() == null ) continue;
 			for (Measure measure : voice) {
 				for (Pair<Note, Fraction> p : measure.getNotes()) {
 					// Unpack the pair.
