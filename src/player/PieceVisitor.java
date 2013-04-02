@@ -54,7 +54,7 @@ public class PieceVisitor {
 				}
 
 				// Move forward one measure.
-				globalTime = globalTime.plus(piece.getMeter());
+				globalTime = globalTime.plus(measure.getDuration());
 			}
 		}
 		return player;

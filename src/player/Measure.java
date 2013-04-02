@@ -19,11 +19,15 @@ import utilities.Pair;
 public class Measure implements Iterable<Measure> {
 
 	/**
-	 * Length of the measure.
+	 * Duration of the measure.
 	 */
-	private final Fraction length;
+	private Fraction duration;
 
-	/**
+	public Fraction getDuration() {
+        return duration;
+    }
+
+    /**
 	 * A list of notes, each associated with their start times.
 	 */
 	private List<Pair<Note, Fraction>> notes;
@@ -48,44 +52,39 @@ public class Measure implements Iterable<Measure> {
 	 *             if any of the listed notes is invalid.
 	 */
 	public Measure(Measure next, Measure alternateNext,
-			List<Pair<Note, Fraction>> notes, Fraction length)
-			throws NoteOutOfBoundsException {
+			List<Pair<Note, Fraction>> notes)
+			throws NoteOutOfBoundsException{
 		this.next = next;
 		this.alternateNext = alternateNext;
 		this.notes = new ArrayList<Pair<Note, Fraction>>();
+		this.duration = new Fraction(0);
 		// Add each new note in a safe manner.
 		for (Pair<Note, Fraction> note : notes)
-			try {
-				this.addNote(note.first, note.second);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		this.length = length;
-
+			this.addNote(note.first, note.second);
 	}
 
 	/**
 	 * Structure Measure. Constructs an empty list of notes automatically.
 	 */
-	public Measure(Measure next, Measure alternateNext, Fraction length) {
+	public Measure(Measure next, Measure alternateNext) {
 		this.next = next;
 		this.alternateNext = alternateNext;
+		this.duration = new Fraction(0);
 		this.notes = new ArrayList<Pair<Note, Fraction>>();
-		this.length = length;
 	}
 
 	/**
 	 * Constructs a Measure based only off the next Measure.
 	 */
-	public Measure(Measure next, Fraction length) {
-		this(next, null, length);
+	public Measure(Measure next) {
+		this(next, null);
 	}
 
 	/**
 	 * Default Constructor. Initializes all values to default.
 	 */
-	public Measure(Fraction length) {
-		this(null, length);
+	public Measure() {
+		this(null);
 	}
 
 	/**
@@ -163,16 +162,14 @@ public class Measure implements Iterable<Measure> {
 		// Check to ensure it starts after 0...
 		if (startTime.numerator < 0)
 			throw new NoteOutOfBoundsException(
-					"Tried to add a note that started at " + startTime + ".");
+					"Tried to add a note that started at negative time" + startTime + ".");
 		if (note.duration.numerator <= 0)
 			throw new NoteOutOfBoundsException(
 					"Tried to add a non-positive duration note.");
 		Fraction endTime = startTime.plus(note.duration);
-		if (endTime.minus(this.length).numerator > 0)
-			throw new NoteOutOfBoundsException(
-					"Tried to add a note which ended after the measure.");
+		if (endTime.minus(this.duration).isPositive())
+			this.duration = endTime;
 		
-
 		// Rests have null pitch. We don't actually want to add them.
 		if (note.pitch == null)
 			return;
@@ -185,7 +182,7 @@ public class Measure implements Iterable<Measure> {
     }
 
 	public Fraction getSmallestDivision() {
-		Fraction smallestDivision = this.length;
+		Fraction smallestDivision = this.duration;
 		for( Pair<Note, Fraction> pair  : this.notes ) {
 			smallestDivision = Fraction.gcd( smallestDivision, pair.first.duration );
 			smallestDivision = Fraction.gcd( smallestDivision, pair.second );
