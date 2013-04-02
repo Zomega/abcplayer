@@ -33,6 +33,7 @@ public class PieceVisitor {
 				piece.getSmallestDivision());
 		SequencePlayer player = new SequencePlayer(piece.getTempo(),
 				ticksPerQuarterNote);
+		Fraction smallestDivision = piece.getSmallestDivision();
 		for (Voice voice : piece.getVoices()) {
 			for (Measure measure : voice) {
 				for (Pair<Note, Fraction> p : measure.getNotes()) {
@@ -44,9 +45,9 @@ public class PieceVisitor {
 							note.pitch.toMidiNote(),
 							PieceVisitor.fractionToTicks(
 									globalTime.plus(offset),
-									piece.getSmallestDivision()),
+									smallestDivision),
 							PieceVisitor.fractionToTicks(note.duration,
-									piece.getSmallestDivision()));
+									smallestDivision));
 				}
 
 				// Move forward one measure.
@@ -68,6 +69,12 @@ public class PieceVisitor {
 	private static int fractionToTicks(Fraction time, Fraction divisionLength) {
 		// The int case should be exact, since time should be an integer
 		// multiple of the division length.
+		System.out.println( time );
+		System.out.println( divisionLength );
+		System.out.println( time.quotient(divisionLength).approximation() );
+		System.out.println( (int) time.quotient(divisionLength).approximation() );
+		
+		
 		return (int) time.quotient(divisionLength).approximation();
 	}
 }
