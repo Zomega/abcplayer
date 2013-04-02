@@ -112,9 +112,23 @@ public class Parser {
 	 * @throws NoteOutOfBoundsException 
 	 */
 	public static Piece parse(String abcContents) throws NoteOutOfBoundsException {
-
+		System.out.println("Begining parsing...");
 		Lexer l = new Lexer(types);
+		System.out.println("Sucessfully lexed input...");
 		List<Token> tokens = l.lex(abcContents);
+
+		Piece piece = parseTokens(tokens);
+		System.out.println("Sucessfully parsed lexed input.");
+		return piece;
+	}
+
+	/**
+	 * Parses the headers from the abc music file and returns the next non
+	 * header token. If there are no more tokens and none are non-headers,
+	 * returns null.
+	 */
+	public static Piece parseTokens( List<Token> tokens ) throws NoteOutOfBoundsException {
+		
 		if (tokens.size() < 2) {
 			throw new IllegalArgumentException(
 					"Field has invalid number of fields");
@@ -130,22 +144,7 @@ public class Parser {
 
 		ListIterator<Token> iter = tokens.listIterator();
 		Piece piece = new Piece();
-		// Parse header
-		Token next = parseHeaderInfo(piece, iter);
-		return piece;
-	}
-
-	/**
-	 * Parses the headers from the abc music file and returns the next non
-	 * header token. If there are no more tokens and none are non-headers,
-	 * returns null
-	 * 
-	 * @param piece
-	 * @param iter
-	 * @return
-	 * @throws NoteOutOfBoundsException 
-	 */
-	public static Token parseHeaderInfo(Piece piece, ListIterator<Token> iter) throws NoteOutOfBoundsException {
+		
 		// set defaults
 		Fraction defaultLen = new Fraction(1, 8);
 		piece.setMeter(new Fraction(4, 4));
@@ -282,7 +281,7 @@ public class Parser {
 						openRepeatStackMap.get(currentVoice).push( startMeasure );
 					}
 					Measure tail = currentVoice.tail();
-					parseABCLines(piece, tail, iter, openRepeatStackMap.get(currentVoice), lastPreOneMap.get(currentVoice) );
+					parseMeasureStructure(piece, tail, iter, openRepeatStackMap.get(currentVoice), lastPreOneMap.get(currentVoice) );
 					seenMusic=true;
 				}
 			}
@@ -293,14 +292,14 @@ public class Parser {
 		return null;
 	}
 
-	public static void parseABCLines(Piece piece, Measure currentMeasure,
+	public static void parseMeasureStructure(Piece piece, Measure currentMeasure,
 			ListIterator<Token> iter, Stack<Measure> openRepeatStack, Measure lastPreOne ) throws NoteOutOfBoundsException {
 		
 		HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature(piece.getKey());
 		iter.previous();
 		while (iter.hasNext()) {
 			// Try to put the current tokens into the current measure.
-			parseMeasure(piece, currentMeasure, iter, scale);
+			parseMeasureContents(piece, currentMeasure, iter, scale);
 
 			if (!iter.hasNext()) {
 				break;
@@ -366,13 +365,12 @@ public class Parser {
 	 * @param iter
 	 * @throws NoteOutOfBoundsException 
 	 */
-	public static void parseMeasure(Piece piece, Measure measure, ListIterator<Token> iter, HashMap<String, Pitch> scale) throws NoteOutOfBoundsException {
+	public static void parseMeasureContents(Piece piece, Measure measure, ListIterator<Token> iter, HashMap<String, Pitch> scale) throws NoteOutOfBoundsException {
         Fraction measureLen = new Fraction(0);
         accidentalChanges = new HashMap<Pitch, Pitch>();
 		while (iter.hasNext()) {
 			Token next = iter.next();
 			Note nextNote;
-			System.out.println("next token"+next);
 			// TODO: Make a NPLET identifier, and use it to do this... redundant an limited.
 			if (next.type == DUPLET) {
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(3,2));

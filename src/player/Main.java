@@ -56,7 +56,7 @@ public class Main {
 	 * Play a few random abc files.
 	 */
 	public static void main(String[] args) throws Exception {
-		Main.play("sample_abc/prelude.abc");
+		Main.play("sample_abc/paddy.abc");
 		// CALL play() HERE
 	}
 
