@@ -30,7 +30,8 @@ public class PieceVisitor {
 		 */
 		int ticksPerQuarterNote = fractionToTicks(new Fraction(1, 4),
 				piece.getSmallestDivision());
-		SequencePlayer player = new SequencePlayer(piece.getTempo(),
+		Fraction defaultNotesPerQuarter = new Fraction(1,4).quotient(piece.getDefaultNoteLength());
+		SequencePlayer player = new SequencePlayer(piece.getTempo()/(defaultNotesPerQuarter.numerator/defaultNotesPerQuarter.denominator),
 				ticksPerQuarterNote);
 		Fraction smallestDivision = piece.getSmallestDivision();
 		for (Voice voice : piece.getVoices()) {
