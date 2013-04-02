@@ -705,7 +705,7 @@ public class Parser {
 	 */
 	public static Fraction parseNoteLength(Token next) {
 		if (next.type == DIGITS)
-			return new Fraction(Integer.parseInt(next.contents), 2);
+			return new Fraction(Integer.parseInt(next.contents));
 		else if (next.type == FRACTION)
 			return parseFraction(next.contents);
 		else if (next.type == FRACTION_NOT_STRICT)
