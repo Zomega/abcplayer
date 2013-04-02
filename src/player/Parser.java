@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ import lexer.*;
  * Class to convert abc files into Piece data structures.
  * 
  * @author kimtoy, czuo, woursler
- * @version prealpha
+ * @version alpha
  */
 public class Parser {
 
@@ -146,10 +147,14 @@ public class Parser {
 		Fraction defaultLen = new Fraction(1, 8);
 		piece.setMeter(new Fraction(4, 4));
 		boolean setDefaultLenFlag = false;
-		boolean seenMusic = false;//flag if file contains abc lines
+		boolean seenMusic = false; //flag if file contains abc lines
 		boolean seenKey = false;
 
 		Voice currentVoice = null;
+		
+		Map< Voice, Stack<Measure> > openRepeatStackMap = new HashMap< Voice, Stack<Measure> >();
+		Map< Voice, Measure > lastPreOneMap = new HashMap< Voice, Measure >(); // TODO: Ensure this updates correctly...
+		
 		// Extract header information.
 		while (iter.hasNext()) {
 			Token next = iter.next();
@@ -248,7 +253,6 @@ public class Parser {
 			}
 			// We're not in the header anymore.
 			else {
-			    seenMusic=true;
 				if (next.type == FIELD_VOICE) {
 					String voiceName = next.contents.substring(2).trim();
 					currentVoice = piece.getVoice(voiceName);
@@ -256,10 +260,18 @@ public class Parser {
 					if( currentVoice == null ) {
 						throw new RuntimeException("Undeclared voice!");
 					}
-					if(currentVoice.getStart()==null)
-					    currentVoice.setStart( new Measure(piece.getMeter()) );
+					if(currentVoice.getStart()==null) {
+						//Initialize the Voice et al...
+						Measure startMeasure = new Measure(piece.getMeter());
+						currentVoice.setStart( startMeasure ); // TODO: Do when the voice is made...
+						openRepeatStackMap.put(currentVoice, new Stack<Measure>());
+						// There is always an implicit begin repeat before the first bar...
+						openRepeatStackMap.get(currentVoice).push( startMeasure );
+						lastPreOneMap.put(currentVoice, null); // TODO: Do when the voice is made...
+					}
 					Measure tail = currentVoice.tail();
-					parseABCLines(piece, tail, iter);
+					parseABCLines(piece, tail, iter, openRepeatStackMap.get(currentVoice), lastPreOneMap.get(currentVoice) );
+					seenMusic=true;
 				}
 			}
 		}
@@ -270,11 +282,8 @@ public class Parser {
 	}
 
 	public static void parseABCLines(Piece piece, Measure currentMeasure,
-			ListIterator<Token> iter) throws NoteOutOfBoundsException {
-
-		// These handle repeats...
-		Stack<Measure> openRepeatStack = new Stack<Measure>();
-		Measure lastPreOne = null;
+			ListIterator<Token> iter, Stack<Measure> openRepeatStack, Measure lastPreOne ) throws NoteOutOfBoundsException {
+		
 		HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature(piece.getKey());
 		iter.previous();
 		while (iter.hasNext()) {
@@ -361,6 +370,7 @@ public class Parser {
 			Token next = iter.next();
 			Note nextNote;
 			System.out.println("next token"+next);
+			// TODO: Make a *PLET identifier, and use it to do this... redundant an limited.
 			if (next.type == DUPLET) {
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(3,2));
                 measure.addNote(nextNote, measureLen);
@@ -427,10 +437,11 @@ public class Parser {
                 measure.addNote(nextNote, measureLen);
                 measureLen = measureLen.plus(nextNote.duration);
 			} else if (next.type == SPACE || next.type == NEWLINE) {
-				// pass
+				// Ignore whitespace (newlines included).
 			} else if (next.type == BARLINE || next.type == DOUBLE_BARLINE
 					|| next.type == OPEN_REPEAT || next.type == CLOSE_REPEAT
 					|| next.type == ONE_REPEAT || next.type == TWO_REPEAT || next.type == FIELD_VOICE) {
+				// These are elements higher level parsers need to handle. Deal with them there.
 				iter.previous();
 				return;
 			} else {
@@ -581,6 +592,7 @@ public class Parser {
 			octave = 12;// raise the pitch by 12 halfsteps for an octave
 		if (accidental == 3)// 3 signifies default key value according to key
 							// signature, if there was no accidental
+			//TODO: Is there anyway we could use MAXINTEGER for this instead or something? Triple sharps maybe should be handled for code robustness.
 			return scale.get(next.contents.toUpperCase()).transpose(octave);
 		else
 			return new Pitch(next.contents.toUpperCase().toCharArray()[0])
@@ -729,6 +741,7 @@ public class Parser {
 
 	/**
 	 * For testing purposes, lex a string into valid tokens
+	 *TODO: Remove this when cleaning. If needed, make types public final so this can be manually written in tests.
 	 * 
 	 * @param string
 	 * @return
