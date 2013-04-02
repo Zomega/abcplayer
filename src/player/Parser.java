@@ -273,7 +273,7 @@ public class Parser {
 						seenKey = true;
 
 						if (piece.getVoices().size() == 0) {
-							Voice voice = new Voice("default", new Measure());
+							Voice voice = new Voice("default");
 							piece.addVoice( voice );
 							currentVoice = voice;
 							openRepeatStackMap.put(voice, new Stack<Measure>());
@@ -298,6 +298,7 @@ public class Parser {
 						//Initialize the Voice et al...
 						Measure startMeasure = new Measure();
 						currentVoice.setStart( startMeasure );
+						System.out.println("Added a measure to voice " + currentVoice.name );
 						// There is always an implicit begin repeat before the first bar...
 						openRepeatStackMap.get(currentVoice).push( startMeasure );
 					}
@@ -315,7 +316,6 @@ public class Parser {
 
 	public static void parseMeasureStructure(Piece piece, Measure currentMeasure,
 			ListIterator<Token> iter, Stack<Measure> openRepeatStack, List<Measure> previousMeasures ) throws NoteOutOfBoundsException {
-		
 		HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature(piece.getKey());
 		iter.previous();
 		while (iter.hasNext()) {
@@ -327,7 +327,7 @@ public class Parser {
 			}
 
 			Token next = iter.next();
-
+	        System.out.println("token "+next);
 			if (next.type == BARLINE) {
 				Measure newMeasure = new Measure();
 				currentMeasure.setNext(newMeasure);
