@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import sound.Pitch;
 import utilities.Fraction;
-import utilities.Pair;
 
 /**
  * Parser test file

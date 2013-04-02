@@ -20,8 +20,9 @@ public class Player {
 	 *            The contents (NOT the filename) of an .abc file to play.
 	 * @throws RuntimeException
 	 *             If parsing fails miserably for some reason.
+	 * @throws NoteOutOfBoundsException 
 	 */
-	public Player(String abcContents) throws RuntimeException {
+	public Player(String abcContents) throws RuntimeException, NoteOutOfBoundsException {
 		this.piece = Parser.parse(abcContents);
 	}
 
