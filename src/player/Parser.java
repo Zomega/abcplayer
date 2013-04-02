@@ -99,6 +99,9 @@ public class Parser {
 
 	public static List<TokenType> types = new ArrayList<TokenType>(
 			Arrays.asList(typeArray));
+	
+	public static HashMap<Pitch, Pitch> accidentalChanges;//map to hold accidental changes in a measure, should be reinitialized
+	//for every new measure
 
 	/**
 	 * Parse the contents of an abc music file.
@@ -354,9 +357,11 @@ public class Parser {
 	 * 
 	 * @param measure
 	 * @param iter
+	 * @throws NoteOutOfBoundsException 
 	 */
-	public static void parseMeasure(Piece piece, Measure measure, ListIterator<Token> iter, HashMap<String, Pitch> scale) {
+	public static void parseMeasure(Piece piece, Measure measure, ListIterator<Token> iter, HashMap<String, Pitch> scale) throws NoteOutOfBoundsException {
         Fraction measureLen = new Fraction(0);
+        accidentalChanges = new HashMap<Pitch, Pitch>();
 		while (iter.hasNext()) {
 			Token next = iter.next();
 			Note nextNote;
@@ -458,13 +463,19 @@ public class Parser {
 		Token next;
 		Pitch p = null;
 		Fraction noteLength = null;
+		Pitch original = null;//if note was modded by accidental, keep original basenote/octave for reference
+		boolean accidental = false;//if note is modified by accidental, must add to accidentalChange map
 
 		// pull first token, expected to be accidental or basenote
 		if (iter.hasNext()) {
 			next = iter.next();
-			if (next.type == ACCIDENTAL)// if accidental, parse note pitch and
+			if (next.type == ACCIDENTAL){// if accidental, parse note pitch and
 										// correct accidental
-				p = parseAccidental(next, iter, scale);
+			    accidental = true;
+			    Pair<Pitch, Pitch> pitches = parseAccidental(next, iter, scale);
+			    original = pitches.first;
+				p = pitches.second;
+			}
 			else if (next.type == BASENOTE)// if only basenote, parse the note pitch with default accidental of 3
 				p = parseBasenote(next, 3, scale);
 			else if (next.type == REST){//Deal with rests as if they were Notes with Pitch = null
@@ -493,6 +504,15 @@ public class Parser {
 			next = iter.next();
 			if (next.type == OCTAVE) {// if octave token, parse accordingly
 				p = parseOctave(next, p);
+				if(accidental){//if a note has been modified by an accidental, add it to a hashmap
+				    original = parseOctave(next, original);
+				    accidentalChanges.put(original, p);
+				}
+				else{//modify note by accidental if it is in the changed note hashmap and the note has no accidental this time
+				    if(accidentalChanges.containsKey(p)){
+				        p = accidentalChanges.get(p);
+				    }
+				}
 				if (iter.hasNext()) {// check if followed by note length token, else return next token
 					next = iter.next();
 					if (next.type == DIGITS || next.type == FRACTION
@@ -511,13 +531,37 @@ public class Parser {
 			} else if (next.type == DIGITS || next.type == FRACTION
 					|| next.type == FRACTION_NOT_STRICT){// is note length token
 				noteLength = piece.getDefaultNoteLength().times(parseNoteLength(next));
+				if(accidental){//add modified note to hashmap of accidental changes
+                    accidentalChanges.put(original, p);
+                }
+				else{//modify note by accidental if it is in the changed note hashmap and the note has no accidental this time
+                    if(accidentalChanges.containsKey(p)){
+                        p = accidentalChanges.get(p);
+                    }
+                }
 				return new Note(noteLength.times(modifier), p);
 			}
 			else{
 			    iter.previous();
+			    if(accidental){//add modified note to hashmap of accidental changes
+                    accidentalChanges.put(original, p);
+                }
+			    else{//modify note by accidental if it is in the changed note hashmap and the note has no accidental this time
+                    if(accidentalChanges.containsKey(p)){
+                        p = accidentalChanges.get(p);
+                    }
+                }
 				return new Note(piece.getDefaultNoteLength().times(modifier), p);
 			}
 		}
+		if(accidental){//add modified note to hashmap of accidental changes
+            accidentalChanges.put(original, p);
+        }
+		else{//modify note by accidental if it is in the changed note hashmap and the note has no accidental this time
+            if(accidentalChanges.containsKey(p)){
+                p = accidentalChanges.get(p);
+            }
+        }
 		// if no addtional modifiers, return next token and parsed Note
 		if (noteLength == null){// if note length was not set, set length to default value
 			return new Note(piece.getDefaultNoteLength().times(modifier), p);
@@ -528,15 +572,15 @@ public class Parser {
 	}
 
 	/**
-	 * Returns a pitch with correct accidental when passed a token that is an
-	 * accidental
+	 * Returns a pair of pitches, one of the original base note and one
+	 * with correct accidental
 	 * 
 	 * @param next
 	 * @param iter
 	 * @param scale
 	 * @return
 	 */
-	public static Pitch parseAccidental(Token next, ListIterator<Token> iter,
+	public static Pair<Pitch,Pitch> parseAccidental(Token next, ListIterator<Token> iter,
 			HashMap<String, Pitch> scale) {
 		int accidental = 0;
 		if (next.contents.equals("^"))
@@ -557,7 +601,7 @@ public class Parser {
 			if (basenote.type != BASENOTE)
 				throw new IllegalArgumentException(
 						"Accidental must be followed by basenote");
-			return parseBasenote(basenote, accidental, scale);
+			return new Pair<Pitch, Pitch>(parseBasenote(basenote, 3, scale), parseBasenote(basenote, accidental, scale));
 		} else
 			throw new IllegalArgumentException(
 					"Accidental must be followed by basenote");
