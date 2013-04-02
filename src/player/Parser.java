@@ -290,7 +290,10 @@ public class Parser {
 				if (next.type == FIELD_VOICE) {
 					String voiceName = next.contents.substring(2).trim();
 					currentVoice = piece.getVoice(voiceName);
-				} else {
+				} else if(next.type==NEWLINE){
+				    //skip
+				}
+				else {
 					if( currentVoice == null ) {
 						throw new RuntimeException("Undeclared voice!");
 					}
