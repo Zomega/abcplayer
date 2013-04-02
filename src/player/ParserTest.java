@@ -105,7 +105,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("A [ABzD] C D|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
         String expected = "[< ( 1 / 4 ) A, ( 0 / 1 ) >, < ( 1 / 4 ) A, ( 1 / 4 ) >, < ( 1 / 4 ) B, ( 1 / 4 ) >, " +
         		"< ( 1 / 4 ) D, ( 1 / 4 ) >, < ( 1 / 4 ) C, ( 1 / 2 ) >, < ( 1 / 4 ) D, ( 3 / 4 ) >]";
@@ -228,7 +228,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("A B C D|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         String expected = "[< ( 1 / 4 ) A, ( 0 / 1 ) >, < ( 1 / 4 ) B, ( 1 / 4 ) >, < ( 1 / 4 ) C, ( 1 / 2 ) >, "
                 + "< ( 1 / 4 ) D, ( 3 / 4 ) >]";
         Parser.parseMeasureContents(piece, m, iter, scale);
@@ -248,7 +248,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("A B C D E|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
     }
     
@@ -266,7 +266,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("^A, b1/8 f3/4 C1/8 _D F|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
 
         String expected = "[< ( 1 / 4 ) ^A,, ( 0 / 1 ) >, < ( 1 / 32 ) b, ( 1 / 4 ) >, < ( 3 / 16 ) ^f, ( 9 / 32 ) >, "
@@ -287,7 +287,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("z B C D|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
         String expected = "[< ( 1 / 4 ) B, ( 1 / 4 ) >, < ( 1 / 4 ) C, ( 1 / 2 ) >, < ( 1 / 4 ) D, ( 3 / 4 ) >]";
         assertEquals(expected, m.toString());
@@ -306,7 +306,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("A (2BD|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
         String expected = "[< ( 1 / 4 ) A, ( 0 / 1 ) >, < ( 3 / 8 ) B, ( 1 / 4 ) >, < ( 3 / 8 ) D, ( 5 / 8 ) >]";
         assertEquals(expected, m.toString());
@@ -325,7 +325,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("A1/3 (3^B1/4_D1/8^C1/8 f1/3|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
         String expected = "[< ( 1 / 12 ) A, ( 0 / 1 ) >, < ( 1 / 24 ) c, ( 1 / 12 ) >, < ( 1 / 48 ) ^C, ( 1 / 8 ) >, " +
         		"< ( 1 / 48 ) ^C, ( 7 / 48 ) >, < ( 1 / 12 ) ^f, ( 1 / 6 ) >]";
@@ -345,7 +345,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("z1/8 (4a''b''c''d'' z1/8|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
         String expected = "[< ( 3 / 16 ) a'', ( 1 / 32 ) >, < ( 3 / 16 ) b'', ( 7 / 32 ) >, < ( 3 / 16 ) c'', " +
         		"( 13 / 32 ) >, < ( 3 / 16 ) d'', ( 19 / 32 ) >]";
@@ -367,7 +367,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("[CDE] F G A|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
         String expected = "[< ( 1 / 4 ) C, ( 0 / 1 ) >, < ( 1 / 4 ) D, ( 0 / 1 ) >, < ( 1 / 4 ) E, ( 0 / 1 ) >, " +
         		"< ( 1 / 4 ) ^F, ( 1 / 4 ) >, < ( 1 / 4 ) G, ( 1 / 2 ) >, < ( 1 / 4 ) A, ( 3 / 4 ) >]";
@@ -391,7 +391,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("[C1/8d'^^FF=Ff^E,1/8] F G A|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
         String expected = "[< ( 1 / 32 ) C, ( 0 / 1 ) >, < ( 1 / 4 ) d', ( 0 / 1 ) >, < ( 1 / 4 ) G, ( 0 / 1 ) >, " +
         		"< ( 1 / 4 ) G, ( 0 / 1 ) >, < ( 1 / 4 ) F, ( 0 / 1 ) >, < ( 1 / 4 ) ^f, ( 0 / 1 ) >, < ( 1 / 32 ) F,, ( 0 / 1 ) >, " +
@@ -413,7 +413,7 @@ public class ParserTest {
 
         List<Token> measure = Parser.lex("(3ABC [C1/8d'F1/3^E,1/8] z1/6|");
         ListIterator<Token> iter = measure.listIterator();
-        Measure m = new Measure(piece.getMeter());
+        Measure m = new Measure();
         Parser.parseMeasureContents(piece, m, iter, scale);
         String expected = "[< ( 1 / 6 ) A, ( 0 / 1 ) >, < ( 1 / 6 ) B, ( 1 / 6 ) >, < ( 1 / 6 ) C, ( 1 / 3 ) >, " +
         		"< ( 1 / 32 ) C, ( 1 / 2 ) >, < ( 1 / 4 ) d', ( 1 / 2 ) >, < ( 1 / 12 ) ^F, ( 1 / 2 ) >, " +

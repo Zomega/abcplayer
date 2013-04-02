@@ -273,8 +273,7 @@ public class Parser {
 						seenKey = true;
 
 						if (piece.getVoices().size() == 0) {
-							Voice voice = new Voice("default", new Measure(
-									piece.getMeter()));
+							Voice voice = new Voice("default", new Measure());
 							piece.addVoice( voice );
 							currentVoice = voice;
 							openRepeatStackMap.put(voice, new Stack<Measure>());
@@ -297,7 +296,7 @@ public class Parser {
 					}
 					if(currentVoice.getStart()==null) {
 						//Initialize the Voice et al...
-						Measure startMeasure = new Measure(piece.getMeter());
+						Measure startMeasure = new Measure();
 						currentVoice.setStart( startMeasure );
 						// There is always an implicit begin repeat before the first bar...
 						openRepeatStackMap.get(currentVoice).push( startMeasure );
@@ -330,14 +329,14 @@ public class Parser {
 			Token next = iter.next();
 
 			if (next.type == BARLINE) {
-				Measure newMeasure = new Measure(piece.getMeter());
+				Measure newMeasure = new Measure();
 				currentMeasure.setNext(newMeasure);
 
 				previousMeasures.add(currentMeasure);
                 currentMeasure = newMeasure;
                 
 			} else if( next.type == DOUBLE_BARLINE ) {
-				Measure newMeasure = new Measure(piece.getMeter());
+				Measure newMeasure = new Measure();
 				currentMeasure.setNext(newMeasure);
 
 				previousMeasures.add(currentMeasure);
@@ -348,7 +347,7 @@ public class Parser {
 				openRepeatStack.push( newMeasure );
 				
 			} else if (next.type == OPEN_REPEAT) {
-				Measure newMeasure = new Measure(piece.getMeter());
+				Measure newMeasure = new Measure();
 				currentMeasure.setNext(newMeasure);
 
 				previousMeasures.add(currentMeasure);
@@ -364,7 +363,7 @@ public class Parser {
 				}
 				currentMeasure.setNext(openRepeatStack.pop());
 				// Has this measure first loop back to the open repeat we saw...
-				Measure newMeasure = new Measure(piece.getMeter());
+				Measure newMeasure = new Measure();
 				currentMeasure.setAlternateNext(newMeasure);
 				// ...before going to the next measure
 				previousMeasures.add(currentMeasure);
@@ -372,7 +371,7 @@ public class Parser {
 				// Now go onto the next (currently empty) measure...
 			} else if (next.type == ONE_REPEAT) {
 
-				Measure newMeasure = new Measure(piece.getMeter());
+				Measure newMeasure = new Measure();
 				currentMeasure.setNext(newMeasure);
 
 				previousMeasures.add(currentMeasure);
@@ -380,7 +379,7 @@ public class Parser {
 			} else if (next.type == TWO_REPEAT) {
 				previousMeasures.get( previousMeasures.size() - 2 ).setAlternateNext(currentMeasure);
 
-				Measure newMeasure = new Measure(piece.getMeter());
+				Measure newMeasure = new Measure();
 				currentMeasure.setNext(newMeasure);
 
 				currentMeasure = newMeasure;
