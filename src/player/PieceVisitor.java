@@ -33,7 +33,6 @@ public class PieceVisitor {
 				piece.getSmallestDivision());
 		SequencePlayer player = new SequencePlayer(piece.getTempo(),
 				ticksPerQuarterNote);
-
 		for (Voice voice : piece.getVoices()) {
 			for (Measure measure : voice) {
 				for (Pair<Note, Fraction> p : measure.getNotes()) {
@@ -54,7 +53,7 @@ public class PieceVisitor {
 				globalTime = globalTime.plus(piece.getMeter());
 			}
 		}
-		return null;
+		return player;
 	}
 
 	/**
