@@ -3,7 +3,7 @@ package player;
 public class Player {
 	private Piece piece;
 	
-	public Player( String abcContents ) throws RuntimeException {
+	public Player( String abcContents ) throws RuntimeException, NoteOutOfBoundsException {
 		this.piece = Parser.parse(abcContents);
 	}
 	
