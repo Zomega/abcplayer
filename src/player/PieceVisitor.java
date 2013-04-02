@@ -69,12 +69,6 @@ public class PieceVisitor {
 	private static int fractionToTicks(Fraction time, Fraction divisionLength) {
 		// The int case should be exact, since time should be an integer
 		// multiple of the division length.
-		System.out.println( time );
-		System.out.println( divisionLength );
-		System.out.println( time.quotient(divisionLength).approximation() );
-		System.out.println( (int) time.quotient(divisionLength).approximation() );
-		
-		
 		return (int) time.quotient(divisionLength).approximation();
 	}
 }

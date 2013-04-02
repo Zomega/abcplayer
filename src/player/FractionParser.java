@@ -5,6 +5,7 @@ import utilities.Fraction;
 public class FractionParser {
 
 	//TODO: It is possible that this should be a static member of Fraction.
+	//TODO: Is this used? If not delete...
 	/**
 	 * @param fract A string with no whitespace that can be parsed as a Fraction.
 	 * @return The parsed fraction object.
