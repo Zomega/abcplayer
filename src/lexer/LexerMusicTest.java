@@ -379,9 +379,12 @@ public class LexerMusicTest {
     
     /**
      * General test for an abc file with a variety of features.  
-     * Requies Lexer to lex different Tokens; in addition to whitespace,
+     * Requires Lexer to lex different Tokens; in addition to whitespace,
      * standard header Tokens, notes, accidentals, octaves, Fractions and rests,
      * handle measure structures such as barlines and repeats (both open/close and n-th)
+     * Note that this Lexer's contents should not be playable: 
+     * although there is voice declaration in the header, there is no voice declaration
+     * after the key signature just before the ABC lines.  
      */
     @Test
     public void genTest1() {
@@ -403,7 +406,7 @@ public class LexerMusicTest {
 
         List<String> expected = new ArrayList<String>();
         expected.add("FIELD_NUM X: 1" + "\n");
-        expected.add("FIELD_TITLE T: Piece No.1" + "\n");
+        expected.add("FIELD_TITLE T: Lexer Test" + "\n");
         expected.add("FIELD_METER M:");
         expected.add("SPACE" + " " + " ");
         //Extra spacing needed
