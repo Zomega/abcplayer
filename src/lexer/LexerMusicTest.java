@@ -382,9 +382,6 @@ public class LexerMusicTest {
      * Requires Lexer to lex different Tokens; in addition to whitespace,
      * standard header Tokens, notes, accidentals, octaves, Fractions and rests,
      * handle measure structures such as barlines and repeats (both open/close and n-th)
-     * Note that this Lexer's contents should not be playable: 
-     * although there is voice declaration in the header, there is no voice declaration
-     * after the key signature just before the ABC lines.  
      */
     @Test
     public void genTest1() {
