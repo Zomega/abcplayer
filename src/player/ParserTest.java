@@ -229,7 +229,6 @@ public class ParserTest {
      */
     @Test
     public void testAccidentalKeyChangeWithinMeasureDoesntAffectOtherMeasures() {
-        System.out.println(Parser.lex("X: 1\nT: \n V:1 \n V:2\n V:3\n L:1/4 \nM:C\nK:C\nV:1\n A ^B|A B"));
         Piece piece = Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n L:1/4 \nM:C\nK:C\nV:1\n A ^B|A B");
 
         String measure1toString = "[< ( 1 / 4 ) A, ( 0 / 1 ) >, < ( 1 / 4 ) c, ( 1 / 4 ) >]";
