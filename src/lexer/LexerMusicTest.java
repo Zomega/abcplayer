@@ -378,7 +378,7 @@ public class LexerMusicTest {
     
     /**
      * General test for an abc file with a variety of features.  
-     * Requies Lexer to lex different Tokens; in addition to whitespace,
+     * Requires Lexer to lex different Tokens; in addition to whitespace,
      * standard header Tokens, notes, accidentals, octaves, Fractions and rests,
      * handle measure structures such as barlines and repeats (both open/close and n-th)
      */
@@ -401,7 +401,7 @@ public class LexerMusicTest {
         List<Token> tokens = l.lex(line);
         List<String> expected = new ArrayList<String>();
         expected.add("FIELD_NUM X: 1" + "\n");
-        expected.add("FIELD_TITLE T: Piece No.1" + "\n");
+        expected.add("FIELD_TITLE T: Lexer Test" + "\n");
         expected.add("FIELD_METER M:");
         expected.add("SPACE" + "  ");
         expected.add("FRACTION 4/4");
