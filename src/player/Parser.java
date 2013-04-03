@@ -87,7 +87,7 @@ public class Parser {
 	public final static TokenType NEWLINE = new TokenType("NEWLINE",
 			Pattern.compile("\\n"));
 	public final static TokenType SPACE = new TokenType("SPACE",
-			Pattern.compile("[\\s]+"));
+			Pattern.compile("[\\s]"));
 
 	// compile token types
 	public static TokenType[] typeArray = { FIELD_NUM, FIELD_TITLE, FIELD_COMP,
@@ -112,13 +112,10 @@ public class Parser {
 	 * @throws NoteOutOfBoundsException 
 	 */
 	public static Piece parse(String abcContents) throws NoteOutOfBoundsException {
-		System.out.println("Begining parsing...");
 		Lexer l = new Lexer(types);
-		System.out.println("Sucessfully lexed input...");
 		List<Token> tokens = l.lex(abcContents);
 
 		Piece piece = parseTokens(tokens);
-		System.out.println("Sucessfully parsed lexed input.");
 		return piece;
 	}
 
@@ -184,36 +181,34 @@ public class Parser {
 					int track = Integer.parseInt(next.contents.substring(2)
 							.trim());
 					piece.setTrackNumber(track);
-					System.out.println("Set track number to " + track);
 				} else if (next.type == FIELD_TITLE) {
 					piece.setTitle(next.contents.substring(2).trim());
-					System.out.println("Set field title to "
-							+ next.contents.substring(2).trim());
 				} else if (next.type == FIELD_COMP) {
 					piece.setComposer(next.contents.substring(2).trim());
-					System.out.println("Set field composer to "
-							+ next.contents.substring(2).trim());
 				} else if (next.type == FIELD_DEFAULT_LEN) {
 					next = eatSpaces(iter);
 					if (next != null && next.type == FRACTION) {
 						defaultLen = parseFraction(next.contents);
 						piece.setDefaultNoteLength(defaultLen);
 						setDefaultLenFlag = true;
+						while(iter.hasNext()){//get rid of spaces
+						    next = iter.next();
+						    if(next.type!=SPACE){
+						        iter.previous();
+						        break;
+						    }
+						}
 						if (!eatNewLine(iter))// next token should be end of
 												// line character to end the
 												// header field
 							throw new IllegalArgumentException(
 									"Field L: must be ended by an end of line character");
-						System.out.println("Set default length to "+piece.getDefaultNoteLength());
 					} else
 						throw new IllegalArgumentException(
 								"Field L: must be followed by a fraction note length "
 										+ next.type.name + " " + next.contents);
 				} else if (next.type == FIELD_METER) {
 					next = eatSpaces(iter);
-					System.out.println(next); // TODO: Clean this up?
-					System.out.println(iter.next());
-					iter.previous();
 					if (next != null
 							&& (next.type == METER || next.type == FRACTION || next.type == BASENOTE)) {
 						if (!next.contents.equals("C") && !next.contents.equals("C|"))
@@ -225,12 +220,18 @@ public class Parser {
 						    if(!next.contents.equals("|"))
 						        iter.previous();
 						}
+	                      while(iter.hasNext()){//get rid of spaces
+	                            next = iter.next();
+	                            if(next.type!=SPACE){
+	                                iter.previous();
+	                                break;
+	                            }
+	                        }
 						if (!eatNewLine(iter))// next token should be end of
 												// line character to end the
 												// header field
 							throw new IllegalArgumentException(
-									"Field L: must be ended by an end of line character");
-						System.out.println("Set field meter to "+piece.getMeter());
+									"Field M: must be ended by an end of line character");
 					} else
 						throw new IllegalArgumentException(
 								"Field M: must be followed by a meter definition");
@@ -238,12 +239,18 @@ public class Parser {
 					next = eatSpaces(iter);
 					if (next != null && next.type == DIGITS) {
 						piece.setTempo(Integer.parseInt(next.contents));
+	                      while(iter.hasNext()){//get rid of spaces
+	                            next = iter.next();
+	                            if(next.type!=SPACE){
+	                                iter.previous();
+	                                break;
+	                            }
+	                        }
 						if (!eatNewLine(iter))// next token should be end of
 												// line character to end the
 												// header field
 							throw new IllegalArgumentException(
 									"Field L: must be ended by an end of line character");
-						System.out.println("Set field tempo");
 					} else
 						throw new IllegalArgumentException(
 								"Field Q: must be followed by an integer tempo defintion");
@@ -254,7 +261,6 @@ public class Parser {
 					piece.addVoice(voice);
 					openRepeatStackMap.put(voice, new Stack<Measure>());
 					previousMeasuresMap.put(voice, new ArrayList<Measure>());
-					System.out.println("Made new Voice \"" + voiceName+ "\"" );
 				} else if (next.type == FIELD_KEY) {
 					next = eatSpaces(iter);
 					if (next.type != null && next.type == BASENOTE) {
@@ -263,7 +269,6 @@ public class Parser {
 													// take out the end of line
 													// character
 						piece.setKey(key);
-						System.out.println("Set field key");
 						// Key should be the final line in the header
 						// So from now on, we cannot have non-Notes/Voice Tokens
 						if (setDefaultLenFlag == false) {
@@ -278,7 +283,6 @@ public class Parser {
 							currentVoice = voice;
 							openRepeatStackMap.put(voice, new Stack<Measure>());
 							previousMeasuresMap.put(voice, new ArrayList<Measure>());
-							System.out.println("Made new Voice \"default\" because no voices were specified." );
 						}
 					} else
 						throw new IllegalArgumentException(
@@ -295,13 +299,14 @@ public class Parser {
 				}
 				else {
 					if( currentVoice == null ) {
-						throw new RuntimeException("Undeclared voice!");
+						throw new RuntimeException("Undeclared voice!");//throws an exception when an unknown voice is
+						//seen in the music or if at least one voice is declared in the header
+						//and there is an abc line with no voice declared, for safety reasons
 					}
 					if(currentVoice.getStart()==null) {
 						//Initialize the Voice et al...
 						Measure startMeasure = new Measure();
 						currentVoice.setStart( startMeasure );
-						System.out.println("Added a measure to voice " + currentVoice.name );
 						// There is always an implicit begin repeat before the first bar...
 						openRepeatStackMap.get(currentVoice).push( startMeasure );
 					}
@@ -339,10 +344,7 @@ public class Parser {
 	        // The ONE_REPEAT and TWO_REPEAT tokens also cause special behavior not related to incrementing the measure.
 	        if (next.type == ONE_REPEAT) {
 				continue;
-				//TODO: Add some sort of note of this here?
 			} else if (next.type == TWO_REPEAT) {
-				//TODO: This will not do quite the right thing if the endings are many bars long.
-				// Add this measure as the alternate ending  for the last measure before 1].
 				previousMeasures.get( previousMeasures.size() - 2 ).setAlternateNext( currentMeasure );
 				continue;
 			}
@@ -364,9 +366,7 @@ public class Parser {
 				
 			} else if (next.type == OPEN_REPEAT) {
 				// Push the current measure onto the open stack.
-				//System.out.println(openRepeatStack.size());
 				openRepeatStack.push(currentMeasure);
-				// TODO: the :|: token?
 			} else if (next.type == CLOSE_REPEAT) {
 				if (openRepeatStack.size() == 0) {
 					throw new RuntimeException("No matching open repeat.");
@@ -395,7 +395,6 @@ public class Parser {
 		while (iter.hasNext()) {
 			Token next = iter.next();
 			Note nextNote;
-			// TODO: Make a NPLET identifier, and use it to do this... redundant an limited.
 			if (next.type == DUPLET) {
                 nextNote = parseNoteElement(piece, iter, scale, new Fraction(3,2));
                 measure.addNote(nextNote, measureLen);
@@ -657,7 +656,6 @@ public class Parser {
 			octave = 12;// raise the pitch by 12 halfsteps for an octave
 		if (accidental == 3)// 3 signifies default key value according to key
 							// signature, if there was no accidental
-			//TODO: Is there anyway we could use MAXINTEGER for this instead or something? Triple sharps maybe should be handled for code robustness.
 			return scale.get(next.contents.toUpperCase()).transpose(octave);
 		else
 			return new Pitch(next.contents.toUpperCase().toCharArray()[0])
@@ -787,7 +785,6 @@ public class Parser {
 		while (iter.hasNext()) {
 		    
 			next = iter.next();
-			System.out.println("header "+next);
 			if (next.type == BASENOTE || next.type == KEY_ACCIDENTAL) {
 				if (minor == false)
 					key += next.contents;
@@ -797,6 +794,8 @@ public class Parser {
 			} else if (next.type == MODE_MINOR) {
 				key += next.contents;
 				minor = true;
+			} else if(next.type==SPACE){
+			    //do nothing
 			} else if (next.type == NEWLINE) {
 				return key;
 			} else
@@ -808,7 +807,6 @@ public class Parser {
 
 	/**
 	 * For testing purposes, lex a string into valid tokens
-	 *TODO: Remove this when cleaning. If needed, make types public final so this can be manually written in tests.
 	 * 
 	 * @param string
 	 * @return

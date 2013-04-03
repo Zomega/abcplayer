@@ -1,6 +1,5 @@
 package utilities;
 
-//TODO: Proofread / sync documentation.
 /**
  * Fraction Instances are immutable objects. They are guaranteed to be in least
  * terms by structural induction. If the fraction is zero ( 0 ), least terms is

@@ -14,10 +14,13 @@ import sound.Pitch;
  * Testing Strategy:
  * -Test using the whitebox testing method, knowing the implementation of the class
  * 
- * -Test each kind of keynote
+ * -Test each kind of keynote in every category 
+ * (e.g. Major sharps, minor sharps, Major flats, minor flats)
+ * -Test the keys with all seven accidentals
+ * -Test keys that have no accidentals
+ * -Test capitalization and differentiation between major and minor parameters
  * 
  * @author kimtoy
- * @category no_didit
  * 
  */
 public class CircleOfFifthsTest {

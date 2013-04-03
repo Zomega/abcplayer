@@ -8,12 +8,12 @@ import org.junit.Test;
  * Fraction test file
  * 
  * Testing strategy:
+ * -Use the black box testing style, in terms of testing individual methods
  * -Comprehensive tests that check each method and constructor
  * -Check that exceptions are thrown when expected
  * Individual component strategies are explained
  * 
  * @author kimtoy
- * @category no_didit
  */
 
 public class FractionTest {

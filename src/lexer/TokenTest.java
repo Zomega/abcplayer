@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 
 /**
- * Test Token equals
+ * Test Token equals method
  * @author kimtoy
  */
 public class TokenTest {

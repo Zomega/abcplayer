@@ -8,6 +8,7 @@ import org.junit.Test;
 
 /**
  * JUnit testing for MeasureIterator.
+ * Strategy: make sure that measure structure remains valid
  * 
  * @author woursler
  * @version RC1

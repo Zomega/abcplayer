@@ -29,13 +29,17 @@ import utilities.Fraction;
  * -Note element parsing tests (chords, duplets, tuplets, quadruplets, rests)
  * -Measure parsing tests (length of measure, accidental changes)
  * -Header checks
+ * -Repeat checks
  * 
  * @author kimtoy, czuo
- * @category no_didit
  * 
  */
 public class ParserTest {
 
+    /**
+     * Test that the header information is correctly set from the parsed piece data
+     * @throws NoteOutOfBoundsException
+     */
     @Test
     public void testParseHeader() throws NoteOutOfBoundsException {
         BufferedReader f = null;
@@ -53,47 +57,196 @@ public class ParserTest {
         }
         Piece piece = Parser.parse(line);
         assertEquals(1, piece.getTrackNumber());
-        assertEquals("Piece No.1", piece.getTitle());
-        assertEquals(new Fraction(4,4), piece.getMeter());
-        assertEquals(new Fraction(1,4), piece.getDefaultNoteLength());
-        assertEquals(140, piece.getTempo());
-        assertEquals("C", piece.getKey());
+        assertEquals("Bagatelle No.25 in A, WoO.59", piece.getTitle());
+        assertEquals(new Fraction(3,8), piece.getMeter());
+        assertEquals(new Fraction(1,16), piece.getDefaultNoteLength());
+        assertEquals(240, piece.getTempo());
+        assertEquals("Am", piece.getKey());
     }
 
+    /**
+     * Tests that exception is thrown if the required headers aren't set 
+     * @throws NoteOutOfBoundsException
+     */
     @Test (expected=IllegalArgumentException.class)
     public void testHeadersRequired() throws NoteOutOfBoundsException{
         String line = "T: 0 \n 2 3 4 5|";
         Parser.parse(line);
     }
     
-    public void testMeterField() throws NoteOutOfBoundsException{
-        Piece piece = Parser.parse("X: \nT: blurgh\n M:C\nK:C\n|A B C D|");
+    /**
+     * Test that an exception is thrown when the piece has no track number
+     * A runtime exception should be thrown for having an invalid token.
+     * @throws NoteOutOfBoundsException
+     */
+    @Test (expected=RuntimeException.class)
+    public void testNoTrackNumber() throws NoteOutOfBoundsException{
+        String line = "X: \nT: title\n M:C\nK:C\n|A B C D|";
+        Parser.parse(line);
+    }
+    
+    /**
+     * Test that Meter recognizes "C" as a meter
+     * @throws NoteOutOfBoundsException
+     */
+    @Test
+    public void testMeterFieldRecognizesCommonTimeSymbol() throws NoteOutOfBoundsException{
+        Piece piece = Parser.parse("X: 2\nT: title\n M:C\nK:C\n|A B C D|");
         assertEquals(new Fraction(4,4), piece.getMeter());
     }
     
-    public void testTitleComposerCanTakeAnyWhitespaceOrContentBeforeNewline(){}
+    /**
+     * Test that the default note length is 1/8
+     */
+    @Test 
+    public void testDefaultNoteLength(){
+        Piece piece = Parser.parse("X: 2\nT: title\n M:C\nK:C\n|A B C D|");
+        assertEquals(new Fraction(1,8), piece.getDefaultNoteLength());
+    }
     
-    public void testHeaderStoresVoices(){}
+    /**
+     * Test if the Title field trims whitespace before storing the piece's title
+     * 
+     * Ensure that a default voice was initialized, and musical content
+     * was added to the piece
+     */
+    @Test
+    public void testTitleCanTakeAnyWhitespaceOrContentBeforeNewlineAndDefaultVoiceCreated(){
+        Piece piece = Parser.parse("X: 1\nT: My TITLE is L:ongCat It is long.   \n L:1/4\nM:C\nK:C\n|A B C D|");
+        String expected = "[< ( 1 / 4 ) A, ( 0 / 1 ) >, < ( 1 / 4 ) B, ( 1 / 4 ) >, < ( 1 / 4 ) C, ( 1 / 2 ) >, "
+                + "< ( 1 / 4 ) D, ( 3 / 4 ) >]";
+        assertEquals("My TITLE is L:ongCat It is long.", piece.getTitle());
+        assertEquals(1, piece.getVoices().size());
+        assertEquals(expected, piece.getVoices().get(0).getStart().getNext().toString());
+    }
     
-    public void testABCFileMusicContainMusicalContent(){}
+    /**
+     * If voices declared, test that exception is thrown for unlabed voice
+     */
+    @Test(expected=RuntimeException.class)
+    public void testUnlabedVoicesThrowsException(){
+        Parser.parse("X: 2\nT: title\n V:1\nM:C\nK:C\n|A B C D|");
+    }
     
+    /**
+     * Tests if voices defined in header were parsed and stored
+     */
+    @Test
+    public void testHeaderStoresVoices(){
+        Piece piece = Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n M:C\nK:C\nV:1\n|A B C D|");
+        assertEquals(3, piece.getVoices().size());
+    }
+    
+    /**
+     * Tests that exception is thrown when abc music file doesn't have musical content
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testABCFileMusicContainMusicalContent(){
+        Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n M:C\nK:C\nV:1\n");
+    }
+    
+    /**
+     * Test that no exceptions are thrown if there are extra newline characters in the header or
+     * between the header and the body
+     */
+    @Test
+    public void testCanParseWithExtraSpacesAndNewlinesInHeader(){
+        Parser.parse("X: 1\nT: \n V:1 \n V:2 \n \n\nV:3 \n M:C  \n L:1/4 \nK:C \nV:1\n\n|A B C D|");
+    }
+    
+    /**
+     * Test that no exceptions are thrown if there are extra newline characters in the header
+     */
+    @Test
+    public void testCanParseWithExtraNewlinesInBody(){
+        Parser.parse("X: 1\nT: \n V:1 \n V:2\nV:3\n M:C\nK:C\nV:1\n|A B C D|\n|A B C D|");
+    }
+    
+    /**
+     * Test simple repeat structure |: stuff :|
+     */
+    @Test
     public void testRepeatStructure() {
-    }
-
-    public void testMutlipleEndings() {
-    }
-
-    public void testPickup() {
-    }
-
-    public void testShorterEndingMeasure() {
-    }
-
-    public void testAccidentalKeyChangeWithinMeasureDoesntAffectOtherMeasures() {
+        Piece piece = Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n M:C\nK:C\nV:1\n |:A B C D|B C D E:|");
+        Voice defaultVoice = piece.getVoices().get(0);
+        Measure measure1 = defaultVoice.getStart().getNext();
+        Measure measure2 = measure1.getNext();
+        assertEquals(measure1, measure2.getNext());
     }
     
-    public void testMeasureStartsWithBarline(){
-        
+    /**
+     * Test that a repeat with no opening brace starts from the start of the piece
+     */
+    @Test
+    public void testRepeatWithNoOpeningBraceStartsFromStartOfPiece(){
+        Piece piece = Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n M:C\nK:C\nV:1\n A B C D|B C D E:|");
+        Voice defaultVoice = piece.getVoices().get(0);
+        Measure measure1 = defaultVoice.getStart();
+        Measure measure2 = measure1.getNext();
+        assertEquals(measure1, measure2.getNext());
+    }
+    
+    /**
+     * Test that repeats without an opening repeat bar will start from the last double bar line
+     */
+    @Test
+    public void testRepeatWithNoOpeningBraceStartsFromDoubleBar(){
+        Piece piece = Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n M:C\nK:C\nV:1\n A B C D||B C D E:|");
+        Voice defaultVoice = piece.getVoices().get(0);
+        Measure measure1 = defaultVoice.getStart();
+        Measure measure2 = measure1.getNext();
+        assertEquals(measure2, measure2.getNext());
+    }
+
+    /**
+     * Test that the multiple ending structure works
+     */
+    @Test
+    public void testMutlipleEndings() {
+        Piece piece = Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n L:1/4\nM:C\nK:C\nV:1\n D E F G|[1B C D E:|[2A B C D|");
+        Voice defaultVoice = piece.getVoices().get(0);
+        Measure measure1 = defaultVoice.getStart().getNext();
+        Measure measure2 = measure1.getNext();
+        String measure3 = "[< ( 1 / 4 ) A, ( 0 / 1 ) >, < ( 1 / 4 ) B, ( 1 / 4 ) >, < ( 1 / 4 ) C, ( 1 / 2 ) >, "
+                + "< ( 1 / 4 ) D, ( 3 / 4 ) >]";
+        assertEquals(measure1, measure2.getNext());
+        assertEquals(measure3, measure1.getAlternateNext().toString());
+    }
+
+    /**
+     * Test that the pickup measure if indeed shorter than the default length
+     * and doesn't throw errors
+     */
+    @Test
+    public void testPickupMeasureHasShorterDuration() {
+        Piece piece = Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n M:C\nK:C\nV:1\n A B|");
+        assertEquals(new Fraction(1, 4), piece.getVoices().get(0).getStart().getDuration());
+    }
+    
+    /**
+     * Test that accidental key changes within a measure do not affect other measures
+     * It is tested in other cases whether accidentals propagate within a measure
+     */
+    @Test
+    public void testAccidentalKeyChangeWithinMeasureDoesntAffectOtherMeasures() {
+        System.out.println(Parser.lex("X: 1\nT: \n V:1 \n V:2\n V:3\n L:1/4 \nM:C\nK:C\nV:1\n A ^B|A B"));
+        Piece piece = Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n L:1/4 \nM:C\nK:C\nV:1\n A ^B|A B");
+
+        String measure1toString = "[< ( 1 / 4 ) A, ( 0 / 1 ) >, < ( 1 / 4 ) c, ( 1 / 4 ) >]";
+        String measure2toString = "[< ( 1 / 4 ) A, ( 0 / 1 ) >, < ( 1 / 4 ) B, ( 1 / 4 ) >]";
+        Voice defaultVoice = piece.getVoices().get(0);
+        Measure measure1 = defaultVoice.getStart();
+        Measure measure2 = measure1.getNext();
+        assertEquals(measure1toString, measure1.toString());
+        assertEquals(measure2toString, measure2.toString());
+    }
+    
+    /**
+     * Test that no error is thrown for measure that starts with a barline
+     */
+    @Test
+    public void testCanParseMeasureThatStartsWithBarline(){
+        Parser.parse("X: 1\nT: \n V:1 \n V:2\n V:3\n M:C\nK:C\nV:1\n||A B C D|");
     }
     
     /**
@@ -116,7 +269,24 @@ public class ParserTest {
         assertEquals(expected, m.toString());
     }
     
-    public void testRestsInTuplet(){}
+    /**
+     * Test that rests in a tuplet are multiplied by 2/3
+     */
+    @Test
+    public void testRestsInTuplet(){
+        Piece piece = new Piece();
+        piece.setDefaultNoteLength(new Fraction(1, 4));
+        piece.setMeter(new Fraction(4, 4));
+        HashMap<String, Pitch> scale = CircleOfFifths.getKeySignature("G");
+
+        List<Token> measure = Parser.lex("A (3AzD D|");
+        ListIterator<Token> iter = measure.listIterator();
+        Measure m = new Measure();
+        Parser.parseMeasureContents(piece, m, iter, scale);
+        String expected = "[< ( 1 / 4 ) A, ( 0 / 1 ) >, < ( 1 / 6 ) A, ( 1 / 4 ) >, " +
+        		"< ( 1 / 6 ) D, ( 7 / 12 ) >, < ( 1 / 4 ) D, ( 3 / 4 ) >]";
+        assertEquals(expected, m.toString());
+    }
 
     /**
      * Test Parser.parseNoteElement on different note and modifier combinations
@@ -148,7 +318,7 @@ public class ParserTest {
 
         List<Token> note4 = Parser.lex("=c''2");
         assertEquals(
-                new Note(new Fraction(1, 4), new Pitch('C').transpose(36)),
+                new Note(new Fraction(1, 2), new Pitch('C').transpose(36)),
                 Parser.parseNoteElement(piece, note4.listIterator(), scale,
                         new Fraction(1)));
 

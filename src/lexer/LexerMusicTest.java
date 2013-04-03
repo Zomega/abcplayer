@@ -19,7 +19,6 @@ import org.junit.Test;
  * -Check that exceptions are thrown when expected (null input, non-token input)
  * Individual component strategies are explained
  * 
- * @category no_didit
  * @author kimtoy, czuo
  */
 public class LexerMusicTest {
@@ -86,7 +85,7 @@ public class LexerMusicTest {
     public final  TokenType NEWLINE = new TokenType("NEWLINE",
             Pattern.compile("\\n"));
     public final  TokenType SPACE = new TokenType("SPACE",
-            Pattern.compile("[\\s]+"));
+            Pattern.compile("[\\s]"));
     
     List<TokenType> types = new ArrayList<TokenType>();
 
@@ -400,16 +399,13 @@ public class LexerMusicTest {
         }
         Lexer l = new Lexer(types);
         List<Token> tokens = l.lex(line);
-
         List<String> expected = new ArrayList<String>();
         expected.add("FIELD_NUM X: 1" + "\n");
         expected.add("FIELD_TITLE T: Piece No.1" + "\n");
         expected.add("FIELD_METER M:");
-        expected.add("SPACE" + " " + " ");
-        //Extra spacing needed
+        expected.add("SPACE" + "  ");
         expected.add("FRACTION 4/4");
         expected.add("NEWLINE" + " " + "\n");
-        //Extra spacing needed
         expected.add("FIELD_VOICE V: Voice 2" + "\n");
         expected.add("FIELD_DEFAULT_LEN L:");
         expected.add("SPACE" + "  ");
@@ -425,10 +421,9 @@ public class LexerMusicTest {
         expected.add("SPACE" + "  ");
         expected.add("BASENOTE C");
         expected.add("NEWLINE" + " " + "\n");
-        
+        expected.add("FIELD_VOICE V: Voice 1" + "\n");
         expected.add("OPEN_CHORD [");
         expected.add("BASENOTE C");
-        expected.add("SPACE  ");
         expected.add("BASENOTE c");
         expected.add("OCTAVE '");
         expected.add("CLOSE_CHORD ]");
@@ -442,28 +437,24 @@ public class LexerMusicTest {
         expected.add("BARLINE |");
         expected.add("SPACE  ");
         expected.add("TUPLET (3");
-        expected.add("SPACE  ");
         expected.add("BASENOTE C");
         expected.add("BASENOTE B");
         expected.add("ACCIDENTAL __");
         expected.add("BASENOTE A");
         expected.add("SPACE  ");
         expected.add("CLOSE_REPEAT :|");
-        expected.add("SPACE  " + " " + "\n");
-        //Not quite sure how this turned out...
-        
-        expected.add("FIELD_VOICE V: Voice 2         " + "\n");
-        //As expected, all the spaces are also captured...
-        expected.add("ONE_REPEAT [1");
-        expected.add("OCTAVE '");
+        expected.add("SPACE " + " ");
         expected.add("SPACE  ");
+        expected.add("NEWLINE" + " " + "\n");
+        expected.add("FIELD_VOICE V: Voice 2         " + "\n");
+        expected.add("ONE_REPEAT [1");
+        expected.add("ACCIDENTAL ^");
         expected.add("BASENOTE C");
         expected.add("OCTAVE ,");
         expected.add("FRACTION_NOT_STRICT /4");
         expected.add("SPACE" + "  ");
         expected.add("BARLINE |");
         expected.add("NEWLINE" + " " + "\n");
-        //assertEquals(tokens.get(3).toString(), expected.get(3));
         
         for (int i = 0; i < tokens.size(); i++)
         {
