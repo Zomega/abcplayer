@@ -1,0 +1,41 @@
+Project 1: abc Music Player		czuo, toyk2a, woursler
+===========================		(grader: Esha)
+
+Team contract: 5 / 5
+
+Design: 20 / 25
+  Milestone design: 12 / 15
+  Revised design: 8 / 10
+
+Implementation: 41 / 50
+  Warmup: 5 / 5
+  Code readability: 5 / 8
+  Specifications: 5 / 7
+  Functionality: 13 / 15
+  Our tests: 13 / 15
+    Tuplets: 2 / 2
+    Chords: 2 / 2
+    Repeats: 2 / 2
+    Voices: 0 / 2
+    Key signature: 2 / 2
+    Accidentals: 2 / 2
+    Rhythm: 3 / 3
+
+Testing: 12 / 15
+  Unit tests: 6 / 6
+  Integration tests: 3 / 6
+  Custom abc files: 3 / 3
+
+TOTAL TEAM SCORE: 78 / 95
+
+(Individual scores will include 5 points for the reflection assignment,
+ and will be posted on Stellar.)
+
+Feedback
+--------
+Dear Catherine, Kimberly, & William, You lost some points in the design
+document, code readability, & Javadoc comments. Great to see that you
+included Integration tests. Moreover, if there is an inconsistency in
+the grades among the team members, it is perhaps due to the Reflections
+document. If you have any concerns about your grade, please feel free to
+contact me and visit me during office hours. Good job! -Esha
